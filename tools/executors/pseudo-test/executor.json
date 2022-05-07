@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "pseudo-test": {
+      "implementation": "./pseudo-test",
+      "schema": "./schema.json",
+      "description": "Runs pseudo tests for ng-openapi-gen"
+    }
+  }
+}

@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        description: 'Release type'
+        required: true
+        default: 'minor'
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.BM_GITHUB_PAT }}
+          fetch-depth: 0
+
+      - name: Setup Node.js and cache
+        uses: ./.github/actions/setup-node
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.BM_GPG_PRIVATE }}
+          passphrase: ${{ secrets.BM_GPG_PASS }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Bump packages version
+        id: bump-version
+        run: |
+          npm run cd:version-bump -- --release-as ${{ github.event.inputs.mode }}
+          TIMING=1 echo "::set-output name=new_version::$(node -p "require('./package.json').version")"
+
+      - name: Build all packages on main branch
+        run: npm run ci:all:build
+
+      - name: Commit changes after bump
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore: release v${{ steps.bump-version.outputs.new_version }}'
+          commit_options: '--no-verify'
+          commit_user_name: 'Blue Muffin'
+          commit_user_email: '69810118+blue-muffin@users.noreply.github.com'
+          commit_author: 'Blue Muffin <69810118+blue-muffin@users.noreply.github.com>'
+          tagging_message: ${{ steps.bump-version.outputs.new_version }}
+          status_options: '--untracked-files=no'
+          skip_fetch: true
+
+      - name: Publish all packages
+        run: npm run cd:all:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release
+        run: npm run cd:github-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.BM_GITHUB_PAT }}
+
+concurrency:
+  group: release-${{ github.head_ref }}
+  cancel-in-progress: true

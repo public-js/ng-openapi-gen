@@ -1,0 +1,60 @@
+{
+  "sourceRoot": "packages/ng-openapi-gen/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/ng-openapi-gen/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/ng-openapi-gen"],
+      "options": {
+        "jestConfig": "packages/ng-openapi-gen/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/ng-openapi-gen",
+        "tsConfig": "packages/ng-openapi-gen/tsconfig.lib.json",
+        "packageJson": "packages/ng-openapi-gen/package.json",
+        "main": "packages/ng-openapi-gen/src/ng-openapi-gen.ts",
+        "assets": [
+          "README.md",
+          "LICENSE",
+          {
+            "input": "./packages/ng-openapi-gen/src",
+            "glob": "schema.json",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/ng-openapi-gen/src/templates",
+            "glob": "*.handlebars",
+            "output": "./src/templates"
+          }
+        ]
+      }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "npm publish --tag=latest --access public",
+        "cwd": "dist/packages/ng-openapi-gen"
+      }
+    },
+    "generate-schema": {
+      "executor": "./tools/executors/schema-generator:schema-generator"
+    },
+    "pseudo-test": {
+      "executor": "./tools/executors/pseudo-test:pseudo-test"
+    }
+  },
+  "tags": []
+}

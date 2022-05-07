@@ -1,0 +1,52 @@
+name: 'Setup Node.js and cache'
+description: 'Setup a Node.js environment & dependencies cache'
+
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '16.x'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js v${{ inputs.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ inputs.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Check node modules cache
+      id: locate-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules
+          */*/node_modules/
+          !node_modules/.cache
+          !*/*/node_modules/.cache
+        key: node-modules-cache-hash__${{ hashfiles('package-lock.json') }}
+
+    - name: Restore node modules from cache
+      id: build-cache
+      if: steps.locate-cache.outputs.cache-hit == 'true'
+      uses: actions/cache@v2
+      with:
+        path: |
+          node_modules/.cache
+          */*/node_modules/.cache
+        key: builds-cache-hash__${{ hashFiles('package-lock.json') }}-${{ github.ref }}
+        restore-keys: builds-cache-hash__${{ hashFiles('package-lock.json') }}
+
+    - name: Fetch node modules to cache
+      if: steps.locate-cache.outputs.cache-hit != 'true'
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: npm-cache-hash__${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-cache-hash__
+
+    - name: Install fetched node modules
+      if: steps.locate-cache.outputs.cache-hit != 'true'
+      run: npm ci
+      shell: bash

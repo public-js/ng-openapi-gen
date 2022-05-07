@@ -1,0 +1,558 @@
+{
+  "openapi": "3.0",
+  "info": {
+    "title": "Test with all types",
+    "version": "1.0"
+  },
+  "paths": {
+    "/foo": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Containers"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bar": {
+      "parameters": [
+        {
+          "name": "param",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ReferencedInParamOneOf1"
+              },
+              {
+                "$ref": "#/components/schemas/ReferencedInParamOneOf2"
+              },
+              {
+                "$ref": "#/components/schemas/a.b.RefObject"
+              },
+              {
+                "$ref": "#/components/schemas/AdditionalProperties"
+              },
+              {
+                "$ref": "#/components/schemas/Nullables"
+              },
+              {
+                "$ref": "#/components/schemas/InlineObject"
+              },
+              {
+                "$ref": "#/components/schemas/AuditCdr"
+              }
+            ]
+          }
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ReferencedInServiceOneOf1"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ReferencedInServiceOneOf2"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/baz": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/disjunct"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RefEnum": {
+        "type": "string",
+        "enum": ["value'A", "value'B", "value'C", ""]
+      },
+      "RefIntEnum": {
+        "type": "integer",
+        "enum": [100, 200, 300]
+      },
+      "RefNamedIntEnum": {
+        "type": "integer",
+        "x-enumNames": ["first", "second", "third"],
+        "enum": [100, 200, 300]
+      },
+      "NullableObject": {
+        "nullable": true,
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "InlineObject": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "object",
+            "properties": {
+              "string": {
+                "type": "string"
+              },
+              "nullableString": {
+                "nullable": true,
+                "type": "string"
+              },
+              "ref": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RefEnum"
+                  }
+                ]
+              },
+              "nullableRef": {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RefEnum"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "a.b.RefObject": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "x.y.RefObject": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/a.b.RefObject"
+          },
+          {
+            "type": "object",
+            "additionalProperties": true
+          }
+        ]
+      },
+      "EscapedProperties": {
+        "type": "object",
+        "properties": {
+          "=": {
+            "type": "string"
+          },
+          "a-b": {
+            "type": "string"
+          },
+          "123": {
+            "type": "string"
+          }
+        }
+      },
+      "union": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": true
+          },
+          {
+            "$ref": "#/components/schemas/RefEnum"
+          },
+          {
+            "$ref": "#/components/schemas/RefIntEnum"
+          },
+          {
+            "$ref": "#/components/schemas/RefNamedIntEnum"
+          },
+          {
+            "$ref": "#/components/schemas/Container"
+          }
+        ]
+      },
+      "disjunct": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ReferencedInNullableOneOf"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/a.b.RefObject"
+          },
+          {
+            "$ref": "#/components/schemas/x.y.RefObject"
+          },
+          {
+            "$ref": "#/components/schemas/ReferencedInOneOf"
+          },
+          {
+            "$ref": "#/components/schemas/EscapedProperties"
+          }
+        ]
+      },
+      "ReferencedInOneOf": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedInNullableOneOf": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedInServiceOneOf1": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedInServiceOneOf2": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedInParamOneOf1": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferencedInParamOneOf2": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AdditionalProperties": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+          "$ref": "#/components/schemas/a.b.RefObject"
+        }
+      },
+      "Nullables": {
+        "type": "object",
+        "required": ["nullableObject", "inlinedNullableObject", "withNullableProperty"],
+        "properties": {
+          "nullableObject": {
+            "$ref": "#/components/schemas/NullableObject"
+          },
+          "withNullableProperty": {
+            "type": "object",
+            "required": ["someProperty"],
+            "properties": {
+              "someProperty": {
+                "$ref": "#/components/schemas/NullableObject"
+              }
+            }
+          },
+          "inlinedNullableObject": {
+            "type": "object",
+            "nullable": true,
+            "required": ["someProperty"],
+            "properties": {
+              "someProperty": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Containers": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Container"
+        }
+      },
+      "Container": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": ["numberProp"],
+            "properties": {
+              "stringProp": {
+                "type": "string",
+                "description": "Property of type string"
+              },
+              "integerProp": {
+                "type": "integer",
+                "description": "Property of type integer"
+              },
+              "numberProp": {
+                "type": "number",
+                "description": "Property of type number"
+              },
+              "booleanProp": {
+                "type": "boolean",
+                "description": "Property of type boolean"
+              },
+              "anyProp": {
+                "description": "Property of type any"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/a.b.RefObject"
+          },
+          {
+            "type": "object",
+            "required": ["refEnumProp", "refObjectProp"],
+            "properties": {
+              "nullableObject": {
+                "$ref": "#/components/schemas/NullableObject"
+              },
+              "refEnumProp": {
+                "$ref": "#/components/schemas/RefEnum",
+                "description": "Property which references an enumerated string"
+              },
+              "refObjectProp": {
+                "description": "Property which references an object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/a.b.RefObject"
+                  }
+                ]
+              },
+              "unionProp": {
+                "$ref": "#/components/schemas/union",
+                "description": "Property which references an union object"
+              },
+              "disjunctProp": {
+                "$ref": "#/components/schemas/disjunct",
+                "decription": "Property wich references an disjunct object"
+              },
+              "containerProp": {
+                "$ref": "#/components/schemas/Container",
+                "description": "Property which references another container"
+              },
+              "arrayOfStringsProp": {
+                "type": "array",
+                "description": "Property of type array of string",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "arrayOfIntegersProp": {
+                "type": "array",
+                "description": "Property of type array of integers",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "arrayOfNumbersProp": {
+                "type": "array",
+                "description": "Property of type array of numbers",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "arrayOfBooleansProp": {
+                "type": "array",
+                "description": "Property of type array of booleans",
+                "items": {
+                  "type": "boolean"
+                }
+              },
+              "arrayOfRefEnumsProp": {
+                "type": "array",
+                "description": "Property of type array of enums",
+                "items": {
+                  "$ref": "#/components/schemas/RefEnum"
+                }
+              },
+              "arrayOfABRefObjectsProp": {
+                "type": "array",
+                "description": "Property of type array of references an object",
+                "items": {
+                  "$ref": "#/components/schemas/a.b.RefObject"
+                }
+              },
+              "arrayOfAnyProp": {
+                "type": "array",
+                "description": "Property of type array of any type",
+                "items": {}
+              },
+              "dynamic": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/x.y.RefObject"
+                }
+              },
+              "stringEnumProp": {
+                "type": "string",
+                "enum": ["a", "b", "c"]
+              },
+              "intEnumProp": {
+                "type": "integer",
+                "enum": [1, 2, 3]
+              },
+              "boolEnumProp": {
+                "type": "boolean",
+                "enum": [false]
+              },
+              "nestedObject": {
+                "type": "object",
+                "properties": {
+                  "p1": {
+                    "type": "string"
+                  },
+                  "p2": {
+                    "type": "integer"
+                  },
+                  "deeper": {
+                    "type": "object",
+                    "required": ["d1"],
+                    "properties": {
+                      "d1": {
+                        "$ref": "#/components/schemas/a.b.RefObject"
+                      },
+                      "d2": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/a.b.RefObject"
+                            }
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "AuditLog": {
+        "required": ["type"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "AuditCdr": {
+        "required": ["operationType", "severity"],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLog"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "callFrom": {
+                "type": "string"
+              },
+              "callTo": {
+                "type": "string"
+              },
+              "callStartDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "callEndDate": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+      - '!release/**'
+  push:
+    branches:
+      - main
+      - '!release/**'
+
+env:
+  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
+
+jobs:
+  build:
+    name: Build packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and cache
+        uses: ./.github/actions/setup-node
+
+      - name: Build only changed packages
+        if: ${{ env.IS_MAIN == 'false' }}
+        run: npm run ci:affect:build
+
+      - name: Build all packages on main branch
+        if: ${{ env.IS_MAIN == 'true' }}
+        run: npm run ci:all:build
+
+concurrency:
+  group: build-${{ github.head_ref }}
+  cancel-in-progress: true

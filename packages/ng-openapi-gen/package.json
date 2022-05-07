@@ -1,0 +1,26 @@
+{
+  "name": "@public-js/ng-openapi-gen",
+  "version": "0.0.0",
+  "description": "An OpenAPI 3 code generator for Angular",
+  "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "~9.0.0",
+    "fs-extra": "~10.1.0",
+    "handlebars": "~4.7.0",
+    "jsesc": "~3.0.0",
+    "openapi3-ts": "~2.0.0",
+    "tslib": "^2.0.0",
+    "yargs-parser": "^20.0.0"
+  },
+  "license": "MIT",
+  "author": "Public JS <public-js@muffin.blue> (https://github.com/public-js/public-js)",
+  "repository": "https://github.com/public-js/ng-openapi-gen",
+  "homepage": "https://github.com/public-js/ng-openapi-gen",
+  "keywords": [],
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
+  "type": "module",
+  "bin": {
+    "ng-openapi-gen": "./src/ng-openapi-gen.js"
+  }
+}

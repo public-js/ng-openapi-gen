@@ -1,0 +1,49 @@
+name: Unit tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - '!release/**'
+  push:
+    branches:
+      - main
+      - '!release/**'
+
+jobs:
+  test-nx:
+    name: Any test with nx
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and cache
+        uses: ./.github/actions/setup-node
+
+      - name: Test all packages
+        run: npm run ci:all:test
+
+      - name: Report to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: 'coverage/packages/*/lcov.info'
+
+      - name: Report to Code Climate
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageLocations: 'coverage/packages/*/lcov.info:lcov'
+
+      - name: Report to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: 'coverage/packages/*/lcov.info'
+
+concurrency:
+  group: test-${{ github.head_ref }}
+  cancel-in-progress: true

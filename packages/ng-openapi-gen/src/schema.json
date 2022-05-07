@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/public-js/ng-openapi-gen/blob/main/packages/ng-openapi-gen/src/schema.json",
+  "title": "Options for ng-openapi-gen",
+  "type": "object",
+  "required": ["input"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "input": {
+      "description": "Path to local or URL to remote OpenAPI 3 spec file in JSON or YAML format.",
+      "type": "string"
+    },
+    "output": {
+      "description": "Path to directory where the generated files will be written to. Defaults to 'src/app/api'.",
+      "type": "string",
+      "default": "src/app/api"
+    },
+    "defaultTag": {
+      "description": "Tag name assumed for operations without tags. Defaults to 'Api'.",
+      "type": "string",
+      "default": "Api"
+    },
+    "fetchTimeout": {
+      "description": "Timeout for fetching spec file from remote URL, in milliseconds. Defaults to 20000.",
+      "type": "number",
+      "default": 20000
+    },
+    "includeTags": {
+      "description": "Specific tags to be included. Overrides \"excludeTags\". Defaults to [].",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "excludeTags": {
+      "description": "Specific tags to be excluded. Defaults to [].",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ignoreUnusedModels": {
+      "description": "Whether to skip models with no references to them. Defaults to true.",
+      "type": "boolean",
+      "default": true
+    },
+    "removeStaleFiles": {
+      "description": "Whether to remove redundant files in the output directory. Defaults to true.",
+      "type": "boolean",
+      "default": true
+    },
+    "modelIndex": {
+      "description": "TypeScript file name (without the \".ts\" extension) that exports all models. Set \"false\" to skip. Defaults to 'models'.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": "models"
+    },
+    "serviceIndex": {
+      "description": "TypeScript file name (without the \".ts\" extension) that exports all services. Set \"false\" to skip. Defaults to 'services'.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": "services"
+    },
+    "indexFile": {
+      "description": "Whether to generate an \"index.ts\" file that exports all generated files. Defaults to false.",
+      "type": "boolean",
+      "default": false
+    },
+    "servicePrefix": {
+      "description": "Prefix for generated service classes. Defaults to ''.",
+      "type": "string",
+      "default": ""
+    },
+    "serviceSuffix": {
+      "description": "Suffix for generated service classes. Defaults to 'Service'.",
+      "type": "string",
+      "default": "Service"
+    },
+    "modelPrefix": {
+      "description": "Prefix for generated model classes. Defaults to ''.",
+      "type": "string",
+      "default": ""
+    },
+    "modelSuffix": {
+      "description": "Suffix for generated model classes. Defaults to ''.",
+      "type": "string",
+      "default": ""
+    },
+    "module": {
+      "description": "Name for the module class that provides all services. Set \"false\" to skip. Defaults to 'ApiModule'.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": "ApiModule"
+    },
+    "configuration": {
+      "description": "Name for the configuration class to generate. Defaults to 'ApiConfiguration'.",
+      "type": "string",
+      "default": "ApiConfiguration"
+    },
+    "baseService": {
+      "description": "Name for the base service class to generate. Defaults to 'BaseService'.",
+      "type": "string",
+      "default": "BaseService"
+    },
+    "requestBuilder": {
+      "description": "Name for the request builder class to generate. Defaults to 'RequestBuilder'.",
+      "type": "string",
+      "default": "RequestBuilder"
+    },
+    "response": {
+      "description": "Name for the response class to generate. Defaults to 'StrictHttpResponse'.",
+      "type": "string",
+      "default": "StrictHttpResponse"
+    },
+    "enumStyle": {
+      "description": "Determines how root enums will be generated. Defaults to 'pascal'.",
+      "enum": ["alias", "upper", "pascal"],
+      "default": "pascal"
+    },
+    "templates": {
+      "description": "Path to directory with custom templates. All `.handlebars` files will override the corresponding default.",
+      "type": "string"
+    },
+    "excludeParameters": {
+      "description": "When specified, filters the generated services, excluding any param corresponding to this list of params.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "skipJsonSuffix": {
+      "description": "When specified, does not generate a $Json suffix. Defaults to false.",
+      "type": "boolean",
+      "default": false
+    },
+    "customizedResponseType": {
+      "description": "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "required": ["toUse"],
+          "properties": {
+            "toUse": {
+              "enum": ["arraybuffer", "blob", "json", "document"]
+            }
+          }
+        }
+      }
+    },
+    "_defaultPropType": {
+      "type": "string",
+      "default": "any"
+    },
+    "_baseIndentLevel": {
+      "type": "number",
+      "default": 2
+    }
+  }
+}

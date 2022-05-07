@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "schema-generator": {
+      "implementation": "./schema-generator",
+      "schema": "./schema.json",
+      "description": "Generates config schema for ng-openapi-gen"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "$schema": "./ng-openapi-gen-schema.json",
+  "input": "default-success-response.json",
+  "output": "../modified-results/default-success-response"
+}

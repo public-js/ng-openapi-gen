@@ -1,0 +1,9 @@
+/dist
+/coverage
+/node_modules
+/CHANGELOG.md
+
+/tools/executors/pseudo-test/**/*.js
+/tools/executors/pseudo-test/modified-results
+/tools/executors/pseudo-test/original-results
+/tools/executors/schema-generator/**/*.js

@@ -1,0 +1,101 @@
+{
+  "openapi": "3.0",
+  "info": {
+    "title": "Person and Place",
+    "version": "1.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Id": {
+        "type": "string"
+      },
+      "Entity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Id"
+          }
+        }
+      },
+      "Person": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Entity"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "places": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PersonPlace"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GPSLocation": {
+        "type": "object",
+        "properties": {
+          "gps": {
+            "type": "string",
+            "description": "GPS coordinates"
+          }
+        }
+      },
+      "Place": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Entity"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GPSLocation"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "Street address"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "name": "string",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "PersonPlace": {
+        "type": "object",
+        "properties": {
+          "place": {
+            "$ref": "#/components/schemas/Place"
+          },
+          "since": {
+            "description": "The date this place was assigned to the person",
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
+}

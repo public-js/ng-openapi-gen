@@ -1,0 +1,19 @@
+name: Assign PR author
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+env:
+  IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+  IS_DBOT: ${{ github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]' }}
+
+jobs:
+  assign-author:
+    name: Assign pull request author
+    runs-on: ubuntu-latest
+    steps:
+      - uses: toshimaru/auto-author-assign@v1.4.0
+        if: ${{ env.IS_FORK == 'false' && env.IS_DBOT == 'false' }}
+        with:
+          repo-token: ${{ secrets.BM_GITHUB_PAT }}
