@@ -32,7 +32,7 @@ export function syncDirs(srcDir: string, destDir: string, removeStale: boolean):
             const destContent = existsSync(destFile) ? fileRead(destFile) : null;
             if (srcContent !== destContent) {
                 fileWrite(destFile, srcContent);
-                console.debug('Wrote ' + destFile);
+                // console.debug('Wrote ' + destFile);
             }
         }
     }
@@ -44,7 +44,7 @@ export function syncDirs(srcDir: string, destDir: string, removeStale: boolean):
             const destFile = join(destDir, file);
             if (!existsSync(srcFile) && lstatSync(destFile).isFile()) {
                 unlinkSync(destFile);
-                console.debug('Removed stale file ' + destFile);
+                // console.debug('Removed stale file ' + destFile);
             }
         }
     }

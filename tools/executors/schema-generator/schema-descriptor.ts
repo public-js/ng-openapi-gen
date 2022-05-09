@@ -150,15 +150,20 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
                 },
             },
         },
-        _defaultPropType: {
-            // description: 'Default property type',
+        fallbackPropertyType: {
+            description: 'Fallback property type when type can not be determined for any reason.',
             type: 'string',
             default: 'any',
         },
-        _baseIndentLevel: {
-            // description: 'Base indent level',
-            type: 'number',
-            default: 2,
+        modelsDir: {
+            type: 'string',
+            default: 'models',
+            onlyFor: ['model'],
+        },
+        servicesDir: {
+            type: 'string',
+            default: 'services',
+            onlyFor: ['model'],
         },
     },
 };

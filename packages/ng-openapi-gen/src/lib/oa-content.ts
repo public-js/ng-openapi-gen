@@ -1,7 +1,8 @@
 import { MediaTypeObject, OpenAPIObject } from 'openapi3-ts';
 
+import { OaImport } from './oa-import.js';
 import { Options } from './options.js';
-import { tsType } from './utils/open-api.js';
+import { tsTypeVal } from './utils/open-api.js';
 
 export class OaContent {
     public type: string;
@@ -9,9 +10,11 @@ export class OaContent {
     constructor(
         public mediaType: string,
         public spec: MediaTypeObject,
-        public options: Options,
         public openApi: OpenAPIObject,
-    ) {
-        this.type = tsType(spec.schema, options, openApi);
+        public options: Options,
+    ) {}
+
+    public updateProperties(imports: Map<string, OaImport>): void {
+        this.type = tsTypeVal(this.spec.schema, this.openApi, this.options, imports);
     }
 }

@@ -12,6 +12,7 @@ import {
 } from 'openapi3-ts';
 
 import { OaContent } from './oa-content.js';
+import { OaImport } from './oa-import.js';
 import { OaOperationVariant } from './oa-operation-variant.js';
 import { OaParameter } from './oa-parameter.js';
 import { OaRequestBody } from './oa-request-body.js';
@@ -85,7 +86,32 @@ export class OaOperation {
         this.pathExpression = this.toPathExpression();
 
         this.deprecated = !!spec.deprecated;
+    }
 
+    public updateProperties(imports: Map<string, OaImport>): void {
+        for (const parameter of this.parameters) {
+            parameter.updateProperties(this.openApi, this.options, imports);
+        }
+        for (const securityGroup of this.security) {
+            for (const security of securityGroup) {
+                security.updateProperties(this.openApi, this.options, imports);
+            }
+        }
+        if (this.requestBody) {
+            for (const cnt of this.requestBody.content) {
+                cnt.updateProperties(imports);
+            }
+        }
+        if (this.successResponse) {
+            for (const cnt of this.successResponse.content) {
+                cnt.updateProperties(imports);
+            }
+        }
+        for (const response of this.allResponses) {
+            for (const cnt of response.content) {
+                cnt.updateProperties(imports);
+            }
+        }
         // Now calculate the variants: request body content x success response content
         this.calculateVariants();
     }
@@ -102,11 +128,9 @@ export class OaOperation {
             param = param as ParameterObject;
 
             if (param.in === 'cookie') {
-                console.warn(
-                    `Ignoring cookie parameter ${this.id}.${param.name} as cookie parameters cannot be sent in XmlHttpRequests.`,
-                );
+                // console.warn(`Ignoring cookie parameter ${this.id}.${param.name} as cookie parameters cannot be sent in XmlHttpRequests.`);
             } else if (this.paramIsNotExcluded(param)) {
-                result.push(new OaParameter(param as ParameterObject, this.options, this.openApi));
+                result.push(new OaParameter(param as ParameterObject));
             }
         }
         return result;
@@ -124,7 +148,7 @@ export class OaOperation {
                     this.openApi,
                     `#/components/securitySchemes/${key}`,
                 ) as SecuritySchemeObject;
-                scopeResult.push(new OaSecurity(key, security, scope, this.options, this.openApi));
+                scopeResult.push(new OaSecurity(key, security, scope));
             }
             result.push(scopeResult);
         }
@@ -142,7 +166,7 @@ export class OaOperation {
         }
         const result: OaContent[] = [];
         for (const [type, typeSpec] of Object.entries(desc)) {
-            result.push(new OaContent(type, typeSpec, this.options, this.openApi));
+            result.push(new OaContent(type, typeSpec, this.openApi, this.options));
         }
         return result;
     }

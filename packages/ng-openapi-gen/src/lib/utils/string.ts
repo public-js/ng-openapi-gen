@@ -1,6 +1,10 @@
 import { camelCase, deburr, kebabCase, upperFirst } from './lo/index.js';
 
-export function removeTrailingSlash(input: string): string {
+export function trimLeadingSlash(input: string): string {
+    return input.startsWith('/') || input.startsWith('\\') ? input.slice(1) : input;
+}
+
+export function trimTrailingSlash(input: string): string {
     return input.endsWith('/') || input.endsWith('\\') ? input.slice(0, -1) : input;
 }
 
@@ -31,9 +35,7 @@ export function toBasicChars(input: string, firstNonDigit = false): string {
     return firstNonDigit && /\d/.test(text.charAt(0)) ? '_' + text : text;
 }
 
-/**
- * Returns the type (class) name for a given regular name
- */
+/** Returns the type (class) name for a given regular name */
 export function typeName(name: string): string {
     return upperFirst(methodName(name));
 }
@@ -46,33 +48,25 @@ export function methodName(name: string): string {
     return camelCase(toBasicChars(name, true));
 }
 
-/**
- * Returns the file name for a given type name
- */
+/** Returns the file name for a given type name */
 export function fileName(text: string): string {
     return kebabCase(toBasicChars(text));
 }
 
-/**
- * Returns the simple name, that is, the last part after '/'
- */
-export function simpleName(name: string): string {
-    return name.slice(name.lastIndexOf('/') + 1);
+/** Returns the reference name, that is, the last part after '/' */
+export function refName(fullRef: string): string {
+    return fullRef.slice(fullRef.lastIndexOf('/') + 1);
 }
 
-/**
- * Escapes the name of a property / parameter if not valid JS identifier
- */
+/** Escapes the name of a property / parameter if not valid JS identifier */
 export function escapeId(name: string) {
     // eslint-disable-next-line unicorn/better-regex
     return /^[a-zA-Z]\w+$/.test(name) ? name : `'${name.replace(/'/g, "\\'")}'`;
 }
 
-/**
- * Returns the TypeScript comments for the given schema description, in a given indentation level
- */
+/** Returns the TypeScript comments for the given schema description, in a given indentation level */
 export function tsComments(description: string | undefined, level: number, deprecated?: boolean): string {
-    const indent = '  '.repeat(level); // _baseIndentLevel
+    const indent = '  '.repeat(level);
     if (description == undefined || description.length === 0) {
         return indent + (deprecated ? '/** @deprecated */' : '');
     }

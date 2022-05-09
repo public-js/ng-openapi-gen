@@ -1,7 +1,8 @@
 import { OpenAPIObject, ParameterLocation, ParameterObject } from 'openapi3-ts';
 
+import { OaImport } from './oa-import.js';
 import { Options } from './options.js';
-import { tsType } from './utils/open-api.js';
+import { tsTypeVal } from './utils/open-api.js';
 import { escapeId, tsComments } from './utils/string.js';
 
 export class OaParameter {
@@ -16,17 +17,20 @@ export class OaParameter {
     public explode?: boolean;
     public parameterOptions: string;
 
-    constructor(public spec: ParameterObject, options: Options, openApi: OpenAPIObject) {
+    constructor(public spec: ParameterObject) {
         this.name = spec.name;
         this.var = escapeId(this.name);
         this.varAccess = this.var.includes("'") ? `[${this.var}]` : `.${this.var}`;
         this.tsComments = tsComments(spec.description || '', 2, spec.deprecated);
         this.in = spec.in || 'query';
         this.required = this.in === 'path' || spec.required || false;
-        this.type = tsType(spec.schema, options, openApi);
         this.style = spec.style;
         this.explode = spec.explode;
         this.parameterOptions = this.createParameterOptions();
+    }
+
+    public updateProperties(openApi: OpenAPIObject, options: Options, imports: Map<string, OaImport>): void {
+        this.type = tsTypeVal(this.spec.schema, openApi, options, imports);
     }
 
     protected createParameterOptions(): string {

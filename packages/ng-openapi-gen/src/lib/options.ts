@@ -53,8 +53,10 @@ interface OptionsInput {
             toUse: 'arraybuffer' | 'blob' | 'json' | 'document';
         };
     };
-    _defaultPropType?: string;
-    _baseIndentLevel?: number;
+    /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
+    fallbackPropertyType?: string;
+    modelsDir?: string;
+    servicesDir?: string;
 }
 
 type DefaultedOptions =
@@ -79,8 +81,9 @@ type DefaultedOptions =
     | 'response'
     | 'enumStyle'
     | 'skipJsonSuffix'
-    | '_defaultPropType'
-    | '_baseIndentLevel';
+    | 'fallbackPropertyType'
+    | 'modelsDir'
+    | 'servicesDir';
 
 export type Options = Required<Pick<OptionsInput, DefaultedOptions>> & OptionsInput;
 
@@ -106,6 +109,7 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     response: 'StrictHttpResponse',
     enumStyle: 'pascal',
     skipJsonSuffix: false,
-    _defaultPropType: 'any',
-    _baseIndentLevel: 2,
+    fallbackPropertyType: 'any',
+    modelsDir: 'models',
+    servicesDir: 'services',
 };

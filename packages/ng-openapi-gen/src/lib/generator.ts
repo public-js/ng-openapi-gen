@@ -12,12 +12,13 @@ import { OaService } from './oa-service.js';
 import { Options } from './options.js';
 import { Templates } from './templates.js';
 import { fileWrite, resolveFromIMU, syncDirs } from './utils/file-system.js';
-import { methodName, removeTrailingSlash, simpleName } from './utils/string.js';
+import { methodName, refName, trimTrailingSlash } from './utils/string.js';
 
 export class Generator {
     protected globals: Globals;
     protected hbProvider: HbProvider;
     protected templates: Templates;
+    protected imports = new Map<string, OaImport>();
     protected models = new Map<string, OaModel>();
     protected services = new Map<string, OaService>();
     protected operationsByTag = new Map<string, OaOperation[]>();
@@ -26,7 +27,7 @@ export class Generator {
     protected tempDir: string;
 
     constructor(public openApi: OpenAPIObject, public options: Options) {
-        this.outDir = removeTrailingSlash(options.output);
+        this.outDir = trimTrailingSlash(options.output);
         this.tempDir = this.outDir + '$';
     }
 
@@ -47,21 +48,26 @@ export class Generator {
             // Generate each model
             const models = Array.from(this.models.values());
             for (const model of models) {
-                this.write('model', model, model.fileName, 'models');
+                this.write('model', model, model.fileName, this.options.modelsDir);
             }
 
             // Generate each service
             const services = Array.from(this.services.values());
             for (const service of services) {
-                this.write('service', service, service.fileName, 'services');
+                this.write('service', service, service.fileName, this.options.servicesDir);
             }
 
             // Context objects passed to general templates
             const general = { services, models };
+            // todo: shorten models here
             const modelImports =
                 this.globals.modelIndexFile || this.options.indexFile
-                    ? models.map((m) => new OaImport(m.name, './models', m.options))
+                    ? models.map((model) => new OaImport().fromModel(model))
                     : null;
+            // const modelImports =
+            //     this.globals.modelIndexFile || this.options.indexFile
+            //         ? models.map((model) => new OaImport().fromRef(this.options, model.name))
+            //         : null;
 
             // Generate the general files
             this.write('configuration', general, this.globals.configurationFile);
@@ -84,9 +90,7 @@ export class Generator {
             // Now synchronize the temp to the output folder
             syncDirs(this.tempDir, this.outDir, this.options.removeStaleFiles !== false);
 
-            console.info(
-                `Generation from ${this.options.input} finished with ${models.length} models and ${services.length} services.`,
-            );
+            // console.info(`Generation from ${this.options.input} finished with ${models.length} models and ${services.length} services.`);
         } finally {
             // Always remove the temporary directory
             fse.removeSync(this.tempDir);
@@ -132,8 +136,15 @@ export class Generator {
     protected collectModels(): void {
         const schemas = (this.openApi.components || {}).schemas || {};
         for (const [name, schema] of Object.entries(schemas)) {
-            const model = new OaModel(this.openApi, schema, name, this.options);
-            this.models.set(name, model);
+            this.models.set(name, new OaModel(this.openApi, schema, name, this.options));
+        }
+        // todo: shorten models here
+        this.shortenModels();
+        for (const [refName, model] of this.models.entries()) {
+            this.imports.set(refName, new OaImport().fromModel(model));
+        }
+        for (const model of this.models.values()) {
+            model.collectImports(this.imports);
         }
     }
 
@@ -146,12 +157,7 @@ export class Generator {
                 }
 
                 let id = methodSpec.operationId;
-                if (id) {
-                    id = methodName(id); // Make sure the id is valid
-                } else {
-                    id = methodName(`${opPath}.${method}`); // Generate an id
-                    console.warn(`Operation '${opPath}.${method}' didn't specify an 'operationId'. Assuming '${id}'.`);
-                }
+                id = id ? methodName(id) : methodName(`${opPath}.${method}`);
 
                 if (this.operations.has(id)) {
                     // Duplicated id. Add a suffix
@@ -160,18 +166,14 @@ export class Generator {
                     while (this.operations.has(tryId)) {
                         tryId = `${id}_${++suffix}`;
                     }
-                    console.warn(
-                        `Duplicate operation id '${id}'. Assuming id ${tryId} for operation '${opPath}.${method}'.`,
-                    );
+                    // console.warn(`Duplicate operation id '${id}'. Assuming id ${tryId} for operation '${opPath}.${method}'.`);
                     id = tryId;
                 }
 
                 const operation = new OaOperation(this.openApi, opPath, pathSpec, method, id, methodSpec, this.options);
                 // Set a default tag if no tags are found
                 if (operation.tags.length === 0) {
-                    console.warn(
-                        `No tags set on operation '${opPath}.${method}'. Assuming '${this.options.defaultTag}'.`,
-                    );
+                    // console.warn(`No tags set on operation '${opPath}.${method}'. Assuming '${this.options.defaultTag}'.`);
                     operation.tags.push(this.options.defaultTag);
                 }
                 for (const tag of operation.tags) {
@@ -192,15 +194,16 @@ export class Generator {
         const tags = this.openApi.tags || [];
         for (const [tagName, operations] of this.operationsByTag.entries()) {
             if (this.options.includeTags.length > 0 && !this.options.includeTags.includes(tagName)) {
-                console.debug(`Ignoring tag ${tagName} because it is not listed in the 'includeTags' option`);
+                // console.debug(`Ignoring tag ${tagName} because it is not listed in the 'includeTags' option`);
                 continue;
             }
             if (this.options.excludeTags.length > 0 && this.options.excludeTags.includes(tagName)) {
-                console.debug(`Ignoring tag ${tagName} because it is listed in the 'excludeTags' option`);
+                // console.debug(`Ignoring tag ${tagName} because it is listed in the 'excludeTags' option`);
                 continue;
             }
             const tag = tags.find((t) => t.name === tagName) || { name: tagName };
             const service = new OaService(tag, operations || [], this.options);
+            service.collectImports(this.imports);
             this.services.set(tag.name, service);
         }
     }
@@ -210,7 +213,7 @@ export class Generator {
         const usedNames = new Set<string>();
         for (const service of this.services.values()) {
             for (const imp of service.imports) {
-                usedNames.add(imp.name);
+                usedNames.add(imp.refName);
             }
             for (const imp of service.additionalDependencies) {
                 usedNames.add(imp);
@@ -227,7 +230,7 @@ export class Generator {
         // Then delete all unused models
         for (const model of this.models.values()) {
             if (!usedNames.has(model.name)) {
-                console.debug(`Ignoring model ${model.name} because it is not used anywhere`);
+                // console.debug(`Ignoring model ${model.name} because it is not used anywhere`);
                 this.models.delete(model.name);
             }
         }
@@ -252,7 +255,7 @@ export class Generator {
         }
 
         if (schema.$ref) {
-            return [simpleName(schema.$ref)];
+            return [refName(schema.$ref)];
         }
 
         const result: string[] = [];
@@ -278,5 +281,30 @@ export class Generator {
             result.push(...this.allReferencedNames(schema.items));
         }
         return result;
+    }
+
+    protected shortenModels(): void {
+        const typeNamesCount = new Map<string, Set<string>>();
+        for (const [refName, model] of this.models.entries()) {
+            const occurrences = typeNamesCount.get(model.typeName) || new Set<string>();
+            occurrences.add(refName);
+            typeNamesCount.set(model.typeName, occurrences);
+        }
+        for (const model of this.models.values()) {
+            if (typeNamesCount.get(model.typeName).size === 1) {
+                model.assumedName = model.typeName;
+                continue;
+            }
+            if (model.typeName !== model.assumedName && !typeNamesCount.has(model.assumedName)) {
+                continue;
+            }
+
+            let suffix = 1;
+            let tryName = `${model.typeName}${suffix}`;
+            while (typeNamesCount.has(tryName)) {
+                tryName = `${model.typeName}${++suffix}`;
+            }
+            model.assumedName = tryName;
+        }
     }
 }

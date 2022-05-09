@@ -11,6 +11,7 @@ export class Globals {
     public requestBuilderFile: string;
     public responseClass: string;
     public responseFile: string;
+    public pathToModelsDir: string;
     public moduleClass?: string;
     public moduleFile?: string;
     public modelIndexFile?: string;
@@ -27,6 +28,7 @@ export class Globals {
         this.requestBuilderFile = fileName(this.requestBuilderClass);
         this.responseClass = options.response;
         this.responseFile = fileName(this.responseClass);
+        this.pathToModelsDir = `./${options.modelsDir}/`;
 
         if (options.module !== false && options.module !== '') {
             this.moduleClass = typeof options.module === 'string' ? options.module : (defaultOptions.module as string);

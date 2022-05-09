@@ -169,13 +169,10 @@
         }
       }
     },
-    "_defaultPropType": {
+    "fallbackPropertyType": {
+      "description": "Fallback property type when type can not be determined for any reason. Defaults to 'any'.",
       "type": "string",
       "default": "any"
-    },
-    "_baseIndentLevel": {
-      "type": "number",
-      "default": 2
     }
   }
 }

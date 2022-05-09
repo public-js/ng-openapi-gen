@@ -1,30 +1,28 @@
 import jsesc from 'jsesc';
 import { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
 
+import { OaImport } from '../oa-import.js';
 import { OaModel } from '../oa-model.js';
 import { Options } from '../options.js';
 import { camelCase, upperCase, upperFirst } from './lo/index.js';
-import { fileName, namespace, simpleName, toBasicChars, tsComments, typeName } from './string.js';
+import { fileName, namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
 
-/**
- * Returns the unqualified model class name, that is, the last part after '.'
- */
+/** Returns the unqualified model class name, that is, the last part after '.' */
 export function unqualifiedName(name: string, options: Options): string {
-    return modelClass(name.slice(name.lastIndexOf('.') + 1), options);
+    // todo: shorten models here
+    const nameParts = name.split('_').map((part) => part.slice(part.lastIndexOf('.') + 1));
+    return modelClass(nameParts.join(''), options);
+    // return modelClass(name.slice(name.lastIndexOf('.') + 1), options);
 }
 
-/**
- * Returns the qualified model class name, that is, the camelized namespace (if any) plus the unqualified name
- */
+/** Returns the qualified model class name, that is, the camelized namespace (if any) plus the unqualified name */
 export function qualifiedName(name: string, options: Options): string {
     const ns = namespace(name);
     const unq = unqualifiedName(name, options);
     return ns ? typeName(ns) + unq : unq;
 }
 
-/**
- * Returns the name of the enum constant for a given value
- */
+/** Returns the name of the enum constant for a given value */
 export function enumName(value: string, options: Options): string {
     let name = toBasicChars(value, true);
     name = options.enumStyle === 'upper' ? upperCase(name).replace(/\s+/g, '_') : upperFirst(camelCase(name));
@@ -34,81 +32,83 @@ export function enumName(value: string, options: Options): string {
     return name;
 }
 
-/**
- * Returns the file to import for a given model
- */
-export function modelFile(pathToModels: string, name: string, options: Options): string {
-    let dir = pathToModels || '';
-    if (dir.endsWith('/')) {
-        dir = dir.slice(0, -1);
-    }
-    const ns = namespace(name);
-    if (ns) {
-        dir += `/${ns}`;
-    }
-    const file = unqualifiedName(name, options);
-    return dir + '/' + fileName(file);
-}
+// /** Returns the file to import for a given model */
+// export function modelFile(pathToModels: string, name: string, options: Options): string {
+//     let dir = pathToModels || '';
+//     if (dir.endsWith('/')) {
+//         dir = dir.slice(0, -1);
+//     }
+//     const ns = namespace(name);
+//     if (ns) {
+//         dir += `/${ns}`;
+//     }
+//     const file = unqualifiedName(name, options);
+//     return dir + '/' + fileName(file);
+// }
+//
+// /** Return the file path to import relative to modelsDir */
+// export function modelFileFromModels(name: string, options: Options): string {
+//     const ns = namespace(name);
+//     return (ns ? `${ns}/` : '') + fileName(unqualifiedName(name, options));
+// }
 
-/**
- * Applies the prefix and suffix to a model class name
- */
+/** Applies the prefix and suffix to a model class name */
 export function modelClass(baseName: string, options: Options): string {
     return `${options.modelPrefix}${typeName(baseName)}${options.modelSuffix}`;
 }
 
-/**
- * Applies the prefix and suffix to a service class name
- */
+/** Applies the prefix and suffix to a service class name */
 export function serviceClass(baseName: string, options: Options): string {
     return `${options.servicePrefix}${typeName(baseName)}${options.serviceSuffix}`;
 }
 
-/**
- * Returns the TypeScript type for the given type and options
- */
-export function tsType(
+/** Returns the TypeScript type for the given type and options */
+export function tsTypeVal(
     schemaOrRef: SchemaObject | ReferenceObject | undefined,
-    options: Options,
     openApi: OpenAPIObject,
+    options: Options,
+    imports?: Map<string, OaImport>,
     container?: OaModel,
 ): string {
+    // No schema
     if (!schemaOrRef) {
-        // No schema
-        return options._defaultPropType;
+        return options.fallbackPropertyType;
     }
+
+    // A reference
     if (schemaOrRef.$ref) {
-        // A reference
         const resolved = resolveRef(openApi, schemaOrRef.$ref);
         const nullable = !!(resolved && (resolved as SchemaObject).nullable);
         const prefix = nullable ? 'null | ' : '';
-        const name = simpleName(schemaOrRef.$ref);
+        const name = refName(schemaOrRef.$ref);
+        const imp: OaImport | undefined = imports?.get(name);
         return container && container.name === name
             ? prefix + container.typeName
-            : prefix + qualifiedName(name, options);
+            : prefix + (imp ? (imp.useAlias ? imp.qualifiedName : imp.typeName) : qualifiedName(name, options));
     }
+
     const schema = schemaOrRef as SchemaObject;
 
     // A union of types
     const union = schema.oneOf || schema.anyOf || [];
     if (union.length > 0) {
         return union.length > 1
-            ? `(${union.map((u) => tsType(u, options, openApi, container)).join(' | ')})`
-            : union.map((u) => tsType(u, options, openApi, container)).join(' | ');
+            ? `(${union.map((u) => tsTypeVal(u, openApi, options, imports, container)).join(' | ')})`
+            : union.map((u) => tsTypeVal(u, openApi, options, imports, container)).join(' | ');
     }
 
-    const type = schema.type || options._defaultPropType;
+    const type = schema.type || options.fallbackPropertyType;
 
     // An array
     if (type === 'array' || schema.items) {
-        return `Array<${tsType(schema.items || {}, options, openApi, container)}>`;
+        return `Array<${tsTypeVal(schema.items || {}, openApi, options, imports, container)}>`;
     }
 
     // All the types
     const allOf = schema.allOf || [];
     let intersectionType: string[] = [];
     if (allOf.length > 0) {
-        intersectionType = allOf.map((u) => tsType(u, options, openApi, container));
+        intersectionType = allOf.map((u) => tsTypeVal(u, openApi, options, imports, container));
     }
 
     // An object
@@ -129,7 +129,7 @@ export function tsType(
             if (!propRequired) {
                 result += '?';
             }
-            let propertyType = tsType(property, options, openApi, container);
+            let propertyType = tsTypeVal(property, openApi, options, imports, container);
             if ((property as SchemaObject).nullable) {
                 propertyType = `${propertyType} | null`;
             }
@@ -137,7 +137,7 @@ export function tsType(
         }
         if (schema.additionalProperties) {
             const additionalProperties = schema.additionalProperties === true ? {} : schema.additionalProperties;
-            result += `[key: string]: ${tsType(additionalProperties, options, openApi, container)};\n`;
+            result += `[key: string]: ${tsTypeVal(additionalProperties, openApi, options, imports, container)};\n`;
         }
         result += '}';
         intersectionType.push(result);
@@ -164,10 +164,7 @@ export function tsType(
     return type === 'integer' ? 'number' : type;
 }
 
-/**
- * Resolves a reference
- * The reference name, such as #/components/schemas/Name, or just Name
- */
+/** Resolves a reference from its name, such as #/components/schemas/Name, or just Name */
 export function resolveRef(openApi: OpenAPIObject, ref: string): unknown {
     if (!ref.includes('/')) {
         ref = `#/components/schemas/${ref}`;
