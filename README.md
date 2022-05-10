@@ -16,7 +16,46 @@ An OpenAPI 3 code generator for Angular
 
 ## Overview
 
+This package generates interfaces and services from an [OpenApi 3 specification](https://www.openapis.org/).
+The generated artifacts follow the [Angular style guide](https://angular.io/guide/styleguide) and are compatible with Angular 7+.
+
+This project is built on top of [ng-openapi-gen](https://github.com/cyclosproject/ng-openapi-gen) and features a lot of improvements listed below.
+
+### Features
+
+- Easy to use the generated code with nearly any Angular app
+- Support for OpenAPI specifications in both JSON and YAML formats
+- Support for OpenAPI specifications with 3.0 and 3.1 versions
+- OpenAPI supports combinations of request body and response content types. A separate method is generated for each combination
+- Each tag in the OpenAPI specification is generated as a separate Angular Injectable service
+- An Angular NgModule is generated (optionally) providing all services
+- Both the body and the original HttpResponse are easily accessible
+- It should be pretty easy to integrate the process with Angular ALI
+- A list of tags to be generated is easily configurable
+- Unused models will not be generated (optionally)
+
+### Differences
+
+- Improved logics which slightly reduces generation time
+- Optimized cross-model references for shorter paths
+- Altered barrel exports for shorter model names
+- API URL is provided with injection token instead of additional class
+
 ## Installing
+
+Add the package to your project by running:
+
+```shell
+npm i -D @public-js/ng-openapi-gen
+```
+
+Execute it from your root `package.json` file like this:
+
+```
+"scripts": {
+  "api-gen": "ng-openapi-gen --config tools/api.config.json"
+}
+```
 
 ## Resources
 
