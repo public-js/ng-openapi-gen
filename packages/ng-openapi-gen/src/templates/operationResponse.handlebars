@@ -1,4 +1,4 @@
-{{{responseMethodTsComments}}}{{responseMethodName}}({{>operationParameters}}): Observable<{{@root.responseClass}}<{{{resultType}}}>> {
+{{{responseMethodTsComments}}}public {{responseMethodName}}({{>operationParameters}}): Observable<{{@root.responseClass}}<{{{resultType}}}>> {
 
     const rb = new {{@root.requestBuilderClass}}(this.rootUrl, {{@root.typeName}}.{{operation.pathVar}}, '{{operation.method}}');
     if (params) {
@@ -12,11 +12,11 @@
 
     return this.http.request(rb.build({
       responseType: '{{responseType}}',
-      accept: '{{accept}}'
+      accept: '{{accept}}',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
         {{> handleResponse}}
-      })
+      }),
     );
   }

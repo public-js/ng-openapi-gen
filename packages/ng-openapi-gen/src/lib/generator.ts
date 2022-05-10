@@ -71,9 +71,7 @@ export class Generator {
 
             // Generate the general files
             this.write('configuration', general, this.globals.configurationFile);
-            this.write('response', general, this.globals.responseFile);
             this.write('requestBuilder', general, this.globals.requestBuilderFile);
-            this.write('baseService', general, this.globals.baseServiceFile);
             if (this.globals.moduleClass && this.globals.moduleFile) {
                 this.write('module', general, this.globals.moduleFile);
             }

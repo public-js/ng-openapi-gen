@@ -23,10 +23,6 @@ export class OaImport {
             fileName(unqualifiedName(model.refName, model.options)),
         ];
         this.setRelativePath();
-
-        if (model.refName.includes('Enums.Audit')) {
-            console.info(this);
-        }
         return this;
     }
 
@@ -37,10 +33,6 @@ export class OaImport {
         this.useAlias = this.typeName !== this.qualifiedName;
         [this.namespace, this.fileName] = [namespace(refName), fileName(unqualifiedName(refName, options))];
         this.setRelativePath();
-
-        if (refName.includes('Enums.Audit')) {
-            console.info(this);
-        }
         return this;
     }
 
@@ -53,10 +45,6 @@ export class OaImport {
         // this.useAlias = this.typeName !== this.qualifiedName;
         [this.namespace, this.fileName] = [source.namespace, source.fileName];
         this.setRelativePath();
-
-        if (source.refName.includes('Enums.Audit')) {
-            console.info(this);
-        }
         return this;
     }
 

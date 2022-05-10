@@ -1,9 +1,7 @@
-export { {{configurationClass}} } from './{{{configurationFile}}}';
-export { {{baseServiceClass}} } from './{{{baseServiceFile}}}';
-export { {{requestBuilderClass}} } from './{{{requestBuilderFile}}}';
-export { {{responseClass}} } from './{{{responseFile}}}';
+export { {{rootUrlToken}} } from './{{{configurationFile}}}';
+export { {{requestBuilderClass}}, {{responseClass}} } from './{{{requestBuilderFile}}}';
 export { {{moduleClass}} } from './{{{moduleFile}}}';
 {{#modelImports}}export { {{{typeName}}}{{#useAlias}} as {{{qualifiedName}}}{{/useAlias}} } from '{{{../pathToModelsDir}}}{{{file}}}';
 {{/modelImports}}
-{{#services}}export { {{typeName}} } from './services/{{{fileName}}}';
+{{#services}}export { {{typeName}} } from '{{{../pathToServicesDir}}}{{{fileName}}}';
 {{/services}}

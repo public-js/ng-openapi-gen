@@ -1,27 +1,23 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Injectable } from '@angular/core';
+{{autoGenerationNotice}}
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { {{baseServiceClass}} } from '../{{baseServiceFile}}';
-import { {{configurationClass}} } from '../{{configurationFile}}';
-import { {{responseClass}} } from '../{{responseFile}}';
-import { {{requestBuilderClass}} } from '../{{requestBuilderFile}}';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+
+import { {{rootUrlToken}} } from '../{{configurationFile}}';
+import { {{requestBuilderClass}}, {{responseClass}} } from '../{{requestBuilderFile}}';
 
 {{#imports}}import { {{{typeName}}}{{#useAlias}} as {{{qualifiedName}}}{{/useAlias}} } from '{{{file}}}';
 {{/imports}}
 
-{{{tsComments}}}@Injectable({
-  providedIn: 'root',
-})
-export class {{typeName}} extends {{baseServiceClass}} {
+{{{tsComments}}}@Injectable()
+export class {{typeName}} {
   constructor(
-    config: {{configurationClass}},
-    http: HttpClient
-  ) {
-    super(config, http);
-  }
+    @Inject({{rootUrlToken}}) private rootUrl: string,
+    @Inject(HttpClient) private http: HttpClient,
+  ) {}
 
 {{#operations}}
 {{>operationPath}}

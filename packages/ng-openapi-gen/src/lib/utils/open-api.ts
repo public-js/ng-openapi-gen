@@ -5,7 +5,7 @@ import { OaImport } from '../oa-import.js';
 import { OaModel } from '../oa-model.js';
 import { Options } from '../options.js';
 import { camelCase, upperCase, upperFirst } from './lo/index.js';
-import { fileName, namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
+import { namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
 
 /** Returns the unqualified model class name, that is, the last part after '.' */
 export function unqualifiedName(name: string, options: Options): string {

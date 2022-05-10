@@ -112,15 +112,15 @@
       ],
       "default": "ApiModule"
     },
-    "configuration": {
-      "description": "Name for the configuration class to generate. Defaults to 'ApiConfiguration'.",
+    "configurationFile": {
+      "description": "Name for the configuration file to generate. Defaults to 'api-configuration'.",
       "type": "string",
-      "default": "ApiConfiguration"
+      "default": "api-configuration"
     },
-    "baseService": {
-      "description": "Name for the base service class to generate. Defaults to 'BaseService'.",
+    "rootUrlToken": {
+      "description": "Name for the \"root URL\" DI token to generate. Defaults to 'API_ROOT_URL_TOKEN'.",
       "type": "string",
-      "default": "BaseService"
+      "default": "API_ROOT_URL_TOKEN"
     },
     "requestBuilder": {
       "description": "Name for the request builder class to generate. Defaults to 'RequestBuilder'.",
@@ -168,6 +168,16 @@
           }
         }
       }
+    },
+    "responseMethodDescription": {
+      "description": "Description template for generated $response method. Defaults to '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}'.",
+      "type": "string",
+      "default": "{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}"
+    },
+    "bodyMethodDescription": {
+      "description": "Description template for generated $body method. Defaults to '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}'.",
+      "type": "string",
+      "default": "{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}"
     },
     "fallbackPropertyType": {
       "description": "Fallback property type when type can not be determined for any reason. Defaults to 'any'.",

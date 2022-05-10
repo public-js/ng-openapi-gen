@@ -4,6 +4,6 @@ params{{^operation.parametersRequired}}?{{/operation.parametersRequired}}: {
 {{/operation.parameters}}
 {{#requestBody}}
 {{{../operation.requestBody.tsComments}}}body{{^../operation.requestBody.required}}?{{/../operation.requestBody.required
-}}: {{{type}}}
+}}: {{{reIndent type 2}}};
 {{/requestBody}}
   }

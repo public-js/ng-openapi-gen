@@ -1,48 +1,28 @@
 /* tslint:disable */
 /* eslint-disable */
-import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
+{{autoGenerationNotice}}
 import { HttpClient } from '@angular/common/http';
-import { {{configurationClass}}, {{configurationParams}} } from './{{configurationFile}}';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
 
-{{#services}}import { {{typeName}} } from './services/{{fileName}}';
+{{#services}}import { {{typeName}} } from '{{{../pathToServicesDir}}}{{fileName}}';
 {{/services}}
 
-/**
- * Module that provides all services and configuration.
- */
 @NgModule({
-  imports: [],
-  exports: [],
-  declarations: [],
   providers: [
 {{#services}}    {{typeName}},
 {{/services}}
-    {{configurationClass}}
   ],
 })
 export class {{moduleClass}} {
-  static forRoot(params: {{configurationParams}}): ModuleWithProviders<{{moduleClass}}> {
-    return {
-      ngModule: {{moduleClass}},
-      providers: [
-        {
-          provide: {{configurationClass}},
-          useValue: params
-        }
-      ]
-    }
-  }
-
-  constructor( 
+  constructor(
     @Optional() @SkipSelf() parentModule: {{moduleClass}},
-    @Optional() http: HttpClient
+    @Optional() http: HttpClient,
   ) {
     if (parentModule) {
       throw new Error('{{moduleClass}} is already loaded. Import in your base AppModule only.');
     }
     if (!http) {
-      throw new Error('You need to import the HttpClientModule in your AppModule! \n' +
-      'See also https://github.com/angular/angular/issues/20575');
+      throw new Error('You need to import the HttpClientModule in your AppModule.');
     }
   }
 }

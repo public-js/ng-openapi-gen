@@ -18,7 +18,7 @@ export class PropForModel {
             return;
         }
         if (typeof this.prop.default === 'string') {
-            return `'${this.prop.default}'`;
+            return `'${this.prop.default.replace('\n', '\\n')}'`;
         } else if (Array.isArray(this.prop.default)) {
             const innerValue =
                 typeof this.prop.default[0] === 'string'

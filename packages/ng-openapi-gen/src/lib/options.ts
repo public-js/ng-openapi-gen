@@ -31,10 +31,10 @@ interface OptionsInput {
     modelSuffix?: string;
     /** Name for the module class that provides all services. Set "false" to skip. Defaults to 'ApiModule'. */
     module?: string | boolean;
-    /** Name for the configuration class to generate. Defaults to 'ApiConfiguration'. */
-    configuration?: string;
-    /** Name for the base service class to generate. Defaults to 'BaseService'. */
-    baseService?: string;
+    /** Name for the configuration file to generate. Defaults to 'api-configuration'. */
+    configurationFile?: string;
+    /** Name for the "root URL" DI token to generate. Defaults to 'API_ROOT_URL_TOKEN'. */
+    rootUrlToken?: string;
     /** Name for the request builder class to generate. Defaults to 'RequestBuilder'. */
     requestBuilder?: string;
     /** Name for the response class to generate. Defaults to 'StrictHttpResponse'. */
@@ -53,6 +53,10 @@ interface OptionsInput {
             toUse: 'arraybuffer' | 'blob' | 'json' | 'document';
         };
     };
+    /** Description template for generated $response method. Defaults to '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}'. */
+    responseMethodDescription?: string;
+    /** Description template for generated $body method. Defaults to '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}'. */
+    bodyMethodDescription?: string;
     /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
     fallbackPropertyType?: string;
     modelsDir?: string;
@@ -75,12 +79,14 @@ type DefaultedOptions =
     | 'modelPrefix'
     | 'modelSuffix'
     | 'module'
-    | 'configuration'
-    | 'baseService'
+    | 'configurationFile'
+    | 'rootUrlToken'
     | 'requestBuilder'
     | 'response'
     | 'enumStyle'
     | 'skipJsonSuffix'
+    | 'responseMethodDescription'
+    | 'bodyMethodDescription'
     | 'fallbackPropertyType'
     | 'modelsDir'
     | 'servicesDir';
@@ -103,12 +109,16 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     modelPrefix: '',
     modelSuffix: '',
     module: 'ApiModule',
-    configuration: 'ApiConfiguration',
-    baseService: 'BaseService',
+    configurationFile: 'api-configuration',
+    rootUrlToken: 'API_ROOT_URL_TOKEN',
     requestBuilder: 'RequestBuilder',
     response: 'StrictHttpResponse',
     enumStyle: 'pascal',
     skipJsonSuffix: false,
+    responseMethodDescription:
+        '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
+    bodyMethodDescription:
+        '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}',
     fallbackPropertyType: 'any',
     modelsDir: 'models',
     servicesDir: 'services',

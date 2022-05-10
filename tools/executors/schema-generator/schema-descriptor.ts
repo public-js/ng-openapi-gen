@@ -90,15 +90,15 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             type: ['string', 'boolean'],
             default: 'ApiModule',
         },
-        configuration: {
-            description: 'Name for the configuration class to generate.',
+        configurationFile: {
+            description: 'Name for the configuration file to generate.',
             type: 'string',
-            default: 'ApiConfiguration',
+            default: 'api-configuration',
         },
-        baseService: {
-            description: 'Name for the base service class to generate.',
+        rootUrlToken: {
+            description: 'Name for the "root URL" DI token to generate.',
             type: 'string',
-            default: 'BaseService',
+            default: 'API_ROOT_URL_TOKEN',
         },
         requestBuilder: {
             description: 'Name for the request builder class to generate.',
@@ -116,6 +116,12 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: 'pascal',
             values: ['alias', 'upper', 'pascal'],
         },
+        // operationPathVisibility: {
+        //     description: 'Determines visibility of "operation path" class properties.',
+        //     type: 'enum',
+        //     default: 'private',
+        //     values: ['public', 'protected', 'private'],
+        // },
         templates: {
             description:
                 'Path to directory with custom templates. All `.handlebars` files will override the corresponding default.',
@@ -149,6 +155,20 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
                     },
                 },
             },
+        },
+        responseMethodDescription: {
+            description: 'Description template for generated $response method.',
+            type: 'string',
+            default:
+                '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
+            onlyFor: ['json', 'model'],
+        },
+        bodyMethodDescription: {
+            description: 'Description template for generated $body method.',
+            type: 'string',
+            default:
+                '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}',
+            onlyFor: ['json', 'model'],
         },
         fallbackPropertyType: {
             description: 'Fallback property type when type can not be determined for any reason.',

@@ -49,3 +49,8 @@ export function syncDirs(srcDir: string, destDir: string, removeStale: boolean):
         }
     }
 }
+
+export function joinIfExists(...pathSegments: string[]): string | null {
+    const joined = join(...pathSegments);
+    return existsSync(joined) ? joined : null;
+}

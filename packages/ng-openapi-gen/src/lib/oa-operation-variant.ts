@@ -14,6 +14,7 @@ export class OaOperationVariant {
 
     public isVoid: boolean;
     public isNumber: boolean;
+    public isString: boolean;
     public isBoolean: boolean;
     public isOther: boolean;
 
@@ -45,8 +46,9 @@ export class OaOperationVariant {
 
         this.isVoid = this.resultType === 'void';
         this.isNumber = this.resultType === 'number';
+        this.isString = this.resultType === 'string';
         this.isBoolean = this.resultType === 'boolean';
-        this.isOther = !this.isVoid && !this.isNumber && !this.isBoolean;
+        this.isOther = !this.isVoid && !this.isNumber && !this.isString && !this.isBoolean;
 
         this.responseMethodTsComments = tsComments(this.responseMethodDescription(), 1, operation.deprecated);
         this.bodyMethodTsComments = tsComments(this.bodyMethodDescription(), 1, operation.deprecated);
@@ -83,25 +85,32 @@ export class OaOperationVariant {
     }
 
     private responseMethodDescription(): string {
-        return `${this.descriptionPrefix()}This method provides access to the full \`HttpResponse\`, allowing access to response headers.
-To access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix()}`;
+        return this.options.responseMethodDescription.replace(
+            /{{([\da-z]+)}}/gi,
+            function (_, key: string) {
+                return this[key];
+            }.bind(this),
+        );
     }
 
     private bodyMethodDescription(): string {
-        return `${this.descriptionPrefix()}This method provides access to only to the response body.
-To access the full response (for headers, for example), \`${
-            this.responseMethodName
-        }()\` instead.${this.descriptionSuffix()}`;
+        return this.options.bodyMethodDescription.replace(
+            /{{([\da-z]+)}}/gi,
+            function (_, key: string) {
+                return this[key];
+            }.bind(this),
+        );
     }
 
-    private descriptionPrefix(): string {
+    // noinspection JSUnusedLocalSymbols
+    private get descriptionPrefix(): string {
         let description = (this.operation.spec.description || '').trim();
         let summary = this.operation.spec.summary;
         if (summary) {
             if (!summary.endsWith('.')) {
                 summary += '.';
             }
-            description = summary + '\n\n' + description;
+            description = summary + (description === '' ? '' : '\n\n') + description;
         }
         if (description !== '') {
             description += '\n\n';
@@ -109,7 +118,8 @@ To access the full response (for headers, for example), \`${
         return description;
     }
 
-    private descriptionSuffix(): string {
+    // noinspection JSUnusedLocalSymbols
+    private get descriptionSuffix(): string {
         const sends = this.requestBody ? 'sends `' + this.requestBody.mediaType + '` and ' : '';
         const handles = this.requestBody
             ? `handles request body of type \`${this.requestBody.mediaType}\``

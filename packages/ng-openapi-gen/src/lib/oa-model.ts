@@ -38,16 +38,6 @@ export class OaModel extends OaBase {
         const description = schema.description || '';
         this.tsComments = tsComments(description, 0, schema.deprecated);
         this.pathToModels = '';
-
-        if (openApi.info.title === 'EDS Partial') {
-            console.info({
-                name: this.name,
-                typeName: this.typeName,
-                namespace: this.namespace,
-                fileName: this.fileName,
-                qualifiedName: this.qualifiedName,
-            });
-        }
     }
 
     public collectImports(imports: Map<string, OaImport>): void {
