@@ -26,6 +26,7 @@
     "___ Miscellaneous ___": "",
     "man:dev:update": "keep-updated update --audit-fix",
     "man:nx:migrate": "npx nx migrate latest && npx nx migrate --run-migrations && npm run man:dev:update && rm -f migrations.json",
+    "postinstall": "node ./tools/patch-std-ver.mjs",
     "prepare": "is-ci || husky install"
   },
   "private": true,
