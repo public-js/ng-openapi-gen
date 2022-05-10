@@ -9,10 +9,8 @@ import { namespace, refName, toBasicChars, tsComments, typeName } from './string
 
 /** Returns the unqualified model class name, that is, the last part after '.' */
 export function unqualifiedName(name: string, options: Options): string {
-    // todo: shorten models here
     const nameParts = name.split('_').map((part) => part.slice(part.lastIndexOf('.') + 1));
     return modelClass(nameParts.join(''), options);
-    // return modelClass(name.slice(name.lastIndexOf('.') + 1), options);
 }
 
 /** Returns the qualified model class name, that is, the camelized namespace (if any) plus the unqualified name */
@@ -31,26 +29,6 @@ export function enumName(value: string, options: Options): string {
     }
     return name;
 }
-
-// /** Returns the file to import for a given model */
-// export function modelFile(pathToModels: string, name: string, options: Options): string {
-//     let dir = pathToModels || '';
-//     if (dir.endsWith('/')) {
-//         dir = dir.slice(0, -1);
-//     }
-//     const ns = namespace(name);
-//     if (ns) {
-//         dir += `/${ns}`;
-//     }
-//     const file = unqualifiedName(name, options);
-//     return dir + '/' + fileName(file);
-// }
-//
-// /** Return the file path to import relative to modelsDir */
-// export function modelFileFromModels(name: string, options: Options): string {
-//     const ns = namespace(name);
-//     return (ns ? `${ns}/` : '') + fileName(unqualifiedName(name, options));
-// }
 
 /** Applies the prefix and suffix to a model class name */
 export function modelClass(baseName: string, options: Options): string {

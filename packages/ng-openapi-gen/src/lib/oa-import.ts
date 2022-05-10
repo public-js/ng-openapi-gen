@@ -40,9 +40,7 @@ export class OaImport {
         this.refName = source.refName;
         this.typeName = source.typeName;
         this.qualifiedName = source.qualifiedName;
-        // todo: shorten models here
         this.useAlias = false;
-        // this.useAlias = this.typeName !== this.qualifiedName;
         [this.namespace, this.fileName] = [source.namespace, source.fileName];
         this.setRelativePath();
         return this;

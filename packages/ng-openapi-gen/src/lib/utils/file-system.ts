@@ -17,7 +17,7 @@ export function fileWrite(path: string, data: string): void {
 }
 
 /** Synchronizes the files from the source to the target directory. Optionally remove stale files. */
-export function syncDirs(srcDir: string, destDir: string, removeStale: boolean): void {
+export function syncDirs(srcDir: string, destDir: string, removeStale: boolean, verbose: boolean): void {
     fse.ensureDirSync(destDir);
 
     const srcFiles = readdirSync(srcDir);
@@ -25,14 +25,14 @@ export function syncDirs(srcDir: string, destDir: string, removeStale: boolean):
         const srcFile = join(srcDir, file);
         const destFile = join(destDir, file);
         if (lstatSync(srcFile).isDirectory()) {
-            syncDirs(srcFile, destFile, removeStale);
+            syncDirs(srcFile, destFile, removeStale, verbose);
         } else {
             // Read the content of both files and update if they differ
             const srcContent = fileRead(srcFile);
             const destContent = existsSync(destFile) ? fileRead(destFile) : null;
             if (srcContent !== destContent) {
                 fileWrite(destFile, srcContent);
-                // console.debug('Wrote ' + destFile);
+                verbose && console.debug('Created file ' + destFile);
             }
         }
     }
@@ -44,7 +44,7 @@ export function syncDirs(srcDir: string, destDir: string, removeStale: boolean):
             const destFile = join(destDir, file);
             if (!existsSync(srcFile) && lstatSync(destFile).isFile()) {
                 unlinkSync(destFile);
-                // console.debug('Removed stale file ' + destFile);
+                verbose && console.debug('Removed stale file ' + destFile);
             }
         }
     }

@@ -112,7 +112,7 @@ export class OaOperation {
                 cnt.updateProperties(imports);
             }
         }
-        // Now calculate the variants: request body content x success response content
+        // Calculate the variants: request body content x success response content
         this.calculateVariants();
     }
 
@@ -128,7 +128,9 @@ export class OaOperation {
             param = param as ParameterObject;
 
             if (param.in === 'cookie') {
-                // console.warn(`Ignoring cookie parameter ${this.id}.${param.name} as cookie parameters cannot be sent in XmlHttpRequests.`);
+                console.warn(
+                    `Ignoring cookie parameter ${this.id}.${param.name} as cookie parameters cannot be sent in XmlHttpRequests.`,
+                );
             } else if (this.paramIsNotExcluded(param)) {
                 result.push(new OaParameter(param as ParameterObject));
             }

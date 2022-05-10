@@ -3,6 +3,8 @@ interface OptionsInput {
     input: string;
     /** Path to directory where the generated files will be written to. Defaults to 'src/app/api'. */
     output?: string;
+    /** Whether to output additional information during generation or not. Defaults to false. */
+    verbose?: boolean;
     /** Tag name assumed for operations without tags. Defaults to 'Api'. */
     defaultTag?: string;
     /** Timeout for fetching spec file from remote URL, in milliseconds. Defaults to 20000. */
@@ -39,7 +41,13 @@ interface OptionsInput {
     requestBuilder?: string;
     /** Name for the response class to generate. Defaults to 'StrictHttpResponse'. */
     response?: string;
-    /** Determines how root enums will be generated. Defaults to 'pascal'. */
+    /**
+     * Determines how root enums will be generated. Possible values are:
+     * - `alias` for a type alias with the possible values;
+     * - `upper` for an enum with UPPER_CASE names;
+     * - `pascal` for an enum with PascalCase names.
+     * Defaults to 'pascal'.
+     */
     enumStyle?: 'alias' | 'upper' | 'pascal';
     /** Path to directory with custom templates. All `.handlebars` files will override the corresponding default. */
     templates?: string;
@@ -65,6 +73,7 @@ interface OptionsInput {
 
 type DefaultedOptions =
     | 'output'
+    | 'verbose'
     | 'defaultTag'
     | 'fetchTimeout'
     | 'includeTags'
@@ -95,6 +104,7 @@ export type Options = Required<Pick<OptionsInput, DefaultedOptions>> & OptionsIn
 
 export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     output: 'src/app/api',
+    verbose: false,
     defaultTag: 'Api',
     fetchTimeout: 20_000,
     includeTags: [],

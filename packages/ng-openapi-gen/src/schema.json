@@ -17,6 +17,11 @@
       "type": "string",
       "default": "src/app/api"
     },
+    "verbose": {
+      "description": "Whether to output additional information during generation or not. Defaults to false.",
+      "type": "boolean",
+      "default": false
+    },
     "defaultTag": {
       "description": "Tag name assumed for operations without tags. Defaults to 'Api'.",
       "type": "string",
@@ -133,7 +138,7 @@
       "default": "StrictHttpResponse"
     },
     "enumStyle": {
-      "description": "Determines how root enums will be generated. Defaults to 'pascal'.",
+      "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for a type alias with the possible values;\n- `upper` for an enum with UPPER_CASE names;\n- `pascal` for an enum with PascalCase names.\nDefaults to 'pascal'.",
       "enum": ["alias", "upper", "pascal"],
       "default": "pascal"
     },

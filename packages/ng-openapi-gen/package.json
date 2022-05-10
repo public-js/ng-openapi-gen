@@ -8,8 +8,13 @@
     "handlebars": "~4.7.0",
     "jsesc": "~3.0.0",
     "openapi3-ts": "~2.0.0",
-    "tslib": "^2.0.0",
     "yargs-parser": "^20.0.0"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=7.0.0",
+    "@angular/core": ">=7.0.0",
+    "rxjs": ">=6.0.0",
+    "tslib": "^2.0.0"
   },
   "license": "MIT",
   "author": "Public JS <public-js@muffin.blue> (https://github.com/public-js/public-js)",

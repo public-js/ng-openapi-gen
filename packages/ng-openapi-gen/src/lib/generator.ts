@@ -59,15 +59,10 @@ export class Generator {
 
             // Context objects passed to general templates
             const general = { services, models };
-            // todo: shorten models here
             const modelImports =
                 this.globals.modelIndexFile || this.options.indexFile
                     ? models.map((model) => new OaImport().fromModel(model))
                     : null;
-            // const modelImports =
-            //     this.globals.modelIndexFile || this.options.indexFile
-            //         ? models.map((model) => new OaImport().fromRef(this.options, model.name))
-            //         : null;
 
             // Generate the general files
             this.write('configuration', general, this.globals.configurationFile);
@@ -86,9 +81,11 @@ export class Generator {
             }
 
             // Now synchronize the temp to the output folder
-            syncDirs(this.tempDir, this.outDir, this.options.removeStaleFiles !== false);
+            syncDirs(this.tempDir, this.outDir, this.options.removeStaleFiles, this.options.verbose);
 
-            // console.info(`Generation from ${this.options.input} finished with ${models.length} models and ${services.length} services.`);
+            console.info(
+                `Generated ${models.length} models and ${services.length} services from ${this.options.input}.`,
+            );
         } finally {
             // Always remove the temporary directory
             fse.removeSync(this.tempDir);
@@ -136,7 +133,6 @@ export class Generator {
         for (const [name, schema] of Object.entries(schemas)) {
             this.models.set(name, new OaModel(this.openApi, schema, name, this.options));
         }
-        // todo: shorten models here
         this.shortenModels();
         for (const [refName, model] of this.models.entries()) {
             this.imports.set(refName, new OaImport().fromModel(model));
@@ -164,14 +160,18 @@ export class Generator {
                     while (this.operations.has(tryId)) {
                         tryId = `${id}_${++suffix}`;
                     }
-                    // console.warn(`Duplicate operation id '${id}'. Assuming id ${tryId} for operation '${opPath}.${method}'.`);
+                    console.warn(
+                        `Duplicate operation id '${id}'. Assuming id ${tryId} for operation '${opPath}.${method}'.`,
+                    );
                     id = tryId;
                 }
 
                 const operation = new OaOperation(this.openApi, opPath, pathSpec, method, id, methodSpec, this.options);
                 // Set a default tag if no tags are found
                 if (operation.tags.length === 0) {
-                    // console.warn(`No tags set on operation '${opPath}.${method}'. Assuming '${this.options.defaultTag}'.`);
+                    console.warn(
+                        `No tags set on operation '${opPath}.${method}'. Assuming '${this.options.defaultTag}'.`,
+                    );
                     operation.tags.push(this.options.defaultTag);
                 }
                 for (const tag of operation.tags) {
@@ -192,11 +192,13 @@ export class Generator {
         const tags = this.openApi.tags || [];
         for (const [tagName, operations] of this.operationsByTag.entries()) {
             if (this.options.includeTags.length > 0 && !this.options.includeTags.includes(tagName)) {
-                // console.debug(`Ignoring tag ${tagName} because it is not listed in the 'includeTags' option`);
+                this.options.verbose &&
+                    console.debug(`Ignoring tag ${tagName} because it is not listed in the 'includeTags' option.`);
                 continue;
             }
             if (this.options.excludeTags.length > 0 && this.options.excludeTags.includes(tagName)) {
-                // console.debug(`Ignoring tag ${tagName} because it is listed in the 'excludeTags' option`);
+                this.options.verbose &&
+                    console.debug(`Ignoring tag ${tagName} because it is listed in the 'excludeTags' option.`);
                 continue;
             }
             const tag = tags.find((t) => t.name === tagName) || { name: tagName };
@@ -228,7 +230,7 @@ export class Generator {
         // Then delete all unused models
         for (const model of this.models.values()) {
             if (!usedNames.has(model.name)) {
-                // console.debug(`Ignoring model ${model.name} because it is not used anywhere`);
+                this.options.verbose && console.debug(`Ignoring model ${model.name} because it is not used anywhere.`);
                 this.models.delete(model.name);
             }
         }

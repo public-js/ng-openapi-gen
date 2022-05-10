@@ -16,6 +16,12 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: 'src/app/api',
             alias: 'o',
         },
+        verbose: {
+            description: 'Whether to output additional information during generation or not.',
+            type: 'boolean',
+            default: false,
+            alias: 'v',
+        },
         defaultTag: {
             description: 'Tag name assumed for operations without tags.',
             type: 'string',
@@ -111,7 +117,13 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: 'StrictHttpResponse',
         },
         enumStyle: {
-            description: 'Determines how root enums will be generated.',
+            description: [
+                'Determines how root enums will be generated. Possible values are:',
+                '- `alias` for a type alias with the possible values;',
+                '- `upper` for an enum with UPPER_CASE names;',
+                '- `pascal` for an enum with PascalCase names.',
+                '',
+            ].join('\n'),
             type: 'enum',
             default: 'pascal',
             values: ['alias', 'upper', 'pascal'],
@@ -159,15 +171,19 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
         responseMethodDescription: {
             description: 'Description template for generated $response method.',
             type: 'string',
-            default:
-                '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
+            default: [
+                '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.',
+                'To access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
+            ].join('\n'),
             onlyFor: ['json', 'model'],
         },
         bodyMethodDescription: {
             description: 'Description template for generated $body method.',
             type: 'string',
-            default:
-                '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}',
+            default: [
+                '{{descriptionPrefix}}This method provides access only to the response body.',
+                'To access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}',
+            ].join('\n'),
             onlyFor: ['json', 'model'],
         },
         fallbackPropertyType: {

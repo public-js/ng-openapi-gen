@@ -27,9 +27,9 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
         'fallbackPropertyType',
     ],
     number: ['fetchTimeout'],
-    boolean: ['ignoreUnusedModels', 'removeStaleFiles', 'indexFile', 'skipJsonSuffix'],
+    boolean: ['verbose', 'ignoreUnusedModels', 'removeStaleFiles', 'indexFile', 'skipJsonSuffix'],
     array: [{ key: 'includeTags' }, { key: 'excludeTags' }, { key: 'excludeParameters' }],
-    alias: { config: 'c', input: 'i', output: 'o' },
+    alias: { config: 'c', input: 'i', output: 'o', verbose: 'v' },
     configuration: { 'strip-dashed': true, 'strip-aliased': true },
     // CONFIG_END
 }) as unknown as Options & { config?: string };
@@ -41,10 +41,10 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
             try {
                 config = JSON.parse(fileRead(parsedArgs.config));
             } catch (error) {
-                throw new Error(`The given config file can not be loaded: ${error.message}`);
+                throw new Error(`The given config file can not be loaded: ${error.message}.`);
             }
         } else {
-            throw new Error(`The given config file does not exist: ${parsedArgs.config}`);
+            throw new Error(`The given config file does not exist: ${parsedArgs.config}.`);
         }
     }
 
@@ -54,7 +54,7 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
     config = Object.assign({}, defaultOptions, config, cleanArgs);
 
     if (!config.input) {
-        throw new Error(`No input file path or URL is specified`);
+        throw new Error(`No input file path or URL is specified.`);
     }
 
     const refParser = new $RefParser();
@@ -66,8 +66,7 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
     })) as OpenAPIObject;
 
     await new Generator(openApi, config).generate();
-})();
-// .catch((error) => {
-//     process.stdout.write(`An error occurred\n`);
-//     throw error;
-// });
+})().catch((error) => {
+    process.stdout.write(`An error occurred:\n`);
+    throw error;
+});

@@ -20,8 +20,6 @@ export class OaModel extends OaBase {
     // Simple properties
     public simpleType: string;
     public enumValues: OaEnumValue[];
-    // Array properties
-    // public elementType: string;
     // Object properties
     public properties: OaProperty[];
     public additionalPropertiesType: string;
