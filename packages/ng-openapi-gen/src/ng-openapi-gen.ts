@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { existsSync } from 'node:fs';
 
 import $RefParser from '@apidevtools/json-schema-ref-parser';

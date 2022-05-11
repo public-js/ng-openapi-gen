@@ -15,8 +15,8 @@
       accept: '{{accept}}',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
+      map((r: HttpResponse<any>) =>
         {{> handleResponse}}
-      }),
+      ),
     );
   }

@@ -7,7 +7,6 @@
     "fs-extra": "~10.1.0",
     "handlebars": "~4.7.0",
     "jsesc": "~3.0.0",
-    "openapi3-ts": "~2.0.0",
     "yargs-parser": "^20.0.0"
   },
   "peerDependencies": {

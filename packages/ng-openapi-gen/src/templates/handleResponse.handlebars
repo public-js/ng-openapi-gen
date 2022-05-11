@@ -1,5 +1,5 @@
-{{#isVoid}}return (r as HttpResponse<any>).clone({ body: undefined }){{/isVoid
-}}{{#isNumber}}return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }){{/isNumber
-}}{{#isBoolean}}return (r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }){{/isBoolean
-}}{{#isString}}return r{{/isString
-}}{{#isOther}}return r{{/isOther}} as {{@root.responseClass}}<{{{resultType}}}>;
+{{#isVoid}}(r as HttpResponse<any>).clone({ body: undefined }){{/isVoid
+}}{{#isNumber}}(r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }){{/isNumber
+}}{{#isBoolean}}(r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }){{/isBoolean
+}}{{#isString}}r{{/isString
+}}{{#isOther}}r{{/isOther}} as {{@root.responseClass}}<{{{resultType}}}>,
