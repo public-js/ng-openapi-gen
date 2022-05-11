@@ -14,7 +14,6 @@ export class Globals {
     public moduleFile?: string;
     public modelIndexFile?: string;
     public serviceIndexFile?: string;
-    public rootUrl?: string;
 
     constructor(options: Options) {
         this.configurationFile = options.configurationFile;

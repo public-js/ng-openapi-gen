@@ -60,7 +60,7 @@ export function tsTypeVal(
         const prefix = nullable ? 'null | ' : '';
         const name = refName(schemaOrRef.$ref);
         const imp: OaImport | undefined = imports?.get(name);
-        return container && container.name === name
+        return container?.name === name
             ? prefix + container.typeName
             : prefix + (imp ? (imp.useAlias ? imp.qualifiedName : imp.typeName) : qualifiedName(name, options));
     }
@@ -94,8 +94,7 @@ export function tsTypeVal(
         let result = '{\n';
         const properties = schema.properties || {};
         const required = schema.required;
-        for (const propName of Object.keys(properties)) {
-            const property = properties[propName];
+        for (const [propName, property] of Object.entries(properties)) {
             if (!property) {
                 continue;
             }

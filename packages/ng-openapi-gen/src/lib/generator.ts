@@ -101,7 +101,6 @@ export class Generator {
 
     protected async collectTemplates(): Promise<void> {
         this.globals = new Globals(this.options);
-        this.globals.rootUrl = this.getRootUrl();
 
         this.hbProvider = new HbProvider();
         await this.hbProvider.loadCustomHelpers(this.options.templates);
@@ -109,23 +108,6 @@ export class Generator {
         const builtInDir = resolveFromIMU(import.meta.url, '../templates');
         const customDir = this.options.templates ? resolve(this.options.templates) : '';
         this.templates = new Templates(builtInDir, customDir, this.globals, this.hbProvider.instance);
-    }
-
-    protected getRootUrl(): string {
-        if (!this.openApi.servers?.length) {
-            return '';
-        }
-        const server = this.openApi.servers[0];
-        let rootUrl = server.url;
-        if (rootUrl == null || rootUrl.length === 0) {
-            return '';
-        }
-        const vars = server.variables || {};
-        for (const key of Object.keys(vars)) {
-            const value = String(vars[key].default);
-            rootUrl = rootUrl.replace(`{${key}}`, value);
-        }
-        return rootUrl;
     }
 
     protected collectModels(): void {

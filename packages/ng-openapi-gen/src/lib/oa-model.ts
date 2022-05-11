@@ -8,7 +8,7 @@ import { Options } from './options.js';
 import { tsTypeVal, unqualifiedName } from './utils/open-api.js';
 import { tsComments } from './utils/string.js';
 
-const nullInUnion = 'null | ';
+const nullInUnion = { val: 'null | ', len: 7 };
 
 export class OaModel extends OaBase {
     public assumedName: string;
@@ -27,10 +27,10 @@ export class OaModel extends OaBase {
     constructor(
         private readonly openApi: OpenAPIObject,
         public readonly schema: SchemaObject,
-        name: string,
+        refName: string,
         public readonly options: Options,
     ) {
-        super(name, options, unqualifiedName);
+        super(refName, options, unqualifiedName);
         this.assumedName = this.qualifiedName;
 
         const description = schema.description || '';
@@ -90,23 +90,22 @@ export class OaModel extends OaBase {
             // An object definition
             const properties = schema.properties || {};
             const required = schema.required || [];
-            const propNames = Object.keys(properties);
             // When there are additional properties, we need a union of all types for it.
             // See https://github.com/cyclosproject/ng-openapi-gen/issues/68
             const propTypes = new Set<string>();
             const appendType = (type: string) => {
-                if (type.startsWith(nullInUnion)) {
+                if (type.startsWith(nullInUnion.val)) {
                     propTypes.add('null');
-                    propTypes.add(type.slice(nullInUnion.length));
+                    propTypes.add(type.slice(nullInUnion.len));
                 } else {
                     propTypes.add(type);
                 }
             };
-            for (const propName of propNames) {
+            for (const [propName, propDef] of Object.entries(properties)) {
                 const prop = new OaProperty(
                     this,
                     propName,
-                    properties[propName],
+                    propDef,
                     required.includes(propName),
                     this.openApi,
                     this.options,
