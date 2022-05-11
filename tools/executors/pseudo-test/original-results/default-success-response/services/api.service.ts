@@ -1,42 +1,40 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Injectable } from '@angular/core';
+
+/**
+ * This file was generated automatically from API specification.
+ * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
+ * To update this file run the generation tool.
+ */
+
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
-import { RequestBuilder } from '../request-builder';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+
+import { API_ROOT_URL_TOKEN } from '../api-configuration';
+import { RequestBuilder, StrictHttpResponse } from '../request-builder';
 
 
-@Injectable({
-  providedIn: 'root',
-})
-export class ApiService extends BaseService {
+@Injectable()
+export class ApiService {
   constructor(
-    config: ApiConfiguration,
-    http: HttpClient
-  ) {
-    super(config, http);
-  }
+    @Inject(API_ROOT_URL_TOKEN) private rootUrl: string,
+    @Inject(HttpClient) private http: HttpClient,
+  ) {}
 
-  /**
-   * Path part for operation getPath1
-   */
-  static readonly GetPath1Path = '/path1';
+  /** Path part for operation `getPath1` */
+  private static readonly GetPath1Path = '/path1';
 
   /**
    * Get a default string response.
-   *
-   *
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getPath1()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPath1$Response(params?: {
+  public getPath1$Response(params?: {
   }): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.GetPath1Path, 'get');
@@ -45,49 +43,42 @@ export class ApiService extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'json',
-      accept: 'application/json'
+      accept: 'application/json',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<string>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<string>,
+      ),
     );
   }
 
   /**
    * Get a default string response.
    *
-   *
-   *
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `getPath1$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `getPath1$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPath1(params?: {
+  public getPath1(params?: {
   }): Observable<string> {
-
     return this.getPath1$Response(params).pipe(
-      map((r: StrictHttpResponse<string>) => r.body as string)
+      map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
 
-  /**
-   * Path part for operation getPath2
-   */
-  static readonly GetPath2Path = '/path2';
+  /** Path part for operation `getPath2` */
+  private static readonly GetPath2Path = '/path2';
 
   /**
    * Get a default number response.
-   *
-   *
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `getPath2()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPath2$Response(params?: {
+  public getPath2$Response(params?: {
   }): Observable<StrictHttpResponse<number>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.GetPath2Path, 'get');
@@ -96,30 +87,27 @@ export class ApiService extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'json',
-      accept: 'application/json'
+      accept: 'application/json',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>;
-      })
+      map((r: HttpResponse<any>) =>
+        (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>,
+      ),
     );
   }
 
   /**
    * Get a default number response.
    *
-   *
-   *
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `getPath2$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `getPath2$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getPath2(params?: {
+  public getPath2(params?: {
   }): Observable<number> {
-
     return this.getPath2$Response(params).pipe(
-      map((r: StrictHttpResponse<number>) => r.body as number)
+      map((r: StrictHttpResponse<number>) => r.body as number),
     );
   }
 

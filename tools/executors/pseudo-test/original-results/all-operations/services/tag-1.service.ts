@@ -1,13 +1,19 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Injectable } from '@angular/core';
+
+/**
+ * This file was generated automatically from API specification.
+ * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
+ * To update this file run the generation tool.
+ */
+
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
-import { RequestBuilder } from '../request-builder';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+
+import { API_ROOT_URL_TOKEN } from '../api-configuration';
+import { RequestBuilder, StrictHttpResponse } from '../request-builder';
 
 import { RefObject } from '../models/ref-object';
 import { RefString } from '../models/ref-string';
@@ -16,21 +22,15 @@ import { RefString } from '../models/ref-string';
 /**
  * Description of tag1
  */
-@Injectable({
-  providedIn: 'root',
-})
-export class Tag1Service extends BaseService {
+@Injectable()
+export class Tag1Service {
   constructor(
-    config: ApiConfiguration,
-    http: HttpClient
-  ) {
-    super(config, http);
-  }
+    @Inject(API_ROOT_URL_TOKEN) private rootUrl: string,
+    @Inject(HttpClient) private http: HttpClient,
+  ) {}
 
-  /**
-   * Path part for operation path1Get
-   */
-  static readonly Path1GetPath = '/path1';
+  /** Path part for operation `path1Get` */
+  private static readonly Path1GetPath = '/path1';
 
   /**
    * Path 1 GET description
@@ -40,7 +40,7 @@ export class Tag1Service extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  path1Get$Json$Response(params: {
+  public path1Get$Json$Response(params: {
 
     /**
      * Common param 1
@@ -103,24 +103,24 @@ export class Tag1Service extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'json',
-      accept: 'text/json'
+      accept: 'text/json',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<RefObject>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<RefObject>,
+      ),
     );
   }
 
   /**
    * Path 1 GET description
    *
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `path1Get$Json$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `path1Get$Json$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  path1Get$Json(params: {
+  public path1Get$Json(params: {
 
     /**
      * Common param 1
@@ -167,9 +167,8 @@ export class Tag1Service extends BaseService {
      */
     'a-b'?: string;
   }): Observable<RefObject> {
-
     return this.path1Get$Json$Response(params).pipe(
-      map((r: StrictHttpResponse<RefObject>) => r.body as RefObject)
+      map((r: StrictHttpResponse<RefObject>) => r.body as RefObject),
     );
   }
 
@@ -181,7 +180,7 @@ export class Tag1Service extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  path1Get$Image$Response(params: {
+  public path1Get$Image$Response(params: {
 
     /**
      * Common param 1
@@ -244,24 +243,24 @@ export class Tag1Service extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'blob',
-      accept: 'image/*'
+      accept: 'image/*',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Blob>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<Blob>,
+      ),
     );
   }
 
   /**
    * Path 1 GET description
    *
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `path1Get$Image$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `path1Get$Image$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  path1Get$Image(params: {
+  public path1Get$Image(params: {
 
     /**
      * Common param 1
@@ -308,28 +307,23 @@ export class Tag1Service extends BaseService {
      */
     'a-b'?: string;
   }): Observable<Blob> {
-
     return this.path1Get$Image$Response(params).pipe(
-      map((r: StrictHttpResponse<Blob>) => r.body as Blob)
+      map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
 
-  /**
-   * Path part for operation path2Get
-   */
-  static readonly Path2GetPath = '/path2/{id}';
+  /** Path part for operation `path2Get` */
+  private static readonly Path2GetPath = '/path2/{id}';
 
   /**
    * GET on path2.
-   *
-   *
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path2Get()` instead.
    *
    * This method doesn't expect any request body.
    */
-  path2Get$Response(params: {
+  public path2Get$Response(params: {
     id: number;
 
     /**
@@ -352,26 +346,24 @@ export class Tag1Service extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'text',
-      accept: '*/*'
+      accept: '*/*',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
-      })
+      map((r: HttpResponse<any>) =>
+        (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>,
+      ),
     );
   }
 
   /**
    * GET on path2.
    *
-   *
-   *
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `path2Get$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `path2Get$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  path2Get(params: {
+  public path2Get(params: {
     id: number;
 
     /**
@@ -384,9 +376,8 @@ export class Tag1Service extends BaseService {
      */
     param2?: string;
   }): Observable<void> {
-
     return this.path2Get$Response(params).pipe(
-      map((r: StrictHttpResponse<void>) => r.body as void)
+      map((r: StrictHttpResponse<void>) => r.body as void),
     );
   }
 

@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
-import { TazkBase as FooBarTazkBase } from '../../Foo/Bar/tazk-base';
-export type Tazk = FooBarTazkBase & {
+import { TazkBase } from './tazk-base';
+
+export type Tazk = TazkBase & {
 'taskNumber'?: number;
 };

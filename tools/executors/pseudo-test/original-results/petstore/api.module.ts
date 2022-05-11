@@ -1,46 +1,32 @@
 /* tslint:disable */
 /* eslint-disable */
-import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
+
+/**
+ * This file was generated automatically from API specification.
+ * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
+ * To update this file run the generation tool.
+ */
+
 import { HttpClient } from '@angular/common/http';
-import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
 
 import { PetsService } from './services/pets.service';
 
-/**
- * Module that provides all services and configuration.
- */
 @NgModule({
-  imports: [],
-  exports: [],
-  declarations: [],
   providers: [
     PetsService,
-    ApiConfiguration
   ],
 })
 export class ApiModule {
-  static forRoot(params: ApiConfigurationParams): ModuleWithProviders<ApiModule> {
-    return {
-      ngModule: ApiModule,
-      providers: [
-        {
-          provide: ApiConfiguration,
-          useValue: params
-        }
-      ]
-    }
-  }
-
-  constructor( 
+  constructor(
     @Optional() @SkipSelf() parentModule: ApiModule,
-    @Optional() http: HttpClient
+    @Optional() http: HttpClient,
   ) {
     if (parentModule) {
       throw new Error('ApiModule is already loaded. Import in your base AppModule only.');
     }
     if (!http) {
-      throw new Error('You need to import the HttpClientModule in your AppModule! \n' +
-      'See also https://github.com/angular/angular/issues/20575');
+      throw new Error('You need to import the HttpClientModule in your AppModule.');
     }
   }
 }

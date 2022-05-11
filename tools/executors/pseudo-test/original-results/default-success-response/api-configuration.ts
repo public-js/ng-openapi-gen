@@ -1,20 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Injectable } from '@angular/core';
 
 /**
- * Global configuration
+ * This file was generated automatically from API specification.
+ * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
+ * To update this file run the generation tool.
  */
-@Injectable({
-  providedIn: 'root',
-})
-export class ApiConfiguration {
-  rootUrl: string = 'http://localhost:3000';
-}
 
-/**
- * Parameters for `ApiModule.forRoot()`
- */
-export interface ApiConfigurationParams {
-  rootUrl?: string;
-}
+import { InjectionToken } from '@angular/core';
+
+export const API_ROOT_URL_TOKEN: InjectionToken<string> = new InjectionToken<string>('_API_ROOT_URL_TOKEN');

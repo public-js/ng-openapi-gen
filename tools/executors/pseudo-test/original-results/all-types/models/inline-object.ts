@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import { RefEnum } from './ref-enum';
+
 export interface InlineObject {
   object?: {
 'string'?: string;

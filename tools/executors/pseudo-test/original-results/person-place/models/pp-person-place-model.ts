@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import { PPPlaceModel } from './pp-place-model';
+
 export interface PPPersonPlaceModel {
   place?: PPPlaceModel;
 

@@ -1,30 +1,30 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Injectable } from '@angular/core';
+
+/**
+ * This file was generated automatically from API specification.
+ * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
+ * To update this file run the generation tool.
+ */
+
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
-import { RequestBuilder } from '../request-builder';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+
+import { API_ROOT_URL_TOKEN } from '../api-configuration';
+import { RequestBuilder, StrictHttpResponse } from '../request-builder';
 
 
-@Injectable({
-  providedIn: 'root',
-})
-export class ApiService extends BaseService {
+@Injectable()
+export class ApiService {
   constructor(
-    config: ApiConfiguration,
-    http: HttpClient
-  ) {
-    super(config, http);
-  }
+    @Inject(API_ROOT_URL_TOKEN) private rootUrl: string,
+    @Inject(HttpClient) private http: HttpClient,
+  ) {}
 
-  /**
-   * Path part for operation fooGet
-   */
-  static readonly FooGetPath = '/foo';
+  /** Path part for operation `fooGet` */
+  private static readonly FooGetPath = '/foo';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -32,7 +32,7 @@ export class ApiService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  fooGet$Response(params?: {
+  public fooGet$Response(params?: {
   }): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.FooGetPath, 'get');
@@ -41,26 +41,25 @@ export class ApiService extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'json',
-      accept: 'application/json'
+      accept: 'application/json',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<string>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<string>,
+      ),
     );
   }
 
   /**
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `fooGet$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `fooGet$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  fooGet(params?: {
+  public fooGet(params?: {
   }): Observable<string> {
-
     return this.fooGet$Response(params).pipe(
-      map((r: StrictHttpResponse<string>) => r.body as string)
+      map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
 
@@ -70,7 +69,7 @@ export class ApiService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  fooGet$Plain$Response(params?: {
+  public fooGet$Plain$Response(params?: {
   }): Observable<StrictHttpResponse<any>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.FooGetPath, 'get');
@@ -79,33 +78,30 @@ export class ApiService extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'text',
-      accept: 'text/plain'
+      accept: 'text/plain',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<any>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<any>,
+      ),
     );
   }
 
   /**
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `fooGet$Plain$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `fooGet$Plain$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  fooGet$Plain(params?: {
+  public fooGet$Plain(params?: {
   }): Observable<any> {
-
     return this.fooGet$Plain$Response(params).pipe(
-      map((r: StrictHttpResponse<any>) => r.body as any)
+      map((r: StrictHttpResponse<any>) => r.body as any),
     );
   }
 
-  /**
-   * Path part for operation barGet
-   */
-  static readonly BarGetPath = '/bar';
+  /** Path part for operation `barGet` */
+  private static readonly BarGetPath = '/bar';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -113,7 +109,7 @@ export class ApiService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  barGet$Response(params?: {
+  public barGet$Response(params?: {
   }): Observable<StrictHttpResponse<any>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.BarGetPath, 'get');
@@ -122,26 +118,25 @@ export class ApiService extends BaseService {
 
     return this.http.request(rb.build({
       responseType: 'text',
-      accept: 'text/plain'
+      accept: 'text/plain',
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<any>;
-      })
+      map((r: HttpResponse<any>) =>
+        r as StrictHttpResponse<any>,
+      ),
     );
   }
 
   /**
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `barGet$Response()` instead.
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), use `barGet$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  barGet(params?: {
+  public barGet(params?: {
   }): Observable<any> {
-
     return this.barGet$Response(params).pipe(
-      map((r: StrictHttpResponse<any>) => r.body as any)
+      map((r: StrictHttpResponse<any>) => r.body as any),
     );
   }
 

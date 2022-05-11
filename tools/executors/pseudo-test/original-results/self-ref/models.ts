@@ -1,1 +1,1 @@
-export { Baz as FooBarBaz } from './models/Foo/Bar/baz';
+export { Baz } from './models/Foo/Bar/baz';

@@ -1,8 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Tazk as FooBarTazk } from '../../Foo/Bar/tazk';
+import { Tazk } from './tazk';
+
 export interface Dooz {
-  doozObject?: FooBarTazk & {
+  doozObject?: Tazk & {
 'doozNumber'?: number;
 };
 }
