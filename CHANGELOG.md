@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/public-js/ng-openapi-gen/compare/0.0.1...0.0.2) (2022-05-11)
+
+
+### Bug Fixes
+
+* execution, templates, dependencies ([a92c18a](https://github.com/public-js/ng-openapi-gen/commit/a92c18acb1be337f8459d148be0a2a36c4881363))
+
 ### 0.0.1 (2022-05-10)
 
 
