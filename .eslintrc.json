@@ -28,6 +28,13 @@
       "rules": {}
     },
     {
+      "files": ["jest.config.ts", "jest.preset.ts"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "unicorn/prefer-module": "off"
+      }
+    },
+    {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nrwl/nx/javascript"],
       "rules": {}
