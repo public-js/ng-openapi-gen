@@ -1,6 +1,5 @@
-module.exports = {
+export default {
     displayName: 'ng-openapi-gen',
-
     globals: {
         'ts-jest': {
             tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -12,5 +11,5 @@ module.exports = {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     coverageDirectory: '../../coverage/packages/ng-openapi-gen',
-    preset: '../../jest.preset.ts',
+    preset: '../../jest.preset.cjs',
 };
