@@ -58,6 +58,7 @@ interface ObjectProperty extends BaseProperty {
     type: 'object';
     minProperties?: number;
     maxProperties?: number;
+    properties?: Record<string, Property>;
     patternProperties?: Record<string, PatternProperty>;
 }
 

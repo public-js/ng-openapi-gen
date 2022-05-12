@@ -37,11 +37,11 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
 }) as unknown as Options & { config?: string };
 
 (async function main() {
-    let config = {} as Options;
+    let options = {} as Options;
     if (parsedArgs.config) {
         if (existsSync(parsedArgs.config)) {
             try {
-                config = JSON.parse(fileRead(parsedArgs.config));
+                options = JSON.parse(fileRead(parsedArgs.config));
             } catch (error) {
                 throw new Error(`The given config file can not be loaded: ${error.message}.`);
             }
@@ -53,21 +53,22 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
     const cleanArgs = Object.fromEntries(
         Object.entries(parsedArgs).filter(([, value]) => value !== undefined),
     ) as Options;
-    config = Object.assign({}, defaultOptions, config, cleanArgs);
+    options = Object.assign({}, defaultOptions, options, cleanArgs);
 
-    if (!config.input) {
+    if (!options.input) {
         throw new Error(`No input file path or URL is specified.`);
     }
 
     const refParser = new $RefParser();
-    const input = config.input;
+    const input = options.input;
 
     const openApi = (await refParser.bundle(input, {
         dereference: { circular: false },
-        resolve: { http: { timeout: config.fetchTimeout } },
+        resolve: { http: { timeout: options.fetchTimeout } },
     })) as OpenAPIObject;
 
-    await new Generator(openApi, config).generate();
+    // validateSchema(openApi, options);
+    await new Generator(openApi, options).generate();
 })().catch((error) => {
     process.stdout.write(`An error occurred:\n`);
     throw error;

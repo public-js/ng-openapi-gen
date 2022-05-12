@@ -41,6 +41,20 @@ export class PropForJson {
             if (this.prop.maxProperties !== undefined) {
                 propSchema.maxProperties = this.prop.maxProperties;
             }
+            if (this.prop.properties !== undefined) {
+                propSchema.properties = {};
+                const required: string[] = [];
+                for (const [propName, propDesc] of Object.entries(this.prop.properties)) {
+                    const propMod = new PropForJson(propName, propDesc);
+                    if (propDesc.requiredIn?.includes('json')) {
+                        required.push(propName);
+                    }
+                    propSchema.properties[propName] = propMod.getSchema();
+                }
+                if (required.length > 0) {
+                    propSchema.required = required;
+                }
+            }
             if (this.prop.patternProperties !== undefined) {
                 propSchema.patternProperties = {};
                 for (const [patternKey, patternObj] of Object.entries(this.prop.patternProperties)) {

@@ -39,8 +39,18 @@ export class PropForModel {
         } else if (Array.isArray(prop.type)) {
             typeValue = prop.type.join(' | ');
         } else if (prop.type === 'object') {
-            const childProps: string[] = [];
+            if (prop.properties !== undefined) {
+                const childProps: string[] = [];
+                for (const [propName, propDesc] of Object.entries(prop.properties)) {
+                    const propMod = new PropForModel(propName, propDesc);
+                    childProps.push(
+                        propMod.comment ? `${propMod.comment}\n${propMod.typeDef};` : `${propMod.typeDef};`,
+                    );
+                }
+                typeValue = ['{', ...childProps, '}'].join('\n');
+            }
             if (prop.patternProperties !== undefined) {
+                const childProps: string[] = [];
                 for (const [, patternObj] of Object.entries(prop.patternProperties)) {
                     for (const [propName, propDesc] of Object.entries(patternObj.properties)) {
                         const propMod = new PropForModel(propName, propDesc);
@@ -49,8 +59,8 @@ export class PropForModel {
                         );
                     }
                 }
+                typeValue = ['{', '[key: string]: {', ...childProps, '};', '}'].join('\n');
             }
-            typeValue = ['{', '[key: string]: {', ...childProps, '};', '}'].join('\n');
         } else {
             typeValue = prop.type;
         }

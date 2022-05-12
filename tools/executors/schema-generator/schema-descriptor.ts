@@ -168,6 +168,50 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
                 },
             },
         },
+        // validationRules: {
+        //     description: 'Defines custom validation rules for spec file.',
+        //     type: 'object',
+        //     properties: {
+        //         operationTags$gte: {
+        //             description: 'Ensure that each operation has tags count >= value',
+        //             type: 'object',
+        //             properties: {
+        //                 value: { type: 'number', requiredIn: ['json', 'model'] },
+        //                 level: { type: 'enum', values: ['error', 'warn'], requiredIn: ['json', 'model'] },
+        //             },
+        //         },
+        //         operationId$required: {
+        //             description: 'Ensure that each operation has operationId',
+        //             type: 'object',
+        //             properties: {
+        //                 level: { type: 'enum', values: ['error', 'warn'], requiredIn: ['json', 'model'] },
+        //             },
+        //         },
+        //         requestBodyContent$required: {
+        //             description: 'Ensure that each requestBody present is a valid object',
+        //             type: 'object',
+        //             properties: {
+        //                 level: { type: 'enum', values: ['error', 'warn'], requiredIn: ['json', 'model'] },
+        //             },
+        //         },
+        //         requestBodyContent$lte: {
+        //             description: 'Ensure that each requestBody present has media types count <= value',
+        //             type: 'object',
+        //             properties: {
+        //                 value: { type: 'number', requiredIn: ['json', 'model'] },
+        //                 level: { type: 'enum', values: ['error', 'warn'], requiredIn: ['json', 'model'] },
+        //             },
+        //         },
+        //         responseContent$lte: {
+        //             description: 'Ensure that each response present has media types count <= value',
+        //             type: 'object',
+        //             properties: {
+        //                 value: { type: 'number', requiredIn: ['json', 'model'] },
+        //                 level: { type: 'enum', values: ['error', 'warn'], requiredIn: ['json', 'model'] },
+        //             },
+        //         },
+        //     },
+        // },
         responseMethodDescription: {
             description: 'Description template for generated $response method.',
             type: 'string',

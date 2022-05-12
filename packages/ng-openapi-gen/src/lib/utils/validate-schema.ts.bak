@@ -1,0 +1,159 @@
+import { OpenAPIObject, OperationObject, ResponseObject } from 'openapi3-ts';
+import { PathsObject, ReferenceObject, RequestBodyObject } from 'openapi3-ts/src/model/OpenApi.js';
+
+import { HTTP_METHODS, HttpMethod } from '../oa-operation.js';
+import { Options } from '../options.js';
+
+type VOptions = Options & Required<Pick<Options, 'validationRules'>>;
+
+type ValidationRule = keyof VOptions['validationRules'];
+
+interface VMOptions<R extends ValidationRule> extends VOptions {
+    validationRules: VOptions['validationRules'] & Required<Pick<VOptions['validationRules'], R>>;
+}
+
+type ValidationFn<R extends ValidationRule> = (
+    rule: VMOptions<R>['validationRules'][R],
+    path: string,
+    method: HttpMethod,
+    opSpec: OperationObject,
+) => void;
+
+interface IValidationInternal extends Record<ValidationRule, ValidationFn<ValidationRule>> {
+    validate(openApi: OpenAPIObject, options: VOptions): void;
+}
+
+class ValidationInternal implements IValidationInternal {
+    public validate(openApi: OpenAPIObject, options: VOptions): void {
+        for (const rule of Object.keys(options.validationRules) as ValidationRule[]) {
+            this.iteratePaths(openApi.paths, options, rule);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    public operationTags$gte(
+        rule: VMOptions<'operationTags$gte'>['validationRules']['operationTags$gte'],
+        path: string,
+        method: HttpMethod,
+        opSpec: OperationObject,
+    ): void {
+        if ((opSpec.tags || []).length < rule.value) {
+            log(rule.level, [path, method], `No "tags" or tags count is less than ${rule.value}`);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    public operationId$required(
+        rule: VMOptions<'operationId$required'>['validationRules']['operationId$required'],
+        path: string,
+        method: HttpMethod,
+        opSpec: OperationObject,
+    ): void {
+        if (!opSpec.operationId) {
+            log(rule.level, [path, method], `No "operationId" or operationId is empty`);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    public requestBodyContent$required(
+        rule: VMOptions<'requestBodyContent$required'>['validationRules']['requestBodyContent$required'],
+        path: string,
+        method: HttpMethod,
+        opSpec: OperationObject,
+    ): void {
+        if (!opSpec.requestBody) {
+            return;
+        }
+        if (
+            typeof (opSpec.requestBody as RequestBodyObject).content !== 'object' &&
+            !(opSpec.requestBody as ReferenceObject).$ref
+        ) {
+            log(rule.level, [path, method, 'requestBody'], `No "content", "$ref", or content is not an object`);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    public requestBodyContent$lte(
+        rule: VMOptions<'requestBodyContent$lte'>['validationRules']['requestBodyContent$lte'],
+        path: string,
+        method: HttpMethod,
+        opSpec: OperationObject,
+    ): void {
+        if (Object.keys((opSpec.requestBody as RequestBodyObject)?.content || {}).length > rule.value) {
+            log(rule.level, [path, method, 'requestBody', 'content'], `Media types count is more than ${rule.value}`);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    public responseContent$lte(
+        rule: VMOptions<'responseContent$lte'>['validationRules']['operationTags$gte'],
+        path: string,
+        method: HttpMethod,
+        opSpec: OperationObject,
+    ): void {
+        if (!opSpec.responses) {
+            return;
+        }
+        if (typeof opSpec.responses !== 'object') {
+            log(rule.level, [path, method, 'responses'], `Responses is not an object`);
+            return;
+        }
+        for (const [statusCode, responseSpec] of Object.entries(opSpec.responses)) {
+            if (
+                typeof (responseSpec as ResponseObject).content !== 'object' &&
+                !(responseSpec as ReferenceObject).$ref
+            ) {
+                log(
+                    rule.level,
+                    [path, method, 'responses', statusCode],
+                    `No "content", "$ref", or content is not an object`,
+                );
+                continue;
+            }
+            if (Object.keys((responseSpec as ResponseObject).content || {}).length > rule.value) {
+                log(
+                    rule.level,
+                    [path, method, 'responses', statusCode],
+                    `Media types count is more than ${rule.value}`,
+                );
+            }
+        }
+    }
+
+    private iteratePaths<R extends ValidationRule>(paths: PathsObject, options: VOptions, callFn: R): void {
+        for (const [path, pathSpec] of Object.entries(paths)) {
+            for (const method of HTTP_METHODS) {
+                const opSpec: OperationObject | undefined = pathSpec[method];
+                if (!opSpec) {
+                    continue;
+                }
+                const opTags = opSpec.tags || [];
+                if (opTags.length > 0) {
+                    if (
+                        options.includeTags.length > 0 &&
+                        !options.includeTags.some((incTag) => opTags.includes(incTag))
+                    ) {
+                        continue;
+                    }
+                    if (options.excludeTags.some((excTag) => opTags.includes(excTag))) {
+                        continue;
+                    }
+                }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                this[callFn](options.validationRules[callFn], path, method, opSpec);
+            }
+        }
+    }
+}
+
+export function validateSchema(openApi: OpenAPIObject, options: Options): void {
+    if (!options.validationRules) {
+        return;
+    }
+    new ValidationInternal().validate(openApi, options as VOptions);
+}
+
+function log(level: 'error' | 'warn', location: string[], message: string): void {
+    console[level](`[${level}] ${location.join('.')}: ${message}`);
+}
