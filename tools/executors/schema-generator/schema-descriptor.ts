@@ -150,6 +150,11 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             type: 'boolean',
             default: false,
         },
+        fallbackPropertyType: {
+            description: 'Fallback property type when type can not be determined for any reason.',
+            type: 'string',
+            default: 'any',
+        },
         customizedResponseType: {
             description:
                 "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
@@ -230,11 +235,6 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             ].join('\n'),
             onlyFor: ['json', 'model'],
         },
-        fallbackPropertyType: {
-            description: 'Fallback property type when type can not be determined for any reason.',
-            type: 'string',
-            default: 'any',
-        },
         modelsDir: {
             type: 'string',
             default: 'models',
@@ -244,6 +244,19 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             type: 'string',
             default: 'services',
             onlyFor: ['model'],
+        },
+        hooks: {
+            type: 'fnObject',
+            default: {},
+            onlyFor: ['model'],
+            properties: {
+                generate$pre: { type: 'fn' },
+                collectTemplates$post: { type: 'fn' },
+                collectModels$post: { type: 'fn' },
+                collectOperations$post: { type: 'fn' },
+                collectServices$post: { type: 'fn' },
+                generation$post: { type: 'fn' },
+            },
         },
     },
 };

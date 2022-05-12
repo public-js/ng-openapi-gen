@@ -55,6 +55,8 @@ interface OptionsInput {
     excludeParameters?: string[];
     /** When specified, does not generate a $Json suffix. Defaults to false. */
     skipJsonSuffix?: boolean;
+    /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
+    fallbackPropertyType?: string;
     /** Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs. */
     customizedResponseType?: {
         [key: string]: {
@@ -65,10 +67,16 @@ interface OptionsInput {
     responseMethodDescription?: string;
     /** Description template for generated $body method. Defaults to '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}'. */
     bodyMethodDescription?: string;
-    /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
-    fallbackPropertyType?: string;
     modelsDir?: string;
     servicesDir?: string;
+    hooks?: {
+        generate$pre?: (...params: unknown[]) => void;
+        collectTemplates$post?: (...params: unknown[]) => void;
+        collectModels$post?: (...params: unknown[]) => void;
+        collectOperations$post?: (...params: unknown[]) => void;
+        collectServices$post?: (...params: unknown[]) => void;
+        generation$post?: (...params: unknown[]) => void;
+    };
 }
 
 type DefaultedOptions =
@@ -94,11 +102,12 @@ type DefaultedOptions =
     | 'response'
     | 'enumStyle'
     | 'skipJsonSuffix'
+    | 'fallbackPropertyType'
     | 'responseMethodDescription'
     | 'bodyMethodDescription'
-    | 'fallbackPropertyType'
     | 'modelsDir'
-    | 'servicesDir';
+    | 'servicesDir'
+    | 'hooks';
 
 export type Options = Required<Pick<OptionsInput, DefaultedOptions>> & OptionsInput;
 
@@ -125,11 +134,12 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     response: 'StrictHttpResponse',
     enumStyle: 'pascal',
     skipJsonSuffix: false,
+    fallbackPropertyType: 'any',
     responseMethodDescription:
         '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
     bodyMethodDescription:
         '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}',
-    fallbackPropertyType: 'any',
     modelsDir: 'models',
     servicesDir: 'services',
+    hooks: {},
 };

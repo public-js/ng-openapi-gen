@@ -32,10 +32,20 @@ export class Generator {
     }
 
     public async generate(): Promise<void> {
+        this.options.hooks.generate$pre && Function.call(this.options.hooks.generate$pre, this);
+
         await this.collectTemplates();
+        this.options.hooks.collectTemplates$post && Function.call(this.options.hooks.collectTemplates$post, this);
+
         this.collectModels();
+        this.options.hooks.collectModels$post && Function.call(this.options.hooks.collectModels$post, this);
+
         this.collectOperations(); // First read all operations, as tags are by operation
+        this.options.hooks.collectOperations$post && Function.call(this.options.hooks.collectOperations$post, this);
+
         this.collectServices(); // Then create a service per operation, as long as the tag is included
+        this.options.hooks.collectServices$post && Function.call(this.options.hooks.collectServices$post, this);
+
         if (this.options.ignoreUnusedModels !== false) {
             this.ignoreUnusedModels();
         }

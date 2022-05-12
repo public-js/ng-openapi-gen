@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 
 import $RefParser from '@apidevtools/json-schema-ref-parser';
 import { OpenAPIObject } from 'openapi3-ts';
@@ -8,7 +8,7 @@ import yargsParser from 'yargs-parser';
 
 import { Generator } from './lib/generator.js';
 import { defaultOptions, Options } from './lib/options.js';
-import { fileRead } from './lib/utils/file-system.js';
+import { fileRead, joinIfExists } from './lib/utils/file-system.js';
 
 const parsedArgs = yargsParser(process.argv.slice(2), {
     // CONFIG_START
@@ -67,9 +67,29 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
         resolve: { http: { timeout: options.fetchTimeout } },
     })) as OpenAPIObject;
 
+    options.hooks = await loadHooks(options);
+
     // validateSchema(openApi, options);
     await new Generator(openApi, options).generate();
+    options.hooks.generation$post && Function.call(options.hooks.generation$post, undefined, openApi, options);
 })().catch((error) => {
     process.stdout.write(`An error occurred:\n`);
     throw error;
 });
+
+async function loadHooks(options: Options): Promise<Options['hooks']> {
+    if (!options.templates) {
+        return defaultOptions.hooks;
+    }
+
+    const loadPath =
+        joinIfExists(options.templates, 'hooks.mjs') ||
+        joinIfExists(options.templates, 'hooks.cjs') ||
+        joinIfExists(options.templates, 'hooks.js');
+    if (!loadPath) {
+        return defaultOptions.hooks;
+    }
+
+    const hooks = await import(realpathSync(loadPath));
+    return hooks?.default && typeof hooks.default === 'object' ? hooks.default : defaultOptions.hooks;
+}

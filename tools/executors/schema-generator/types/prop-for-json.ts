@@ -77,6 +77,8 @@ export class PropForJson {
                     propSchema.patternProperties[patternKey] = patternProp;
                 }
             }
+        } else if (this.prop.type === 'fnObject') {
+            propSchema.type = 'object';
         } else {
             propSchema.type = this.prop.type;
         }

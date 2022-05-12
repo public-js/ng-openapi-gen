@@ -158,6 +158,11 @@
       "type": "boolean",
       "default": false
     },
+    "fallbackPropertyType": {
+      "description": "Fallback property type when type can not be determined for any reason. Defaults to 'any'.",
+      "type": "string",
+      "default": "any"
+    },
     "customizedResponseType": {
       "description": "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
       "type": "object",
@@ -183,11 +188,6 @@
       "description": "Description template for generated $body method. Defaults to '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}'.",
       "type": "string",
       "default": "{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}"
-    },
-    "fallbackPropertyType": {
-      "description": "Fallback property type when type can not be determined for any reason. Defaults to 'any'.",
-      "type": "string",
-      "default": "any"
     }
   }
 }

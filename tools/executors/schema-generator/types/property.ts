@@ -1,6 +1,6 @@
 import { JSONSchema7Type } from 'json-schema';
 
-type PropertyType = 'string' | 'number' | 'boolean' | 'array' | 'enum' | 'object';
+type PropertyType = 'string' | 'number' | 'boolean' | 'array' | 'enum' | 'object' | 'fnObject' | 'fn';
 
 interface BaseProperty {
     description?: string;
@@ -67,6 +67,15 @@ interface PatternProperty extends BaseProperty {
     properties: Record<string, Property>;
 }
 
+interface HooksObjectProperty extends BaseProperty {
+    type: 'fnObject';
+    properties: Record<string, HookProperty>;
+}
+
+interface HookProperty extends BaseProperty {
+    type: 'fn';
+}
+
 export type Property =
     | StringProperty
     | NumberProperty
@@ -75,4 +84,5 @@ export type Property =
     | StringArrayProperty
     | NumberArrayProperty
     | EnumProperty
-    | ObjectProperty;
+    | ObjectProperty
+    | HooksObjectProperty;

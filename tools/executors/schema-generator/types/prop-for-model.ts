@@ -25,6 +25,8 @@ export class PropForModel {
                     ? this.prop.default.map((val) => `'${val}'`)
                     : this.prop.default;
             return `[${innerValue.join(', ')}]`;
+        } else if (typeof this.prop.default === 'object') {
+            return JSON.stringify(this.prop.default); // .slice(1, -1);
         }
         return this.prop.default;
     }
@@ -61,6 +63,12 @@ export class PropForModel {
                 }
                 typeValue = ['{', '[key: string]: {', ...childProps, '};', '}'].join('\n');
             }
+        } else if (prop.type === 'fnObject') {
+            const childProps: string[] = [];
+            for (const propName of Object.keys(prop.properties)) {
+                childProps.push(`${propName}?: (...params: unknown[]) => void;`);
+            }
+            typeValue = ['{', ...childProps, '}'].join('\n');
         } else {
             typeValue = prop.type;
         }
