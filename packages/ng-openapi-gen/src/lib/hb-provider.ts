@@ -28,14 +28,17 @@ export class HbProvider {
             return;
         }
 
-        const loadPath = joinIfExists(templatesDir, 'handlebars.mjs') || joinIfExists(templatesDir, 'handlebars.js');
+        const loadPath =
+            joinIfExists(templatesDir, 'handlebars.mjs') ||
+            joinIfExists(templatesDir, 'handlebars.cjs') ||
+            joinIfExists(templatesDir, 'handlebars.js');
         if (!loadPath) {
             return;
         }
 
-        const helpersFn = await import(realpathSync(loadPath));
-        if (helpersFn && typeof helpersFn === 'function') {
-            helpersFn.call(this.instance, this.instance);
+        const helpers = await import(realpathSync(loadPath));
+        if (helpers?.default && typeof helpers.default === 'function') {
+            helpers.default.call(this.instance, this.instance);
         }
     }
 }
