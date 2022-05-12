@@ -8,7 +8,7 @@
 [![Codacy](https://app.codacy.com/project/badge/Grade/bf3812369c7146d285b05b539fcf913f)](https://www.codacy.com/gh/public-js/ng-openapi-gen/dashboard)
 [![LGTM](https://img.shields.io/lgtm/grade/javascript/g/public-js/ng-openapi-gen?logo=lgtm)](https://lgtm.com/projects/g/public-js/ng-openapi-gen/context:javascript)
 [![Codecov](https://codecov.io/gh/public-js/ng-openapi-gen/branch/main/graph/badge.svg?token=DXGP8I126q)](https://codecov.io/gh/public-js/ng-openapi-gen)
-[![Code Climate](https://api.codeclimate.com/v1/badges/912d673cf7910a4aa7fd/maintainability)](https://codeclimate.com/github/public-js/ng-openapi-gen/maintainability)
+[![Code Climate](https://api.codeclimate.com/v1/badges/1200908a0ede980d61dc/maintainability)](https://codeclimate.com/github/public-js/ng-openapi-gen/maintainability)
 
 An OpenAPI 3 code generator for Angular
 
