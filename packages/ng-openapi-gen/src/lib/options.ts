@@ -57,6 +57,8 @@ interface OptionsInput {
     skipJsonSuffix?: boolean;
     /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
     fallbackPropertyType?: string;
+    /** When specified, overrides default system line separators when writing files. Possible values are: `\n` and `\r\n`. */
+    lineSeparator?: '\n' | '\r\n';
     /** Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs. */
     customizedResponseType?: {
         [key: string]: {
