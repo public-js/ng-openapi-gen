@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
     "ng-openapi-gen": "packages/ng-openapi-gen"

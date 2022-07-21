@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "extends": "nx/presets/core.json",
   "npmScope": "public-js",
   "affected": {
@@ -14,6 +15,11 @@
         "cacheableOperations": ["build", "lint", "test", "e2e"],
         "accessToken": "YzcxZDRhNzgtNDg3Zi00NjExLWE0ZTAtM2VjMzBmMDU5NDc1fHJlYWQtd3JpdGU="
       }
+    }
+  },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
     }
   }
 }
