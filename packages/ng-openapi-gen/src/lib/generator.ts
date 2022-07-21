@@ -1,3 +1,4 @@
+import { EOL } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
 import fse from 'fs-extra';
@@ -25,10 +26,12 @@ export class Generator {
     protected operations = new Map<string, OaOperation>();
     protected outDir: string;
     protected tempDir: string;
+    protected replaceEol?: string;
 
     constructor(public openApi: OpenAPIObject, public options: Options) {
         this.outDir = trimTrailingSlash(options.output);
         this.tempDir = this.outDir + '$';
+        this.replaceEol = options.lineSeparator && options.lineSeparator !== EOL ? options.lineSeparator : undefined;
     }
 
     public async generate(): Promise<void> {
@@ -106,7 +109,7 @@ export class Generator {
         const tsContent = this.templates.apply(template, model);
         const filePath = join(this.tempDir, subDir || '.', `${baseName}.ts`);
         fse.ensureDirSync(dirname(filePath));
-        fileWrite(filePath, tsContent);
+        fileWrite(filePath, this.replaceEol ? tsContent.replace(EOL, this.replaceEol) : tsContent);
     }
 
     protected async collectTemplates(): Promise<void> {

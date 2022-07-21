@@ -155,6 +155,12 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             type: 'string',
             default: 'any',
         },
+        lineSeparator: {
+            description:
+                'When specified, overrides default system line separators when writing files. Possible values are: `\\n` and `\\r\\n`.',
+            type: 'enum',
+            values: ['\\n', '\\r\\n'],
+        },
         customizedResponseType: {
             description:
                 "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
