@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/public-js/ng-openapi-gen/compare/0.0.3...0.0.4) (2022-07-21)
+
+
+### Features
+
+* add ability to override lineSeparator ([fde1f64](https://github.com/public-js/ng-openapi-gen/commit/fde1f64aec4650c3d796c10cb3226cd35507aca6))
+
 ### [0.0.3](https://github.com/public-js/ng-openapi-gen/compare/0.0.2...0.0.3) (2022-06-22)
 
 
