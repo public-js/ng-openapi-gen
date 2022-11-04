@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 export interface PetstorePetModel {
-  id: number;
+  id: bigint;
   name: string;
   tag?: string;
 }
