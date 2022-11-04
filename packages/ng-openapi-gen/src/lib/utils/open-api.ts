@@ -137,8 +137,13 @@ export function tsTypeVal(
         return 'Blob';
     }
 
-    // A simple type
-    return type === 'integer' ? 'number' : type;
+    // An integer
+    if (type === 'integer') {
+        return schema.format === 'int64' ? 'bigint' : 'number';
+    }
+
+    // Any other type
+    return type;
 }
 
 /** Resolves a reference from its name, such as #/components/schemas/Name, or just Name */

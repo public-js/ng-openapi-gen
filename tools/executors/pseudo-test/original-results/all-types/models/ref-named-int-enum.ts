@@ -4,5 +4,5 @@
 export enum RefNamedIntEnum {
   first = 100,
   second = 200,
-  third = 300
+  third = 300,
 }
