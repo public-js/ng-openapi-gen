@@ -5,5 +5,5 @@ export enum RefEnum {
   ValueA = 'value\'A',
   ValueB = 'value\'B',
   ValueC = 'value\'C',
-  _ = ''
+  _ = '',
 }
