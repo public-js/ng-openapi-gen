@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/public-js/ng-openapi-gen/compare/0.0.5...0.0.6) (2023-02-26)
+
+
+### Features
+
+* add bigint config parameter ([4dfe048](https://github.com/public-js/ng-openapi-gen/commit/4dfe04897499738fe0d303cb4ce643aa8335d582))
+
 ### [0.0.5](https://github.com/public-js/ng-openapi-gen/compare/0.0.4...0.0.5) (2022-11-04)
 
 
