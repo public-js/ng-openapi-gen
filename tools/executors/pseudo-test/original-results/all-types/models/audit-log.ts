@@ -3,7 +3,7 @@
 
 export interface AuditLog {
   date?: string;
-  id?: bigint;
+  id?: number;
   text?: string;
   type: string;
 }

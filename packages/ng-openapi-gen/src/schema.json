@@ -33,7 +33,7 @@
       "default": 20000
     },
     "includeTags": {
-      "description": "Specific tags to be included. Overrides \"excludeTags\". Defaults to [].",
+      "description": "Specific tags to be included. Overrides `excludeTags`. Defaults to [].",
       "type": "array",
       "items": {
         "type": "string"
@@ -57,7 +57,7 @@
       "default": true
     },
     "modelIndex": {
-      "description": "TypeScript file name (without the \".ts\" extension) that exports all models. Set \"false\" to skip. Defaults to 'models'.",
+      "description": "TypeScript file name (without the `.ts` extension) that exports all models. Set `false` to skip. Defaults to 'models'.",
       "anyOf": [
         {
           "type": "string"
@@ -69,7 +69,7 @@
       "default": "models"
     },
     "serviceIndex": {
-      "description": "TypeScript file name (without the \".ts\" extension) that exports all services. Set \"false\" to skip. Defaults to 'services'.",
+      "description": "TypeScript file name (without the `.ts` extension) that exports all services. Set `false` to skip. Defaults to 'services'.",
       "anyOf": [
         {
           "type": "string"
@@ -81,7 +81,7 @@
       "default": "services"
     },
     "indexFile": {
-      "description": "Whether to generate an \"index.ts\" file that exports all generated files. Defaults to false.",
+      "description": "Whether to generate an `index.ts` file that exports all generated files. Defaults to false.",
       "type": "boolean",
       "default": false
     },
@@ -106,7 +106,7 @@
       "default": ""
     },
     "module": {
-      "description": "Name for the module class that provides all services. Set \"false\" to skip. Defaults to 'ApiModule'.",
+      "description": "Name for the module class that provides all services. Set `false` to skip. Defaults to 'ApiModule'.",
       "anyOf": [
         {
           "type": "string"
@@ -138,7 +138,7 @@
       "default": "StrictHttpResponse"
     },
     "enumStyle": {
-      "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for a type alias with the possible values;\n- `upper` for an enum with UPPER_CASE names;\n- `pascal` for an enum with PascalCase names.\nDefaults to 'pascal'.",
+      "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for a type alias with the possible values;\n- `upper` for an enum with UPPER_CASE names;\n- `pascal` for an enum with PascalCase names (default).\nDefaults to 'pascal'.",
       "enum": ["alias", "upper", "pascal"],
       "default": "pascal"
     },
@@ -162,6 +162,11 @@
       "description": "Fallback property type when type can not be determined for any reason. Defaults to 'any'.",
       "type": "string",
       "default": "any"
+    },
+    "bigintStyle": {
+      "description": "Determines how bigint will be generated. Can be either `number` (default) or `bigint`. Defaults to 'number'.",
+      "enum": ["number", "bigint"],
+      "default": "number"
     },
     "lineSeparator": {
       "description": "When specified, overrides default system line separators when writing files. Possible values are: `\\n` and `\\r\\n`.",

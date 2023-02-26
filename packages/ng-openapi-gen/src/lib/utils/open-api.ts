@@ -139,7 +139,7 @@ export function tsTypeVal(
 
     // An integer
     if (type === 'integer') {
-        return schema.format === 'int64' ? 'bigint' : 'number';
+        return schema.format === 'int64' && options.bigintStyle === 'bigint' ? 'bigint' : 'number';
     }
 
     // Any other type

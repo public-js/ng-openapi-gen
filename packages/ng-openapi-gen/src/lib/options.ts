@@ -9,7 +9,7 @@ interface OptionsInput {
     defaultTag?: string;
     /** Timeout for fetching spec file from remote URL, in milliseconds. Defaults to 20000. */
     fetchTimeout?: number;
-    /** Specific tags to be included. Overrides "excludeTags". Defaults to []. */
+    /** Specific tags to be included. Overrides `excludeTags`. Defaults to []. */
     includeTags?: string[];
     /** Specific tags to be excluded. Defaults to []. */
     excludeTags?: string[];
@@ -17,11 +17,11 @@ interface OptionsInput {
     ignoreUnusedModels?: boolean;
     /** Whether to remove redundant files in the output directory. Defaults to true. */
     removeStaleFiles?: boolean;
-    /** TypeScript file name (without the ".ts" extension) that exports all models. Set "false" to skip. Defaults to 'models'. */
+    /** TypeScript file name (without the `.ts` extension) that exports all models. Set `false` to skip. Defaults to 'models'. */
     modelIndex?: string | boolean;
-    /** TypeScript file name (without the ".ts" extension) that exports all services. Set "false" to skip. Defaults to 'services'. */
+    /** TypeScript file name (without the `.ts` extension) that exports all services. Set `false` to skip. Defaults to 'services'. */
     serviceIndex?: string | boolean;
-    /** Whether to generate an "index.ts" file that exports all generated files. Defaults to false. */
+    /** Whether to generate an `index.ts` file that exports all generated files. Defaults to false. */
     indexFile?: boolean;
     /** Prefix for generated service classes. Defaults to ''. */
     servicePrefix?: string;
@@ -31,7 +31,7 @@ interface OptionsInput {
     modelPrefix?: string;
     /** Suffix for generated model classes. Defaults to ''. */
     modelSuffix?: string;
-    /** Name for the module class that provides all services. Set "false" to skip. Defaults to 'ApiModule'. */
+    /** Name for the module class that provides all services. Set `false` to skip. Defaults to 'ApiModule'. */
     module?: string | boolean;
     /** Name for the configuration file to generate. Defaults to 'api-configuration'. */
     configurationFile?: string;
@@ -45,7 +45,7 @@ interface OptionsInput {
      * Determines how root enums will be generated. Possible values are:
      * - `alias` for a type alias with the possible values;
      * - `upper` for an enum with UPPER_CASE names;
-     * - `pascal` for an enum with PascalCase names.
+     * - `pascal` for an enum with PascalCase names (default).
      * Defaults to 'pascal'.
      */
     enumStyle?: 'alias' | 'upper' | 'pascal';
@@ -57,6 +57,8 @@ interface OptionsInput {
     skipJsonSuffix?: boolean;
     /** Fallback property type when type can not be determined for any reason. Defaults to 'any'. */
     fallbackPropertyType?: string;
+    /** Determines how bigint will be generated. Can be either `number` (default) or `bigint`. Defaults to 'number'. */
+    bigintStyle?: 'number' | 'bigint';
     /** When specified, overrides default system line separators when writing files. Possible values are: `\n` and `\r\n`. */
     lineSeparator?: '\n' | '\r\n';
     /** Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs. */
@@ -105,6 +107,7 @@ type DefaultedOptions =
     | 'enumStyle'
     | 'skipJsonSuffix'
     | 'fallbackPropertyType'
+    | 'bigintStyle'
     | 'responseMethodDescription'
     | 'bodyMethodDescription'
     | 'modelsDir'
@@ -137,6 +140,7 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     enumStyle: 'pascal',
     skipJsonSuffix: false,
     fallbackPropertyType: 'any',
+    bigintStyle: 'number',
     responseMethodDescription:
         '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
     bodyMethodDescription:
