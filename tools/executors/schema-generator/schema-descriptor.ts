@@ -33,7 +33,7 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: 20_000,
         },
         includeTags: {
-            description: 'Specific tags to be included. Overrides "excludeTags".',
+            description: 'Specific tags to be included. Overrides `excludeTags`.',
             type: 'array',
             arrayOf: 'string',
             default: [],
@@ -56,18 +56,18 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
         },
         modelIndex: {
             description:
-                'TypeScript file name (without the ".ts" extension) that exports all models. Set "false" to skip.',
+                'TypeScript file name (without the `.ts` extension) that exports all models. Set `false` to skip.',
             type: ['string', 'boolean'],
             default: 'models',
         },
         serviceIndex: {
             description:
-                'TypeScript file name (without the ".ts" extension) that exports all services. Set "false" to skip.',
+                'TypeScript file name (without the `.ts` extension) that exports all services. Set `false` to skip.',
             type: ['string', 'boolean'],
             default: 'services',
         },
         indexFile: {
-            description: 'Whether to generate an "index.ts" file that exports all generated files.',
+            description: 'Whether to generate an `index.ts` file that exports all generated files.',
             type: 'boolean',
             default: false,
         },
@@ -92,7 +92,7 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: '',
         },
         module: {
-            description: 'Name for the module class that provides all services. Set "false" to skip.',
+            description: 'Name for the module class that provides all services. Set `false` to skip.',
             type: ['string', 'boolean'],
             default: 'ApiModule',
         },
@@ -121,7 +121,7 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
                 'Determines how root enums will be generated. Possible values are:',
                 '- `alias` for a type alias with the possible values;',
                 '- `upper` for an enum with UPPER_CASE names;',
-                '- `pascal` for an enum with PascalCase names.',
+                '- `pascal` for an enum with PascalCase names (default).',
                 '',
             ].join('\n'),
             type: 'enum',
@@ -154,6 +154,12 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             description: 'Fallback property type when type can not be determined for any reason.',
             type: 'string',
             default: 'any',
+        },
+        bigintStyle: {
+            description: 'Determines how bigint will be generated. Can be either `number` (default) or `bigint`.',
+            type: 'enum',
+            default: 'number',
+            values: ['number', 'bigint'],
         },
         lineSeparator: {
             description:

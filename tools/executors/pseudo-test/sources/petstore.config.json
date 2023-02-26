@@ -3,5 +3,6 @@
   "input": "petstore.json",
   "output": "../modified-results/petstore",
   "modelPrefix": "Petstore",
-  "modelSuffix": "Model"
+  "modelSuffix": "Model",
+  "bigintStyle": "bigint"
 }
