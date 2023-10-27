@@ -66,7 +66,7 @@ export function escapeId(name: string) {
 /** Returns the TypeScript comments for the given schema description, in a given indentation level */
 export function tsComments(description: string | undefined, level: number, deprecated?: boolean): string {
     const indent = '  '.repeat(level);
-    if (description == undefined || description.length === 0) {
+    if (description === undefined || description.length === 0) {
         return indent + (deprecated ? '/** @deprecated */' : '');
     }
     const lines = description.trim().split('\n');
