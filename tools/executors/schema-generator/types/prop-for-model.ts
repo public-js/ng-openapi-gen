@@ -6,7 +6,10 @@ export class PropForModel {
     public typeDef: string;
     public comment: string;
 
-    constructor(public name: string, public prop: Property) {
+    constructor(
+        public name: string,
+        public prop: Property,
+    ) {
         this.defaulted = this.prop.default !== undefined;
         this.defaultValue = this.getDefaultValue();
         this.typeDef = this.getTypeDef(this.name, this.prop);

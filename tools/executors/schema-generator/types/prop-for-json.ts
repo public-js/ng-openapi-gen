@@ -7,7 +7,10 @@ export class PropForJson {
     public defaultValueForDescription: unknown;
     public description: string;
 
-    constructor(public name: string, public prop: Property) {
+    constructor(
+        public name: string,
+        public prop: Property,
+    ) {
         this.defaultValueForSchema = this.getDefaultValueForSchema();
         this.defaultValueForDescription = this.getDefaultValueForDescription();
         this.description = this.getDescription();
