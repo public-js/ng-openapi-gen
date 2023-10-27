@@ -161,11 +161,18 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
             default: 'number',
             values: ['number', 'bigint'],
         },
-        lineSeparator: {
-            description:
-                'When specified, overrides default system line separators when writing files. Possible values are: `\\n` and `\\r\\n`.',
+        endOfLineStyle: {
+            description: [
+                'Determines how to normalize line endings. Possible values are:',
+                '- `lf` to force LF (\\n) line endings (Unix, OS X);',
+                '- `cr` to force CR (\\r) line endings (Mac OS);',
+                '- `crlf` to force CRLF (\\r\\n) line endings (Windows, DOS);',
+                '- `auto` to normalize line endings for the current operating system (default).',
+                '',
+            ].join('\n'),
             type: 'enum',
-            values: ['\\n', '\\r\\n'],
+            default: 'auto',
+            values: ['lf', 'cr', 'crlf', 'auto'],
         },
         customizedResponseType: {
             description:

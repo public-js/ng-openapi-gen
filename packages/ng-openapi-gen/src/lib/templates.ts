@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs';
 
+import eol from 'eol';
 import Handlebars from 'handlebars';
 
 import { Globals } from './globals.js';
@@ -41,7 +42,7 @@ export class Templates {
     protected loadTemplate(dir: string, file: string): void {
         const partialName = getFileNameIfExt(file, '.handlebars');
         if (partialName && !this.templates[partialName]) {
-            const contents = fileRead(dir, file);
+            const contents = eol.auto(fileRead(dir, file));
             const compiled = this.handlebars.compile(normalizeLineBreaks(contents));
             this.templates[partialName] = compiled;
             this.handlebars.registerPartial(partialName, compiled);

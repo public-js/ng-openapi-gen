@@ -1,6 +1,6 @@
-import { EOL } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
+import eol from 'eol';
 import fse from 'fs-extra';
 import { OpenAPIObject, OperationObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
 
@@ -26,12 +26,10 @@ export class Generator {
     protected operations = new Map<string, OaOperation>();
     protected outDir: string;
     protected tempDir: string;
-    protected replaceEol?: string;
 
     constructor(public openApi: OpenAPIObject, public options: Options) {
         this.outDir = trimTrailingSlash(options.output);
         this.tempDir = this.outDir + '$';
-        this.replaceEol = options.lineSeparator && options.lineSeparator !== EOL ? options.lineSeparator : undefined;
     }
 
     public async generate(): Promise<void> {
@@ -106,10 +104,10 @@ export class Generator {
     }
 
     protected write(template: string, model: object | null | undefined, baseName: string, subDir?: string) {
-        const tsContent = this.templates.apply(template, model);
+        const tsContent = this.setEndOfLine(this.templates.apply(template, model));
         const filePath = join(this.tempDir, subDir || '.', `${baseName}.ts`);
         fse.ensureDirSync(dirname(filePath));
-        fileWrite(filePath, this.replaceEol ? tsContent.replace(EOL, this.replaceEol) : tsContent);
+        fileWrite(filePath, tsContent);
     }
 
     protected async collectTemplates(): Promise<void> {
@@ -300,6 +298,19 @@ export class Generator {
                 tryName = `${model.typeName}${++suffix}`;
             }
             model.assumedName = tryName;
+        }
+    }
+
+    protected setEndOfLine(text: string): string {
+        switch (this.options.endOfLineStyle) {
+            case 'cr':
+                return eol.cr(text);
+            case 'lf':
+                return eol.lf(text);
+            case 'crlf':
+                return eol.crlf(text);
+            default:
+                return eol.auto(text);
         }
     }
 }

@@ -59,8 +59,15 @@ interface OptionsInput {
     fallbackPropertyType?: string;
     /** Determines how bigint will be generated. Can be either `number` (default) or `bigint`. Defaults to 'number'. */
     bigintStyle?: 'number' | 'bigint';
-    /** When specified, overrides default system line separators when writing files. Possible values are: `\n` and `\r\n`. */
-    lineSeparator?: '\n' | '\r\n';
+    /**
+     * Determines how to normalize line endings. Possible values are:
+     * - `lf` to force LF (\n) line endings (Unix, OS X);
+     * - `cr` to force CR (\r) line endings (Mac OS);
+     * - `crlf` to force CRLF (\r\n) line endings (Windows, DOS);
+     * - `auto` to normalize line endings for the current operating system (default).
+     * Defaults to 'auto'.
+     */
+    endOfLineStyle?: 'lf' | 'cr' | 'crlf' | 'auto';
     /** Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs. */
     customizedResponseType?: {
         [key: string]: {
@@ -108,6 +115,7 @@ type DefaultedOptions =
     | 'skipJsonSuffix'
     | 'fallbackPropertyType'
     | 'bigintStyle'
+    | 'endOfLineStyle'
     | 'responseMethodDescription'
     | 'bodyMethodDescription'
     | 'modelsDir'
@@ -141,6 +149,7 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     skipJsonSuffix: false,
     fallbackPropertyType: 'any',
     bigintStyle: 'number',
+    endOfLineStyle: 'auto',
     responseMethodDescription:
         '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}',
     bodyMethodDescription:
