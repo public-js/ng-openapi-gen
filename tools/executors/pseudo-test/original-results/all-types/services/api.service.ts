@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -44,7 +44,8 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet$Response(params?: {
-  }): Observable<StrictHttpResponse<Containers>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Containers>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.FooGetPath, 'get');
     if (params) {
@@ -53,6 +54,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -68,8 +70,9 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet(params?: {
-  }): Observable<Containers> {
-    return this.fooGet$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Containers> {
+    return this.fooGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<Containers>) => r.body as Containers),
     );
   }
@@ -85,7 +88,8 @@ export class ApiService {
    */
   public barGet$Response(params?: {
     param?: (ReferencedInParamOneOf1 | ReferencedInParamOneOf2 | RefObject | AdditionalProperties | Nullables | InlineObject | AuditCdr);
-  }): Observable<StrictHttpResponse<(ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<(ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.BarGetPath, 'get');
     if (params) {
@@ -95,6 +99,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -111,8 +116,9 @@ export class ApiService {
    */
   public barGet(params?: {
     param?: (ReferencedInParamOneOf1 | ReferencedInParamOneOf2 | RefObject | AdditionalProperties | Nullables | InlineObject | AuditCdr);
-  }): Observable<(ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)> {
-    return this.barGet$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<(ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)> {
+    return this.barGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<(ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)>) => r.body as (ReferencedInServiceOneOf1 | ReferencedInServiceOneOf2)),
     );
   }
@@ -127,7 +133,8 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public bazGet$Response(params?: {
-  }): Observable<StrictHttpResponse<Disjunct>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Disjunct>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.BazGetPath, 'get');
     if (params) {
@@ -136,6 +143,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -151,8 +159,9 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public bazGet(params?: {
-  }): Observable<Disjunct> {
-    return this.bazGet$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Disjunct> {
+    return this.bazGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<Disjunct>) => r.body as Disjunct),
     );
   }

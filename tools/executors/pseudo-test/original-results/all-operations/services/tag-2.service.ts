@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -53,7 +53,8 @@ export class Tag2Service {
      */
     post1?: number;
     body: RefObject;
-  }): Observable<StrictHttpResponse<void>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<void>> {
 
     const rb = new RequestBuilder(this.rootUrl, Tag2Service.Path1PostPath, 'post');
     if (params) {
@@ -66,6 +67,7 @@ export class Tag2Service {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: '*/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -99,8 +101,9 @@ export class Tag2Service {
      */
     post1?: number;
     body: RefObject;
-  }): Observable<void> {
-    return this.path1Post$Json$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<void> {
+    return this.path1Post$Json$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void),
     );
   }
@@ -130,7 +133,8 @@ export class Tag2Service {
      */
     post1?: number;
     body: string;
-  }): Observable<StrictHttpResponse<void>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<void>> {
 
     const rb = new RequestBuilder(this.rootUrl, Tag2Service.Path1PostPath, 'post');
     if (params) {
@@ -143,6 +147,7 @@ export class Tag2Service {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: '*/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -176,8 +181,9 @@ export class Tag2Service {
      */
     post1?: number;
     body: string;
-  }): Observable<void> {
-    return this.path1Post$Plain$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<void> {
+    return this.path1Post$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void),
     );
   }

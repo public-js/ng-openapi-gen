@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -35,7 +35,8 @@ export class TagTag2Tag3Tag4Tag5Service {
    * This method doesn't expect any request body.
    */
   public path5Get$Response(params?: {
-  }): Observable<StrictHttpResponse<{
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<{
 }>> {
 
     const rb = new RequestBuilder(this.rootUrl, TagTag2Tag3Tag4Tag5Service.Path5GetPath, 'get');
@@ -45,6 +46,7 @@ export class TagTag2Tag3Tag4Tag5Service {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -63,9 +65,10 @@ export class TagTag2Tag3Tag4Tag5Service {
    * This method doesn't expect any request body.
    */
   public path5Get(params?: {
-  }): Observable<{
+  },
+  context?: HttpContext): Observable<{
 }> {
-    return this.path5Get$Response(params).pipe(
+    return this.path5Get$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>) => r.body as {
 }),
