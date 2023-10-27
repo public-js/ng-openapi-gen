@@ -9,3 +9,6 @@
 /tools/executors/pseudo-test/modified-results
 /tools/executors/pseudo-test/original-results
 /tools/executors/schema-generator/**/*.js
+
+.angular
+.nx/cache

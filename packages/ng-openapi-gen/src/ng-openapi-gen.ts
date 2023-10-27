@@ -59,10 +59,9 @@ const parsedArgs = yargsParser(process.argv.slice(2), {
         throw new Error(`No input file path or URL is specified.`);
     }
 
-    const refParser = new $RefParser();
     const input = options.input;
 
-    const openApi = (await refParser.bundle(input, {
+    const openApi = (await $RefParser.bundle(input, {
         dereference: { circular: false },
         resolve: { http: { timeout: options.fetchTimeout } },
     })) as OpenAPIObject;
