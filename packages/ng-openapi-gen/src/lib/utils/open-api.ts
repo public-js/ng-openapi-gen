@@ -23,7 +23,13 @@ export function qualifiedName(name: string, options: Options): string {
 /** Returns the name of the enum constant for a given value */
 export function enumName(value: string, options: Options): string {
     let name = toBasicChars(value, true);
-    name = options.enumStyle === 'upper' ? upperCase(name).replace(/\s+/g, '_') : upperFirst(camelCase(name));
+    if (options.enumStyle === 'ignorecase') {
+        return name;
+    } else if (options.enumStyle === 'upper') {
+        name = upperCase(name).replace(/\s+/g, '_');
+    } else {
+        name = upperFirst(camelCase(name));
+    }
     if (/^\d/.test(name)) {
         name = '$' + name;
     }

@@ -43,12 +43,13 @@ interface OptionsInput {
     response?: string;
     /**
      * Determines how root enums will be generated. Possible values are:
-     * - `alias` for a type alias with the possible values;
-     * - `upper` for an enum with UPPER_CASE names;
-     * - `pascal` for an enum with PascalCase names (default).
+     * - `alias` for type aliases with the possible values;
+     * - `upper` for enums with UPPER_CASE names;
+     * - `ignorecase` for enums with names as is;
+     * - `pascal` for enums with PascalCase names (default).
      * Defaults to 'pascal'.
      */
-    enumStyle?: 'alias' | 'upper' | 'pascal';
+    enumStyle?: 'alias' | 'upper' | 'ignorecase' | 'pascal';
     /** Path to directory with custom templates. All `.handlebars` files will override the corresponding default. */
     templates?: string;
     /** When specified, filters the generated services, excluding any param corresponding to this list of params. */

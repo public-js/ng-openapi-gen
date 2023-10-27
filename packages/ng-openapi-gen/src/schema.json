@@ -138,8 +138,8 @@
       "default": "StrictHttpResponse"
     },
     "enumStyle": {
-      "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for a type alias with the possible values;\n- `upper` for an enum with UPPER_CASE names;\n- `pascal` for an enum with PascalCase names (default).\nDefaults to 'pascal'.",
-      "enum": ["alias", "upper", "pascal"],
+      "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for type aliases with the possible values;\n- `upper` for enums with UPPER_CASE names;\n- `ignorecase` for enums with names as is;\n- `pascal` for enums with PascalCase names (default).\nDefaults to 'pascal'.",
+      "enum": ["alias", "upper", "ignorecase", "pascal"],
       "default": "pascal"
     },
     "templates": {

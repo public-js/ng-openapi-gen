@@ -119,14 +119,15 @@ export const schemaDescriptor: { properties: Record<string, Property> } = {
         enumStyle: {
             description: [
                 'Determines how root enums will be generated. Possible values are:',
-                '- `alias` for a type alias with the possible values;',
-                '- `upper` for an enum with UPPER_CASE names;',
-                '- `pascal` for an enum with PascalCase names (default).',
+                '- `alias` for type aliases with the possible values;',
+                '- `upper` for enums with UPPER_CASE names;',
+                '- `ignorecase` for enums with names as is;',
+                '- `pascal` for enums with PascalCase names (default).',
                 '',
             ].join('\n'),
             type: 'enum',
             default: 'pascal',
-            values: ['alias', 'upper', 'pascal'],
+            values: ['alias', 'upper', 'ignorecase', 'pascal'],
         },
         // operationPathVisibility: {
         //     description: 'Determines visibility of "operation path" class properties.',
