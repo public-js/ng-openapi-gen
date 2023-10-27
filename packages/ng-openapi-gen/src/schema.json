@@ -168,9 +168,10 @@
       "enum": ["number", "bigint"],
       "default": "number"
     },
-    "lineSeparator": {
-      "description": "When specified, overrides default system line separators when writing files. Possible values are: `\\n` and `\\r\\n`.",
-      "enum": ["\\n", "\\r\\n"]
+    "endOfLineStyle": {
+      "description": "Determines how to normalize line endings. Possible values are:\n- `lf` to force LF (\\n) line endings (Unix, OS X);\n- `cr` to force CR (\\r) line endings (Mac OS);\n- `crlf` to force CRLF (\\r\\n) line endings (Windows, DOS);\n- `auto` to normalize line endings for the current operating system (default).\nDefaults to 'auto'.",
+      "enum": ["lf", "cr", "crlf", "auto"],
+      "default": "auto"
     },
     "customizedResponseType": {
       "description": "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
