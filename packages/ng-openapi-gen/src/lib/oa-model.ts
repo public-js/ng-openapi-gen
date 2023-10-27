@@ -64,7 +64,9 @@ export class OaModel extends OaBase {
         }
 
         const hasAllOf = this.schema.allOf && this.schema.allOf.length > 0;
-        this.isObject = (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf;
+        const hasOneOf = this.schema.oneOf && this.schema.oneOf.length > 0;
+        this.isObject =
+            (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
         this.isEnum = (this.enumValues || []).length > 0;
         this.isSimple = !this.isObject && !this.isEnum;
 
