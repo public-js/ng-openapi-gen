@@ -11,7 +11,12 @@ export class Templates {
     protected templates: Record<string, Handlebars.TemplateDelegate> = {};
     protected globals: Record<string, unknown> = {};
 
-    constructor(builtInDir: string, customDir: string, globals: Globals, protected handlebars: typeof Handlebars) {
+    constructor(
+        builtInDir: string,
+        customDir: string,
+        globals: Globals,
+        protected handlebars: typeof Handlebars,
+    ) {
         const customTemplates = customDir ? readdirSync(customDir) : [];
         for (const file of customTemplates) {
             this.loadTemplate(customDir, file);

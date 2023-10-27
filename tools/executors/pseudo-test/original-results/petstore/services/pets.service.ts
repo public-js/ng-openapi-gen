@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -41,7 +41,8 @@ export class PetsService {
      * How many items to return at one time (max 100)
      */
     limit?: number;
-  }): Observable<StrictHttpResponse<PetstorePetsModel>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<PetstorePetsModel>> {
 
     const rb = new RequestBuilder(this.rootUrl, PetsService.ListPetsPath, 'get');
     if (params) {
@@ -51,6 +52,7 @@ export class PetsService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -73,8 +75,9 @@ export class PetsService {
      * How many items to return at one time (max 100)
      */
     limit?: number;
-  }): Observable<PetstorePetsModel> {
-    return this.listPets$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<PetstorePetsModel> {
+    return this.listPets$Response(params, context).pipe(
       map((r: StrictHttpResponse<PetstorePetsModel>) => r.body as PetstorePetsModel),
     );
   }
@@ -91,7 +94,8 @@ export class PetsService {
    * This method doesn't expect any request body.
    */
   public createPets$Response(params?: {
-  }): Observable<StrictHttpResponse<void>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<void>> {
 
     const rb = new RequestBuilder(this.rootUrl, PetsService.CreatePetsPath, 'post');
     if (params) {
@@ -100,6 +104,7 @@ export class PetsService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: '*/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -117,8 +122,9 @@ export class PetsService {
    * This method doesn't expect any request body.
    */
   public createPets(params?: {
-  }): Observable<void> {
-    return this.createPets$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<void> {
+    return this.createPets$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void),
     );
   }
@@ -140,7 +146,8 @@ export class PetsService {
      * The id of the pet to retrieve
      */
     petId: string;
-  }): Observable<StrictHttpResponse<PetstorePetsModel>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<PetstorePetsModel>> {
 
     const rb = new RequestBuilder(this.rootUrl, PetsService.ShowPetByIdPath, 'get');
     if (params) {
@@ -150,6 +157,7 @@ export class PetsService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -172,8 +180,9 @@ export class PetsService {
      * The id of the pet to retrieve
      */
     petId: string;
-  }): Observable<PetstorePetsModel> {
-    return this.showPetById$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<PetstorePetsModel> {
+    return this.showPetById$Response(params, context).pipe(
       map((r: StrictHttpResponse<PetstorePetsModel>) => r.body as PetstorePetsModel),
     );
   }

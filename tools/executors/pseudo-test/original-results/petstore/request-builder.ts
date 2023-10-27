@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse, HttpContext } from '@angular/common/http';
 
 /** Constrains the HTTP response body to be non-null */
 export type StrictHttpResponse<T> = HttpResponse<T> & { readonly body: T };
@@ -128,9 +128,9 @@ class PathParameter extends Parameter {
   // @ts-ignore
   serializeValue(value: any, separator = ','): string {
     var result = typeof value === 'string' ? encodeURIComponent(value) : super.serializeValue(value, separator);
-    result = result.replace('%3D', '=');
-    result = result.replace('%3B', ';');
-    result = result.replace('%2C', ',');
+    result = result.replace(/%3D/g, '=');
+    result = result.replace(/%3B/g, ';');
+    result = result.replace(/%2C/g, ',');
     return result;
   }
 }
@@ -314,6 +314,9 @@ export class RequestBuilder {
 
     /** Whether to report progress on uploads / downloads */
     reportProgress?: boolean;
+
+    /** Allow passing HttpContext for HttpClient */
+    context?: HttpContext;
   }): HttpRequest<T> {
     options = options || {};
 
@@ -352,6 +355,7 @@ export class RequestBuilder {
       headers: httpHeaders,
       responseType: options.responseType,
       reportProgress: options.reportProgress,
+      context: options.context,
     });
   }
 }

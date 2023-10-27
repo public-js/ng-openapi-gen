@@ -17,7 +17,7 @@ An OpenAPI 3 code generator for Angular
 ## Overview
 
 This package generates interfaces and services from an [OpenApi 3 specification](https://www.openapis.org/).
-The generated artifacts follow the [Angular style guide](https://angular.io/guide/styleguide) and are compatible with Angular 7+.
+The generated artifacts follow the [Angular style guide](https://angular.io/guide/styleguide) and are compatible with Angular 12+.
 
 This project is built on top of [ng-openapi-gen](https://github.com/cyclosproject/ng-openapi-gen) and features a lot of improvements listed below.
 

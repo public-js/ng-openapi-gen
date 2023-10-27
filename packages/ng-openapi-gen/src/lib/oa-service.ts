@@ -8,7 +8,11 @@ import { serviceClass } from './utils/open-api.js';
 import { tsComments } from './utils/string.js';
 
 export class OaService extends OaBase {
-    constructor(tag: TagObject, public readonly operations: OaOperation[], options: Options) {
+    constructor(
+        tag: TagObject,
+        public readonly operations: OaOperation[],
+        options: Options,
+    ) {
         super(tag.name, options, serviceClass);
 
         this.fileName = this.fileName.replace(/-service$/, '.service');

@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -37,7 +37,8 @@ export class NoTagService {
    */
   public path3Del$Response(params: {
     id: number;
-  }): Observable<StrictHttpResponse<Array<string>>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Array<string>>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path3DelPath, 'delete');
     if (params) {
@@ -47,6 +48,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/*+json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -65,8 +67,9 @@ export class NoTagService {
    */
   public path3Del(params: {
     id: number;
-  }): Observable<Array<string>> {
-    return this.path3Del$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Array<string>> {
+    return this.path3Del$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<string>>) => r.body as Array<string>),
     );
   }
@@ -82,7 +85,8 @@ export class NoTagService {
    */
   public path4Put$Json$Plain$Response(params?: {
     body?: RefObject;
-  }): Observable<StrictHttpResponse<string>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -92,6 +96,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -108,8 +113,9 @@ export class NoTagService {
    */
   public path4Put$Json$Plain(params?: {
     body?: RefObject;
-  }): Observable<string> {
-    return this.path4Put$Json$Plain$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<string> {
+    return this.path4Put$Json$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
@@ -122,7 +128,8 @@ export class NoTagService {
    */
   public path4Put$Json$Binary$Response(params?: {
     body?: RefObject;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -132,6 +139,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'text/binary',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -148,8 +156,9 @@ export class NoTagService {
    */
   public path4Put$Json$Binary(params?: {
     body?: RefObject;
-  }): Observable<Blob> {
-    return this.path4Put$Json$Binary$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Json$Binary$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -162,7 +171,8 @@ export class NoTagService {
    */
   public path4Put$Json$Image$Response(params?: {
     body?: RefObject;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -172,6 +182,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'image/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -188,8 +199,9 @@ export class NoTagService {
    */
   public path4Put$Json$Image(params?: {
     body?: RefObject;
-  }): Observable<Blob> {
-    return this.path4Put$Json$Image$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Json$Image$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -202,7 +214,8 @@ export class NoTagService {
    */
   public path4Put$Plain$Plain$Response(params?: {
     body?: string;
-  }): Observable<StrictHttpResponse<string>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -212,6 +225,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -228,8 +242,9 @@ export class NoTagService {
    */
   public path4Put$Plain$Plain(params?: {
     body?: string;
-  }): Observable<string> {
-    return this.path4Put$Plain$Plain$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<string> {
+    return this.path4Put$Plain$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
@@ -242,7 +257,8 @@ export class NoTagService {
    */
   public path4Put$Plain$Binary$Response(params?: {
     body?: string;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -252,6 +268,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'text/binary',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -268,8 +285,9 @@ export class NoTagService {
    */
   public path4Put$Plain$Binary(params?: {
     body?: string;
-  }): Observable<Blob> {
-    return this.path4Put$Plain$Binary$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Plain$Binary$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -282,7 +300,8 @@ export class NoTagService {
    */
   public path4Put$Plain$Image$Response(params?: {
     body?: string;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -292,6 +311,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'image/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -308,8 +328,9 @@ export class NoTagService {
    */
   public path4Put$Plain$Image(params?: {
     body?: string;
-  }): Observable<Blob> {
-    return this.path4Put$Plain$Image$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Plain$Image$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -322,7 +343,8 @@ export class NoTagService {
    */
   public path4Put$Any$Plain$Response(params?: {
     body?: Blob;
-  }): Observable<StrictHttpResponse<string>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -332,6 +354,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -348,8 +371,9 @@ export class NoTagService {
    */
   public path4Put$Any$Plain(params?: {
     body?: Blob;
-  }): Observable<string> {
-    return this.path4Put$Any$Plain$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<string> {
+    return this.path4Put$Any$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
@@ -362,7 +386,8 @@ export class NoTagService {
    */
   public path4Put$Any$Binary$Response(params?: {
     body?: Blob;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -372,6 +397,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'text/binary',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -388,8 +414,9 @@ export class NoTagService {
    */
   public path4Put$Any$Binary(params?: {
     body?: Blob;
-  }): Observable<Blob> {
-    return this.path4Put$Any$Binary$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Any$Binary$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -402,7 +429,8 @@ export class NoTagService {
    */
   public path4Put$Any$Image$Response(params?: {
     body?: Blob;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path4PutPath, 'put');
     if (params) {
@@ -412,6 +440,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'image/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -428,8 +457,9 @@ export class NoTagService {
    */
   public path4Put$Any$Image(params?: {
     body?: Blob;
-  }): Observable<Blob> {
-    return this.path4Put$Any$Image$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path4Put$Any$Image$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -444,7 +474,8 @@ export class NoTagService {
    * This method doesn't expect any request body.
    */
   public withQuotes$Response(params?: {
-  }): Observable<StrictHttpResponse<string>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.PathWithQuotesGetPath, 'get');
     if (params) {
@@ -453,6 +484,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -468,8 +500,9 @@ export class NoTagService {
    * This method doesn't expect any request body.
    */
   public withQuotes(params?: {
-  }): Observable<string> {
-    return this.withQuotes$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<string> {
+    return this.withQuotes$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
@@ -486,7 +519,8 @@ export class NoTagService {
    * This method doesn't expect any request body.
    */
   public path6Get$Response(params?: {
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, NoTagService.Path6GetPath, 'get');
     if (params) {
@@ -495,6 +529,7 @@ export class NoTagService {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: '*/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -512,8 +547,9 @@ export class NoTagService {
    * This method doesn't expect any request body.
    */
   public path6Get(params?: {
-  }): Observable<Blob> {
-    return this.path6Get$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path6Get$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }

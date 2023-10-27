@@ -15,7 +15,11 @@ export class OaSecurity {
     public in: string;
     public type: string;
 
-    constructor(key: string, public spec: SecuritySchemeObject, public scope: string[] = []) {
+    constructor(
+        key: string,
+        public spec: SecuritySchemeObject,
+        public scope: string[] = [],
+    ) {
         this.name = spec.name || '';
         this.var = methodName(key);
         this.tsComments = tsComments(spec.description || '', 2);

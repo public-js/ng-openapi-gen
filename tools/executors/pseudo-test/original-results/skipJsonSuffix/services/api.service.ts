@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -33,7 +33,8 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet$Response(params?: {
-  }): Observable<StrictHttpResponse<string>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<string>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.FooGetPath, 'get');
     if (params) {
@@ -42,6 +43,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'application/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -57,8 +59,9 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet(params?: {
-  }): Observable<string> {
-    return this.fooGet$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<string> {
+    return this.fooGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<string>) => r.body as string),
     );
   }
@@ -70,7 +73,8 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet$Plain$Response(params?: {
-  }): Observable<StrictHttpResponse<any>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<any>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.FooGetPath, 'get');
     if (params) {
@@ -79,6 +83,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -94,8 +99,9 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public fooGet$Plain(params?: {
-  }): Observable<any> {
-    return this.fooGet$Plain$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<any> {
+    return this.fooGet$Plain$Response(params, context).pipe(
       map((r: StrictHttpResponse<any>) => r.body as any),
     );
   }
@@ -110,7 +116,8 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public barGet$Response(params?: {
-  }): Observable<StrictHttpResponse<any>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<any>> {
 
     const rb = new RequestBuilder(this.rootUrl, ApiService.BarGetPath, 'get');
     if (params) {
@@ -119,6 +126,7 @@ export class ApiService {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: 'text/plain',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -134,8 +142,9 @@ export class ApiService {
    * This method doesn't expect any request body.
    */
   public barGet(params?: {
-  }): Observable<any> {
-    return this.barGet$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<any> {
+    return this.barGet$Response(params, context).pipe(
       map((r: StrictHttpResponse<any>) => r.body as any),
     );
   }

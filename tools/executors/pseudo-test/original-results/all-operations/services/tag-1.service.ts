@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -86,7 +86,8 @@ export class Tag1Service {
      * Should be escaped
      */
     'a-b'?: string;
-  }): Observable<StrictHttpResponse<RefObject>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<RefObject>> {
 
     const rb = new RequestBuilder(this.rootUrl, Tag1Service.Path1GetPath, 'get');
     if (params) {
@@ -104,6 +105,7 @@ export class Tag1Service {
     return this.http.request(rb.build({
       responseType: 'json',
       accept: 'text/json',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -166,8 +168,9 @@ export class Tag1Service {
      * Should be escaped
      */
     'a-b'?: string;
-  }): Observable<RefObject> {
-    return this.path1Get$Json$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<RefObject> {
+    return this.path1Get$Json$Response(params, context).pipe(
       map((r: StrictHttpResponse<RefObject>) => r.body as RefObject),
     );
   }
@@ -226,7 +229,8 @@ export class Tag1Service {
      * Should be escaped
      */
     'a-b'?: string;
-  }): Observable<StrictHttpResponse<Blob>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
 
     const rb = new RequestBuilder(this.rootUrl, Tag1Service.Path1GetPath, 'get');
     if (params) {
@@ -244,6 +248,7 @@ export class Tag1Service {
     return this.http.request(rb.build({
       responseType: 'blob',
       accept: 'image/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -306,8 +311,9 @@ export class Tag1Service {
      * Should be escaped
      */
     'a-b'?: string;
-  }): Observable<Blob> {
-    return this.path1Get$Image$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<Blob> {
+    return this.path1Get$Image$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>) => r.body as Blob),
     );
   }
@@ -335,7 +341,8 @@ export class Tag1Service {
      * Header param
      */
     param2?: string;
-  }): Observable<StrictHttpResponse<void>> {
+  },
+  context?: HttpContext): Observable<StrictHttpResponse<void>> {
 
     const rb = new RequestBuilder(this.rootUrl, Tag1Service.Path2GetPath, 'get');
     if (params) {
@@ -347,6 +354,7 @@ export class Tag1Service {
     return this.http.request(rb.build({
       responseType: 'text',
       accept: '*/*',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
@@ -375,8 +383,9 @@ export class Tag1Service {
      * Header param
      */
     param2?: string;
-  }): Observable<void> {
-    return this.path2Get$Response(params).pipe(
+  },
+  context?: HttpContext): Observable<void> {
+    return this.path2Get$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>) => r.body as void),
     );
   }

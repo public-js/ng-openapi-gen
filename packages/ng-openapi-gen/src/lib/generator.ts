@@ -27,7 +27,10 @@ export class Generator {
     protected outDir: string;
     protected tempDir: string;
 
-    constructor(public openApi: OpenAPIObject, public options: Options) {
+    constructor(
+        public openApi: OpenAPIObject,
+        public options: Options,
+    ) {
         this.outDir = trimTrailingSlash(options.output);
         this.tempDir = this.outDir + '$';
     }
