@@ -13,6 +13,7 @@
     return this.http.request(rb.build({
       responseType: '{{responseType}}',
       accept: '{{accept}}',
+      context: context,
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>

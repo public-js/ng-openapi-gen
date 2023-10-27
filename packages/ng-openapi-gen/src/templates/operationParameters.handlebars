@@ -6,4 +6,5 @@ params{{^operation.parametersRequired}}?{{/operation.parametersRequired}}: {
 {{{../operation.requestBody.tsComments}}}body{{^../operation.requestBody.required}}?{{/../operation.requestBody.required
 }}: {{{reIndent type 2}}};
 {{/requestBody}}
-  }
+  },
+  context?: HttpContext

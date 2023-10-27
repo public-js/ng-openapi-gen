@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 {{autoGenerationNotice}}
-import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse, HttpContext } from '@angular/common/http';
 
 /** Constrains the HTTP response body to be non-null */
 export type {{responseClass}}<T> = HttpResponse<T> & { readonly body: T };
@@ -308,6 +308,9 @@ export class {{requestBuilderClass}} {
 
     /** Whether to report progress on uploads / downloads */
     reportProgress?: boolean;
+
+    /** Allow passing HttpContext for HttpClient */
+    context?: HttpContext;
   }): HttpRequest<T> {
     options = options || {};
 
@@ -346,6 +349,7 @@ export class {{requestBuilderClass}} {
       headers: httpHeaders,
       responseType: options.responseType,
       reportProgress: options.reportProgress,
+      context: options.context,
     });
   }
 }
