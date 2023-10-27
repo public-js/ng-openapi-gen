@@ -85,7 +85,12 @@ export function tsTypeVal(
 
     // An array
     if (type === 'array' || schema.items) {
-        return `Array<${tsTypeVal(schema.items || {}, openApi, options, imports, container)}>`;
+        const items = schema.items || {};
+        let itemsType = tsTypeVal(items, openApi, options, imports, container);
+        if ((items as unknown)['nullable'] && !itemsType.includes(' | null')) {
+            itemsType += ' | null';
+        }
+        return `Array<${itemsType}>`;
     }
 
     // All the types
