@@ -1,3 +1,5 @@
+/* tslint:disable */
+/* eslint-disable */
 export { RefEnum } from './models/ref-enum';
 export { RefIntEnum } from './models/ref-int-enum';
 export { RefNamedIntEnum } from './models/ref-named-int-enum';

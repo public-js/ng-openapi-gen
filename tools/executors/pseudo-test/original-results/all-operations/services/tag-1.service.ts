@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -102,11 +102,9 @@ export class Tag1Service {
       rb.query('a-b', params['a-b'], {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'text/json',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'text/json', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<RefObject>,
@@ -245,11 +243,9 @@ export class Tag1Service {
       rb.query('a-b', params['a-b'], {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'image/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'image/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -351,11 +347,9 @@ export class Tag1Service {
       rb.header('param2', params.param2, {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: '*/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: '*/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>,

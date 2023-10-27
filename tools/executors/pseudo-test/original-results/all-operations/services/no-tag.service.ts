@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -45,11 +45,9 @@ export class NoTagService {
       rb.path('id', params.id, {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/*+json',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'application/*+json', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Array<string>>,
@@ -93,11 +91,9 @@ export class NoTagService {
       rb.body(params.body, 'application/json');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<string>,
@@ -136,11 +132,9 @@ export class NoTagService {
       rb.body(params.body, 'application/json');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'text/binary',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'text/binary', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -179,11 +173,9 @@ export class NoTagService {
       rb.body(params.body, 'application/json');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'image/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'image/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -222,11 +214,9 @@ export class NoTagService {
       rb.body(params.body, 'text/plain');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<string>,
@@ -265,11 +255,9 @@ export class NoTagService {
       rb.body(params.body, 'text/plain');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'text/binary',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'text/binary', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -308,11 +296,9 @@ export class NoTagService {
       rb.body(params.body, 'text/plain');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'image/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'image/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -351,11 +337,9 @@ export class NoTagService {
       rb.body(params.body, '*/*');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<string>,
@@ -394,11 +378,9 @@ export class NoTagService {
       rb.body(params.body, '*/*');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'text/binary',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'text/binary', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -437,11 +419,9 @@ export class NoTagService {
       rb.body(params.body, '*/*');
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: 'image/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: 'image/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,
@@ -481,11 +461,9 @@ export class NoTagService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<string>,
@@ -526,11 +504,9 @@ export class NoTagService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'blob',
-      accept: '*/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'blob', accept: '*/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<Blob>,

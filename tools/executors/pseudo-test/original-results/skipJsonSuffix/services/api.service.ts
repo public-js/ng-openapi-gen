@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -40,11 +40,9 @@ export class ApiService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'application/json', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<string>,
@@ -80,11 +78,9 @@ export class ApiService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<any>,
@@ -123,11 +119,9 @@ export class ApiService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: 'text/plain',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: 'text/plain', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<any>,

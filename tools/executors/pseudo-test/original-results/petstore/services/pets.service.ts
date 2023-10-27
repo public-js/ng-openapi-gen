@@ -7,7 +7,7 @@
  * To update this file run the generation tool.
  */
 
-import { HttpClient, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -49,11 +49,9 @@ export class PetsService {
       rb.query('limit', params.limit, {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'application/json', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<PetstorePetsModel>,
@@ -101,11 +99,9 @@ export class PetsService {
     if (params) {
     }
 
-    return this.http.request(rb.build({
-      responseType: 'text',
-      accept: '*/*',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'text', accept: '*/*', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>,
@@ -154,11 +150,9 @@ export class PetsService {
       rb.path('petId', params.petId, {});
     }
 
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json',
-      context: context,
-    })).pipe(
+    return this.http.request(
+      rb.build({ responseType: 'json', accept: 'application/json', context: context })
+    ).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) =>
         r as StrictHttpResponse<PetstorePetsModel>,
