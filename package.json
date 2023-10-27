@@ -1,6 +1,6 @@
 {
   "name": "ng-openapi-gen",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "scripts": {
     "ps-test:quick": "nx build ng-openapi-gen && nx pseudo-test ng-openapi-gen",

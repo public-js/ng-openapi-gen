@@ -1,6 +1,6 @@
 {
   "name": "@public-js/ng-openapi-gen",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "An OpenAPI 3 code generator for Angular",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "~9.0.0",
