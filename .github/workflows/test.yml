@@ -15,12 +15,12 @@ jobs:
     name: Any test with nx
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Node.js and cache
-        uses: ./.github/actions/setup-node
+        uses: ./.github/actions/nodejs
 
       - name: Test all packages
         run: npm run ci:all:test
@@ -32,14 +32,14 @@ jobs:
           coverage-reports: 'coverage/packages/*/lcov.info'
 
       - name: Report to Code Climate
-        uses: paambaati/codeclimate-action@v3.0.0
+        uses: paambaati/codeclimate-action@v3.2.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageLocations: 'coverage/packages/*/lcov.info:lcov'
 
       - name: Report to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: 'coverage/packages/*/lcov.info'
