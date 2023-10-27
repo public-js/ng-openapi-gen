@@ -105,6 +105,14 @@ export function tsTypeVal(
         let result = '{\n';
         const properties = schema.properties || {};
         const required = schema.required;
+
+        for (const baseSchema of allOf) {
+            const discriminator = tryGetDiscriminator(baseSchema, schema, openApi);
+            if (discriminator) {
+                result += `'${discriminator.propName}': '${discriminator.value}';\n`;
+            }
+        }
+
         for (const [propName, property] of Object.entries(properties)) {
             if (!property) {
                 continue;
@@ -177,4 +185,42 @@ export function resolveRef(openApi: OpenAPIObject, ref: string): unknown {
         throw new Error(`Couldn't resolve reference ${ref}`);
     }
     return current;
+}
+
+/** Tries to get a discriminator info from a base schema and for a derived one */
+function tryGetDiscriminator(
+    baseSchemaOrRef: SchemaObject | ReferenceObject,
+    derivedSchema: SchemaObject,
+    openApi: OpenAPIObject,
+) {
+    const baseSchema = (
+        baseSchemaOrRef.$ref ? resolveRef(openApi, baseSchemaOrRef.$ref) : baseSchemaOrRef
+    ) as SchemaObject;
+    const discriminatorProp = baseSchema.discriminator?.propertyName;
+    if (discriminatorProp) {
+        const discriminatorValue = tryGetDiscriminatorValue(baseSchema, derivedSchema, openApi);
+        if (discriminatorValue) {
+            return {
+                propName: discriminatorProp,
+                value: discriminatorValue,
+            };
+        }
+    }
+    return;
+}
+
+/** Tries to get a discriminator value from a base schema and for a derived one */
+function tryGetDiscriminatorValue(
+    baseSchema: SchemaObject,
+    derivedSchema: SchemaObject,
+    openApi: OpenAPIObject,
+): string | null {
+    const mapping = baseSchema.discriminator?.mapping;
+
+    if (mapping) {
+        const mappingIndex = Object.values(mapping).findIndex((ref) => resolveRef(openApi, ref) === derivedSchema);
+        return Object.keys(mapping)[mappingIndex] ?? null;
+    }
+
+    return null;
 }
