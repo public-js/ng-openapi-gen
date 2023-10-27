@@ -5,8 +5,8 @@
 [![Downloads](https://img.shields.io/npm/dw/@public-js/ng-openapi-gen?style=flat)](https://www.npmjs.com/package/@public-js/ng-openapi-gen)
 [![Size](https://packagephobia.com/badge?p=@public-js/ng-openapi-gen)](https://packagephobia.com/result?p=@public-js/ng-openapi-gen)
 
-[![Codacy](https://app.codacy.com/project/badge/Grade/bf3812369c7146d285b05b539fcf913f)](https://www.codacy.com/gh/public-js/ng-openapi-gen/dashboard)
-[![LGTM](https://img.shields.io/lgtm/grade/javascript/g/public-js/ng-openapi-gen?logo=lgtm)](https://lgtm.com/projects/g/public-js/ng-openapi-gen/context:javascript)
+[![CodeQL](https://github.com/public-js/ng-openapi-gen/actions/workflows/codeql-analyze.yml/badge.svg?branch=main)](https://github.com/public-js/ng-openapi-gen/actions/workflows/codeql-analyze.yml)
+[![Codacy](https://app.codacy.com/project/badge/Grade/bf3812369c7146d285b05b539fcf913f)](https://app.codacy.com/gh/public-js/ng-openapi-gen/dashboard)
 [![Codecov](https://codecov.io/gh/public-js/ng-openapi-gen/branch/main/graph/badge.svg?token=DXGP8I126q)](https://codecov.io/gh/public-js/ng-openapi-gen)
 [![Code Climate](https://api.codeclimate.com/v1/badges/1200908a0ede980d61dc/maintainability)](https://codeclimate.com/github/public-js/ng-openapi-gen/maintainability)
 
@@ -66,4 +66,4 @@ Execute it from your root `package.json` file like this:
 ## License
 
 MIT, [full license text](LICENSE).
-Read more about it on [TLDRLegal](https://www.tldrlegal.com/l/mit).
+Read more about it on [TLDRLegal](https://www.tldrlegal.com/license/mit-license).
