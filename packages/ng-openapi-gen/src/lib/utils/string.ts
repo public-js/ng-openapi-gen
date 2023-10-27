@@ -60,8 +60,7 @@ export function refName(fullRef: string): string {
 
 /** Escapes the name of a property / parameter if not valid JS identifier */
 export function escapeId(name: string) {
-    // eslint-disable-next-line unicorn/better-regex
-    return /^[a-zA-Z]\w+$/.test(name) ? name : `'${name.replace(/'/g, "\\'")}'`;
+    return /^[A-Za-z]\w*$/.test(name) ? name : `'${name.replace(/'/g, "\\'")}'`;
 }
 
 /** Returns the TypeScript comments for the given schema description, in a given indentation level */
