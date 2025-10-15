@@ -7,6 +7,7 @@ export class OaImport {
     public refName: string;
     public typeName: string;
     public qualifiedName: string;
+    public isEnum: boolean;
     public useAlias: boolean;
     public file: string;
 
@@ -17,6 +18,7 @@ export class OaImport {
         this.refName = model.refName;
         this.typeName = model.typeName;
         this.qualifiedName = model.assumedName;
+        this.isEnum = model.isEnum;
         this.useAlias = this.typeName !== this.qualifiedName;
         [this.namespace, this.fileName] = [
             namespace(model.refName),
