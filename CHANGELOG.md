@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/public-js/ng-openapi-gen/compare/0.0.7...0.1.0) (2025-10-15)
+
+
+### Features
+
+* eliminate TS1205 type re-exports ([16bdeaa](https://github.com/public-js/ng-openapi-gen/commit/16bdeaa2e42b89acce92c1eb60b984fd0c55e2b7))
+* eliminate TS1205 type re-exports ([#19](https://github.com/public-js/ng-openapi-gen/issues/19)) ([c15cb71](https://github.com/public-js/ng-openapi-gen/commit/c15cb7194ce037e5efad43d5b1241acd09016aff))
+
 ### [0.0.7](https://github.com/public-js/ng-openapi-gen/compare/0.0.6...0.0.7) (2023-10-27)
 
 
