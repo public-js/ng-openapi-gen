@@ -1,3 +1,3 @@
 /* tslint:disable */
 /* eslint-disable */
-export { Baz } from './models/Foo/Bar/baz';
+export type { Baz } from './models/Foo/Bar/baz';
