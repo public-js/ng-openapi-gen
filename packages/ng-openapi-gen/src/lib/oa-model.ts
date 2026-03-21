@@ -96,7 +96,11 @@ export class OaModel extends OaBase {
             // See https://github.com/cyclosproject/ng-openapi-gen/issues/68
             const propTypes = new Set<string>();
             const appendType = (type: string) => {
-                if (type.startsWith(nullInUnion.val)) {
+                if (Array.isArray(type)) {
+                    for (const subType of type) {
+                        propTypes.add(subType);
+                    }
+                } else if (type.startsWith(nullInUnion.val)) {
                     propTypes.add('null');
                     propTypes.add(type.slice(nullInUnion.len));
                 } else {

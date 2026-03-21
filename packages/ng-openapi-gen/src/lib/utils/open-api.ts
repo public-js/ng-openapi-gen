@@ -4,6 +4,7 @@ import { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
 import { OaImport } from '../oa-import.js';
 import { OaModel } from '../oa-model.js';
 import { Options } from '../options.js';
+import { effectiveSchemaOrRef } from './effective-schema.js';
 import { camelCase, upperCase, upperFirst } from './lo/index.js';
 import { namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
 
@@ -58,6 +59,8 @@ export function tsTypeVal(
     if (!schemaOrRef) {
         return options.fallbackPropertyType;
     }
+
+    schemaOrRef = effectiveSchemaOrRef(schemaOrRef);
 
     // A reference
     if (schemaOrRef.$ref) {
