@@ -13,6 +13,10 @@ on:
           - minor
           - major
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   publish-release:
     name: Publish release
@@ -46,6 +50,9 @@ jobs:
       - name: Build all packages on main branch
         run: npm run ci:all:build
 
+      - name: Publish all packages
+        run: npm run cd:all:publish
+
       - name: Commit changes after bump
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -57,11 +64,6 @@ jobs:
           tagging_message: ${{ steps.bump-version.outputs.new_version }}
           status_options: '--untracked-files=no'
           skip_fetch: true
-
-      - name: Publish all packages
-        run: npm run cd:all:publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub release
         run: npm run cd:github-release
