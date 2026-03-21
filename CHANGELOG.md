@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/public-js/ng-openapi-gen/compare/0.1.0...0.1.1) (2026-03-21)
+
+
+### Features
+
+* add carrier type detection ([223cf69](https://github.com/public-js/ng-openapi-gen/commit/223cf69b870035e9301bfaa665f4ec9f7350a402))
+* add carrier type detection ([#20](https://github.com/public-js/ng-openapi-gen/issues/20)) ([86a8f22](https://github.com/public-js/ng-openapi-gen/commit/86a8f22df1be40795a03e9bec9fbc130c0a7b017))
+
 ## [0.1.0](https://github.com/public-js/ng-openapi-gen/compare/0.0.7...0.1.0) (2025-10-15)
 
 
