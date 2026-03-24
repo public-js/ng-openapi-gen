@@ -4,6 +4,8 @@ import type { OpenAPIObject } from 'openapi3-ts';
 import { resolveOptions, type Options, type OptionsInput } from '../config/options.js';
 import { GeneratorDocumentBuilder } from './generation/document-builder.js';
 import { emitDocument } from './emitter/emit-document.js';
+import { loadHooks } from './hooks/loader.js';
+import { HookRunner } from './hooks/runner.js';
 import { writeGeneratedFiles } from './output/write-output.js';
 import { GeneratorLogger } from './runtime/logger.js';
 
@@ -19,14 +21,17 @@ export async function generate(input: Partial<OptionsInput> | Options): Promise<
     }
 
     const logger = new GeneratorLogger(options.verbose);
-    const openApi = (await $RefParser.bundle(options.input, {
+    const hooks = new HookRunner(await loadHooks(options.hooks), options, logger);
+    let openApi = (await $RefParser.bundle(options.input, {
         dereference: { circular: false },
         resolve: { http: { timeout: options.fetchTimeout } },
     })) as OpenAPIObject;
+    openApi = await hooks.transformOpenApi(openApi);
 
-    const document = await new GeneratorDocumentBuilder(openApi, options, logger).build();
-    const files = emitDocument(document);
+    const document = await new GeneratorDocumentBuilder(openApi, options, hooks, logger).build();
+    const files = await emitDocument(document, hooks);
     const writtenFiles = writeGeneratedFiles(files, options, logger);
+    await hooks.afterWrite(writtenFiles, { openApi, document });
 
     logger.info(
         `Generated ${document.models.length} models and ${document.services.length} services from ${options.input}.`,

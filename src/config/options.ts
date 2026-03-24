@@ -26,6 +26,7 @@ export interface OptionsInput {
     response?: string;
     enumStyle?: 'alias' | 'upper' | 'ignorecase' | 'pascal';
     injectionStyle?: 'constructor' | 'inject';
+    hooks?: string | string[];
     excludeParameters?: string[];
     skipJsonSuffix?: boolean;
     fallbackPropertyType?: string;
@@ -59,6 +60,7 @@ type DefaultedOptions =
     | 'response'
     | 'enumStyle'
     | 'injectionStyle'
+    | 'hooks'
     | 'skipJsonSuffix'
     | 'fallbackPropertyType'
     | 'bigintStyle'
@@ -67,7 +69,11 @@ type DefaultedOptions =
     | 'modelsDir'
     | 'servicesDir';
 
-export type Options = Required<Pick<OptionsInput, DefaultedOptions>> & OptionsInput;
+export type Options = Required<Pick<OptionsInput, DefaultedOptions>> &
+    Omit<OptionsInput, 'hooks'> & {
+        input: string;
+        hooks: string[];
+    };
 
 export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     output: optionMetadata.output.default as string,
@@ -92,6 +98,7 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     response: optionMetadata.response.default as string,
     enumStyle: optionMetadata.enumStyle.default as Options['enumStyle'],
     injectionStyle: optionMetadata.injectionStyle.default as Options['injectionStyle'],
+    hooks: [],
     skipJsonSuffix: optionMetadata.skipJsonSuffix.default as boolean,
     fallbackPropertyType: optionMetadata.fallbackPropertyType.default as string,
     bigintStyle: optionMetadata.bigintStyle.default as Options['bigintStyle'],
@@ -101,12 +108,20 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     servicesDir: internalDefaultOptions.servicesDir,
 };
 
+export function normalizeHooks(value: OptionsInput['hooks']): string[] {
+    if (!value) {
+        return [];
+    }
+    return Array.isArray(value) ? value.filter(Boolean) : [value];
+}
+
 export function resolveOptions(input: Partial<OptionsInput>): Options {
     return {
         ...defaultOptions,
         ...input,
         includeTags: [...(input.includeTags ?? defaultOptions.includeTags)],
         excludeTags: [...(input.excludeTags ?? defaultOptions.excludeTags)],
+        hooks: normalizeHooks(input.hooks),
     } as Options;
 }
 

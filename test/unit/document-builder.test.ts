@@ -2,6 +2,7 @@ import type { OpenAPIObject } from 'openapi3-ts';
 import { describe, expect, test } from 'vitest';
 
 import { resolveOptions } from '../../src/config/options.js';
+import { HookRunner } from '../../src/core/hooks/runner.js';
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';
 import { GeneratorLogger } from '../../src/core/runtime/logger.js';
 
@@ -11,7 +12,8 @@ async function buildDocument(openApi: OpenAPIObject, optionOverrides: Record<str
         ...optionOverrides,
     });
     const logger = new GeneratorLogger(false);
-    return new GeneratorDocumentBuilder(openApi, options, logger).build();
+    const hooks = new HookRunner([], options, logger);
+    return new GeneratorDocumentBuilder(openApi, options, hooks, logger).build();
 }
 
 describe('document builder', () => {

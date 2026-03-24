@@ -141,6 +141,11 @@ export const optionMetadata: Record<string, OptionMetadata> = {
         enumValues: ['constructor', 'inject'],
         default: 'constructor',
     },
+    hooks: {
+        description: 'Path or paths to hook modules. Each module should export a default hook or an array of hooks.',
+        kind: 'stringArrayOrString',
+        cli: true,
+    },
     excludeParameters: {
         description:
             'When specified, filters the generated services, excluding any param corresponding to this list of params.',

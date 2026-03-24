@@ -2,6 +2,7 @@ import type { OpenAPIObject, OperationObject, ReferenceObject, SchemaObject } fr
 
 import type { Options } from '../../config/options.js';
 import { methodName, refName } from '../../utils/string.js';
+import { HookRunner } from '../hooks/runner.js';
 import type { GeneratorDocument } from './document.js';
 import { Globals } from '../runtime/globals.js';
 import { OaImport } from '../models/oa-import.js';
@@ -21,28 +22,32 @@ export class GeneratorDocumentBuilder {
     constructor(
         private openApi: OpenAPIObject,
         private readonly options: Options,
+        private readonly hooks: HookRunner,
         private readonly logger: GeneratorLogger,
     ) {
         this.globals = new Globals(options);
     }
 
-    public build(): GeneratorDocument {
-        this.collectModels();
-        this.collectOperations();
-        this.collectServices();
+    public async build(): Promise<GeneratorDocument> {
+        await this.collectModels();
+        await this.collectOperations();
+        await this.collectServices();
 
         if (this.options.ignoreUnusedModels !== false) {
             this.ignoreUnusedModels();
         }
 
+        const document = this.toDocument();
+        await this.hooks.transformDocument(document, { openApi: this.openApi, document });
         return this.toDocument();
     }
 
-    private collectModels(): void {
+    private async collectModels(): Promise<void> {
         const schemas = (this.openApi.components || {}).schemas || {};
         for (const [name, schema] of Object.entries(schemas)) {
             const model = new OaModel(this.openApi, schema as SchemaObject, name, this.options);
             this.models.set(name, model);
+            await this.hooks.transformModel(model, { openApi: this.openApi });
         }
         this.shortenModels();
         for (const [name, model] of this.models.entries()) {
@@ -53,7 +58,7 @@ export class GeneratorDocumentBuilder {
         }
     }
 
-    private collectOperations(): void {
+    private async collectOperations(): Promise<void> {
         for (const [opPath, pathSpec] of Object.entries(this.openApi.paths || {})) {
             for (const method of HTTP_METHODS) {
                 const methodSpec: OperationObject | undefined = pathSpec[method];
@@ -84,6 +89,8 @@ export class GeneratorDocumentBuilder {
                     operation.tags.push(this.options.defaultTag);
                 }
 
+                await this.hooks.transformOperation(operation, { openApi: this.openApi });
+
                 for (const tag of operation.tags) {
                     const list = this.operationsByTag.get(tag) ?? [];
                     list.push(operation);
@@ -94,7 +101,7 @@ export class GeneratorDocumentBuilder {
         }
     }
 
-    private collectServices(): void {
+    private async collectServices(): Promise<void> {
         const tags = this.openApi.tags || [];
         for (const [tagName, operations] of this.operationsByTag.entries()) {
             if (this.options.includeTags.length > 0 && !this.options.includeTags.includes(tagName)) {
@@ -107,6 +114,7 @@ export class GeneratorDocumentBuilder {
             }
             const tag = tags.find((candidate) => candidate.name === tagName) || { name: tagName };
             const service = new OaService(tag, operations || [], this.options);
+            await this.hooks.transformService(service, { openApi: this.openApi });
             service.collectImports(this.imports);
             this.services.set(tag.name, service);
         }

@@ -156,6 +156,20 @@
       ],
       "default": "constructor"
     },
+    "hooks": {
+      "description": "Path or paths to hook modules. Each module should export a default hook or an array of hooks.",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "excludeParameters": {
       "description": "When specified, filters the generated services, excluding any param corresponding to this list of params.",
       "type": "array",

@@ -1,6 +1,7 @@
 import { IndentationText, NewLineKind, Project, QuoteKind } from 'ts-morph';
 
 import type { GeneratorDocument, GeneratedFile } from '../generation/document.js';
+import { HookRunner } from '../hooks/runner.js';
 import { emitRequestBuilderSource } from './support-emitter.js';
 import { buildModelSourceFile } from './model-source-file.js';
 import { buildServiceSourceFile } from './service-emitter.js';
@@ -12,7 +13,7 @@ import {
     buildServiceIndexSourceFile,
 } from './support-source-files.js';
 
-export function emitDocument(document: GeneratorDocument): GeneratedFile[] {
+export async function emitDocument(document: GeneratorDocument, hooks: HookRunner): Promise<GeneratedFile[]> {
     const project = new Project({
         useInMemoryFileSystem: true,
         manipulationSettings: {
@@ -77,7 +78,22 @@ export function emitDocument(document: GeneratorDocument): GeneratedFile[] {
         buildRootIndexSourceFile(createSourceFile('support:index', 'index.ts'), document);
     }
 
-    return project
+    await hooks.generateAdditionalFiles({ openApi: document.openApi, document, project });
+    for (const extra of hooks.takeGeneratedFiles()) {
+        if ((extra.kind ?? 'text') === 'ts') {
+            createTextSourceFile(extra.id ?? `hook:${extra.relativePath}`, extra.relativePath, extra.content);
+        }
+    }
+
+    for (const sourceFile of project.getSourceFiles().sort((a, b) => a.getFilePath().localeCompare(b.getFilePath()))) {
+        const metadata = tsFiles.get(sourceFile.getFilePath());
+        if (!metadata) {
+            continue;
+        }
+        await hooks.transformSourceFile(sourceFile, metadata, { openApi: document.openApi, document, project });
+    }
+
+    const files: GeneratedFile[] = project
         .getSourceFiles()
         .map((sourceFile) => {
             const metadata = tsFiles.get(sourceFile.getFilePath());
@@ -92,6 +108,19 @@ export function emitDocument(document: GeneratorDocument): GeneratedFile[] {
             };
         })
         .sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+
+    for (const extra of hooks.takeGeneratedFiles()) {
+        if ((extra.kind ?? 'text') !== 'ts') {
+            files.push({
+                id: extra.id ?? `hook:${extra.relativePath}`,
+                kind: extra.kind ?? 'text',
+                relativePath: extra.relativePath,
+                content: extra.content,
+            });
+        }
+    }
+
+    return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
 }
 
 function toNewLineKind(style: GeneratorDocument['options']['endOfLineStyle']): NewLineKind {
