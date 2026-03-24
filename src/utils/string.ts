@@ -1,4 +1,4 @@
-import { camelCase, deburr, kebabCase, upperFirst } from './lo/index.js';
+import { camelCase, deburr, kebabCase, upperFirst } from './text-case.js';
 
 export function trimLeadingSlash(input: string): string {
     return input.startsWith('/') || input.startsWith('\\') ? input.slice(1) : input;

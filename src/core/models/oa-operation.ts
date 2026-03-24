@@ -19,7 +19,7 @@ import { OaRequestBody } from './oa-request-body.js';
 import { OaResponse } from './oa-response.js';
 import { OaSecurity } from './oa-security.js';
 import { Options } from '../../config/options.js';
-import { upperFirst } from '../../utils/lo/index.js';
+import { upperFirst } from '../../utils/text-case.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { typeName } from '../../utils/string.js';
 

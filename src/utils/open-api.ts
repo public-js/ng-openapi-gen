@@ -5,7 +5,7 @@ import { OaImport } from '../core/models/oa-import.js';
 import { OaModel } from '../core/models/oa-model.js';
 import { Options } from '../config/options.js';
 import { effectiveSchemaOrRef } from './effective-schema.js';
-import { camelCase, upperCase, upperFirst } from './lo/index.js';
+import { camelCase, upperCase, upperFirst } from './text-case.js';
 import { namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
 
 /** Returns the unqualified model class name, that is, the last part after '.' */
