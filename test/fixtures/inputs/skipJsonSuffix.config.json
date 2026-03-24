@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "skipJsonSuffix.json",
+  "output": "../modified-results/skipJsonSuffix",
+  "runPrettier": false,
+  "skipJsonSuffix": true
+}

@@ -12,23 +12,43 @@ on:
           - patch
           - minor
           - major
+          - beta
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: read
+  id-token: write
+  contents: write
 
 jobs:
   publish-release:
     name: Publish release
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/beta' }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
           token: ${{ secrets.BM_GITHUB_PAT }}
           fetch-depth: 0
+
+      - name: Validate release mode for branch
+        run: |
+          case "${{ github.ref_name }}:${{ github.event.inputs.mode }}" in
+            main:patch|main:minor|main:major|beta:beta)
+              ;;
+            beta:patch|beta:minor|beta:major)
+              echo "Stable releases are only allowed from the main branch." >&2
+              exit 1
+              ;;
+            main:beta)
+              echo "The beta release mode is only allowed from the beta branch." >&2
+              exit 1
+              ;;
+            *)
+              echo "Unsupported release request for branch ${{ github.ref_name }}." >&2
+              exit 1
+              ;;
+          esac
 
       - name: Setup Node.js and cache
         uses: ./.github/actions/nodejs
@@ -44,17 +64,17 @@ jobs:
       - name: Bump packages version
         id: bump-version
         run: |
-          npm run cd:version-bump -- --release-as ${{ github.event.inputs.mode }}
-          TIMING=1 echo "::set-output name=new_version::$(node -p "require('./package.json').version")"
+          npm run cd:prepare-release -- ${{ github.event.inputs.mode }}
+          echo "new_version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
 
-      - name: Build all packages on main branch
-        run: npm run ci:all:build
+      - name: Build package
+        run: npm run build
 
-      - name: Publish all packages
-        run: npm run cd:all:publish
+      - name: Publish package
+        run: npm publish --access public --tag ${{ github.event.inputs.mode == 'beta' && 'rc' || 'latest' }}
 
       - name: Commit changes after bump
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'chore: release v${{ steps.bump-version.outputs.new_version }}'
           commit_options: '--no-verify'
@@ -66,10 +86,12 @@ jobs:
           skip_fetch: true
 
       - name: Create GitHub release
-        run: npm run cd:github-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.BM_GITHUB_PAT }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump-version.outputs.new_version }}
+          generate_release_notes: true
+          prerelease: ${{ github.event.inputs.mode == 'beta' }}
 
 concurrency:
-  group: release-${{ github.head_ref }}
+  group: release-${{ github.ref_name }}
   cancel-in-progress: true

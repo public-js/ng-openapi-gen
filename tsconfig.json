@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src", "scripts", "test/**/*.test.ts", "test/fixtures/canonical-ts.ts"],
+  "exclude": ["dist", "node_modules", "src/support/request-builder.ts", "test/fixtures/expected/**", "test/fixtures/inputs/**", "v1/**"]
+}

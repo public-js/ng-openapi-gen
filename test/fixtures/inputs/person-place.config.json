@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "person-place.json",
+  "output": "../modified-results/person-place",
+  "runPrettier": false,
+  "ignoreUnusedModels": false,
+  "modelPrefix": "PP",
+  "modelSuffix": "Model"
+}

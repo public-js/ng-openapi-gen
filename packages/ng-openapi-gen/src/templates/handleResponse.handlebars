@@ -1,5 +1,0 @@
-{{#isVoid}}(r as HttpResponse<any>).clone({ body: undefined }){{/isVoid
-}}{{#isNumber}}(r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }){{/isNumber
-}}{{#isBoolean}}(r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }){{/isBoolean
-}}{{#isString}}r{{/isString
-}}{{#isOther}}r{{/isOther}} as {{@root.responseClass}}<{{{resultType}}}>,

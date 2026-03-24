@@ -4,15 +4,13 @@ on:
   pull_request:
     branches:
       - main
-      - '!release/**'
   push:
     branches:
       - main
-      - '!release/**'
 
 jobs:
-  test-nx:
-    name: Any test with nx
+  test:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,13 +21,13 @@ jobs:
         uses: ./.github/actions/nodejs
 
       - name: Test all packages
-        run: npm run ci:all:test
+        run: npm run test
 
-      - name: Report to Codacy
-        uses: codacy/codacy-coverage-reporter-action@v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: 'coverage/packages/*/lcov.info'
+#      - name: Report to Codacy
+#        uses: codacy/codacy-coverage-reporter-action@v1
+#        with:
+#          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+#          coverage-reports: 'coverage/packages/*/lcov.info'
 
 #      - name: Report to Code Climate
 #        uses: paambaati/codeclimate-action@v3.2.0

@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "all-operations.json",
+  "output": "../modified-results/all-operations",
+  "runPrettier": false,
+  "defaultTag": "noTag",
+  "excludeParameters": ["X-Exclude"]
+}

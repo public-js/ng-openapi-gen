@@ -1,7 +1,0 @@
-export { {{rootUrlToken}} } from './{{{configurationFile}}}';
-export { {{requestBuilderClass}}, {{responseClass}} } from './{{{requestBuilderFile}}}';
-export { {{moduleClass}} } from './{{{moduleFile}}}';
-{{#modelImports}}export { {{{typeName}}}{{#useAlias}} as {{{qualifiedName}}}{{/useAlias}} } from '{{{../pathToModelsDir}}}{{{file}}}';
-{{/modelImports}}
-{{#services}}export { {{typeName}} } from '{{{../pathToServicesDir}}}{{{fileName}}}';
-{{/services}}

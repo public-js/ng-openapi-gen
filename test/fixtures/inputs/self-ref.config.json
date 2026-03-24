@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "self-ref.json",
+  "output": "../modified-results/self-ref",
+  "runPrettier": false,
+  "ignoreUnusedModels": false
+}

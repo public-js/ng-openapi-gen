@@ -4,14 +4,9 @@ on:
   pull_request:
     branches:
       - main
-      - '!release/**'
   push:
     branches:
       - main
-      - '!release/**'
-
-env:
-  IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   build:
@@ -26,13 +21,9 @@ jobs:
       - name: Setup Node.js and cache
         uses: ./.github/actions/nodejs
 
-      - name: Build only changed packages
-        if: ${{ env.IS_MAIN == 'false' }}
-        run: npm run ci:affect:build
-
-      - name: Build all packages on main branch
+      - name: Build the package
         if: ${{ env.IS_MAIN == 'true' }}
-        run: npm run ci:all:build
+        run: npm run build
 
 concurrency:
   group: build-${{ github.head_ref }}

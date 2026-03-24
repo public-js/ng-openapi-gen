@@ -1,0 +1,11 @@
+afterWrite
+api-configuration.ts
+api.module.ts
+hook-fixture.ts
+models.ts
+models/error.ts
+models/pet.ts
+models/pets.ts
+request-builder.ts
+services.ts
+services/pets.service.ts
