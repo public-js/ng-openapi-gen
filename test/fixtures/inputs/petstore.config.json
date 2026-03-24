@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "petstore.json",
+  "output": "../modified-results/petstore",
+  "modelPrefix": "Petstore",
+  "modelSuffix": "Model",
+  "bigintStyle": "bigint"
+}

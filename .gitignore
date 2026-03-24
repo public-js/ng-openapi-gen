@@ -5,10 +5,6 @@
 /tmp
 /out-tsc
 
-/tools/executors/pseudo-test/**/*.js
-/tools/executors/pseudo-test/modified-results
-/tools/executors/schema-generator/**/*.js
-
 # dependencies
 /node_modules
 
@@ -19,12 +15,6 @@
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - IntelliJ
-/.idea
-!.idea/jsLinters/eslint.xml
-!.idea/prettier.xml
-!.idea/vcs.xml
 
 # IDE - VSCode
 .vscode/*
@@ -46,6 +36,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-.angular
-.nx/cache

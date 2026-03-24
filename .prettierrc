@@ -7,19 +7,6 @@
     "useTabs": false,
     "overrides": [
         {
-            "files": "*.html",
-            "options": {
-                "parser": "html",
-                "singleQuote": false
-            }
-        },
-        {
-            "files": "*.ts",
-            "options": {
-                "parser": "typescript"
-            }
-        },
-        {
             "files": "*.json",
             "options": {
                 "singleQuote": false,

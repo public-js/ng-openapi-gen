@@ -1,14 +1,20 @@
 # Add files here to ignore them from prettier formatting
 
-/dist
+/.idea
 /coverage
+/dist
 /node_modules
+/tmp
 /CHANGELOG.md
+/package-lock.json
 
-/tools/executors/pseudo-test/**/*.js
-/tools/executors/pseudo-test/modified-results
-/tools/executors/pseudo-test/original-results
-/tools/executors/schema-generator/**/*.js
+# Generated from src/config/option-metadata.ts
+/src/schema.json
+# Copied verbatim into the generated output
+/src/support/request-builder.ts
 
-.angular
-.nx/cache
+# Not supported by the Handlebars parser
+/src/templates
+
+/test/fixtures/expected
+/test/fixtures/inputs

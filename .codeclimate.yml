@@ -5,4 +5,5 @@ exclude_patterns:
   - '**/*.test.ts'
   - '**/*.spec.ts'
   - '**/*.d.ts'
-  - 'tools/executors/pseudo-test/*results*/*.ts'
+  - 'test/**/*.ts'
+  - 'scripts/**/*.ts'

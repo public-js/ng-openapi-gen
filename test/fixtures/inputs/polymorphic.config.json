@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "polymorphic.json",
+  "output": "../modified-results/polymorphic",
+  "ignoreUnusedModels": false
+}

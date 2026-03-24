@@ -1,8 +1,0 @@
-{
-  "$schema": "./ng-openapi-gen-schema.json",
-  "input": "person-place.json",
-  "output": "../modified-results/person-place",
-  "ignoreUnusedModels": false,
-  "modelPrefix": "PP",
-  "modelSuffix": "Model"
-}
