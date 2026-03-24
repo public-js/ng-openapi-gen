@@ -33,7 +33,7 @@
     "vitest": "^2.1.8"
   },
   "bin": {
-    "ng-openapi-gen": "./dist/cli.js"
+    "ng-openapi-gen": "dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -42,7 +42,10 @@
   ],
   "license": "MIT",
   "author": "Public JS <public-js@muffin.blue> (https://github.com/public-js/public-js)",
-  "repository": "https://github.com/public-js/ng-openapi-gen",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/public-js/ng-openapi-gen.git"
+  },
   "homepage": "https://github.com/public-js/ng-openapi-gen",
   "commitlint": {
     "extends": [

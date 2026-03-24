@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /*__AUTO_GENERATION_NOTICE__*/
 
-import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpContext, HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse } from '@angular/common/http';
 
 export type StrictHttpResponse<T> = HttpResponse<T> & { readonly body: T };
 
@@ -88,7 +90,7 @@ class PathParameter extends Parameter {
       value = '';
     }
     let prefix = this.options.style === 'label' ? '.' : '';
-    let separator = this.options.explode ? (prefix === '' ? ',' : prefix) : ',';
+    const separator = this.options.explode ? (prefix === '' ? ',' : prefix) : ',';
     let alreadySerialized = false;
     if (this.options.style === 'matrix') {
       prefix = `;${this.name}=`;

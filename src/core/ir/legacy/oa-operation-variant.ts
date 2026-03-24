@@ -52,7 +52,7 @@ export class OaOperationVariant {
         this.isOther = !this.isVoid && !this.isNumber && !this.isString && !this.isBoolean;
 
         this.responseMethodTsComments = tsComments(
-            `'${this.descriptionPrefix}This method provides access to the full \`HttpResponse\`, allowing access to response headers.\nTo access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix}'`,
+            `${this.descriptionPrefix}This method provides access to the full \`HttpResponse\`, allowing access to response headers.\nTo access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix}`,
             1,
             operation.deprecated,
         );
@@ -102,7 +102,7 @@ export class OaOperationVariant {
     private get descriptionSuffix(): string {
         const sends = this.requestBody ? 'sends `' + this.requestBody.mediaType + '` and ' : '';
         const handles = this.requestBody
-            ? `handles request body of type \`${this.requestBody.mediaType}\``
+            ? `handles the request body of type \`${this.requestBody.mediaType}\``
             : "doesn't expect any request body";
         return `\n\nThis method ${sends}${handles}.`;
     }

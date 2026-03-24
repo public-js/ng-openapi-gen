@@ -2,12 +2,12 @@
 /* eslint-disable */
 
 /**
- * This file was generated automatically from API specification.
+ * This file was generated automatically from the API specification.
  * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
- * To update this file run the generation tool.
+ * To update this file, run the generation tool.
  */
 
-import { HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse, HttpContext } from '@angular/common/http';
+import { HttpContext, HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse } from '@angular/common/http';
 
 /** Constrains the HTTP response body to be non-null */
 export type StrictHttpResponse<T> = HttpResponse<T> & { readonly body: T };
