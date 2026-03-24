@@ -13,8 +13,5 @@
 # Copied verbatim into the generated output
 /src/support/request-builder.ts
 
-# Not supported by the Handlebars parser
-/src/templates
-
 /test/fixtures/expected
 /test/fixtures/inputs

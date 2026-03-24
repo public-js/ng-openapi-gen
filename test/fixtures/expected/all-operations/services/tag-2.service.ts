@@ -2,9 +2,9 @@
 /* eslint-disable */
 
 /**
- * This file was generated automatically from API specification.
+ * This file was generated automatically from the API specification.
  * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
- * To update this file run the generation tool.
+ * To update this file, run the generation tool.
  */
 
 import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
@@ -34,7 +34,7 @@ export class Tag2Service {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path1Post$Json()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path1Post$Json$Response(params: {
 
@@ -80,7 +80,7 @@ export class Tag2Service {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path1Post$Json$Response()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path1Post$Json(params: {
 
@@ -112,7 +112,7 @@ export class Tag2Service {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path1Post$Plain()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path1Post$Plain$Response(params: {
 
@@ -158,7 +158,7 @@ export class Tag2Service {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path1Post$Plain$Response()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path1Post$Plain(params: {
 

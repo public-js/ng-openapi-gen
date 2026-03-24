@@ -44,6 +44,7 @@ export class OaOperation {
     public allResponses: OaResponse[] = [];
     public pathExpression: string;
     public variants: OaOperationVariant[] = [];
+    public generateResponseMethod: boolean;
 
     constructor(
         public openApi: OpenAPIObject,
@@ -58,6 +59,7 @@ export class OaOperation {
         this.tags = spec.tags || [];
         this.pathVar = `${upperFirst(id)}Path`;
         this.methodName = spec['x-operation-name'] || this.id;
+        this.generateResponseMethod = options.generateResponseMethod;
 
         // Add both the common and specific parameters
         this.parameters = [...this.collectParameters(pathSpec.parameters), ...this.collectParameters(spec.parameters)];

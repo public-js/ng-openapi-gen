@@ -1,43 +1,35 @@
-import { realpathSync } from 'node:fs';
-
 import $RefParser from '@apidevtools/json-schema-ref-parser';
-import { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIObject } from 'openapi3-ts';
 
-import { defaultOptions, Options } from '../config/options.js';
-import { joinIfExists } from '../utils/file-system.js';
-import { Generator } from './generator.js';
+import { resolveOptions, type Options, type OptionsInput } from '../config/options.js';
+import { GeneratorDocumentBuilder } from './generation/document-builder.js';
+import { emitDocument } from './emitter/emit-document.js';
+import { writeGeneratedFiles } from './output/write-output.js';
+import { GeneratorLogger } from './runtime/logger.js';
 
-export async function generate(input: Partial<Options>): Promise<void> {
-    const options = Object.assign({}, defaultOptions, input) as Options;
+export interface GenerateResult {
+    openApi: OpenAPIObject;
+    writtenFiles: Array<{ id: string; relativePath: string; absolutePath: string }>;
+}
 
+export async function generate(input: Partial<OptionsInput> | Options): Promise<GenerateResult> {
+    const options = resolveOptions(input);
     if (!options.input) {
-        throw new Error(`No input file path or URL is specified.`);
+        throw new Error('No input file path or URL is specified.');
     }
 
+    const logger = new GeneratorLogger(options.verbose);
     const openApi = (await $RefParser.bundle(options.input, {
         dereference: { circular: false },
         resolve: { http: { timeout: options.fetchTimeout } },
     })) as OpenAPIObject;
 
-    options.hooks = await loadHooks(options);
+    const document = await new GeneratorDocumentBuilder(openApi, options, logger).build();
+    const files = emitDocument(document);
+    const writtenFiles = writeGeneratedFiles(files, options, logger);
 
-    await new Generator(openApi, options).generate();
-    options.hooks.generation$post && Function.call(options.hooks.generation$post, undefined, openApi, options);
-}
-
-async function loadHooks(options: Options): Promise<Options['hooks']> {
-    if (!options.templates) {
-        return defaultOptions.hooks;
-    }
-
-    const loadPath =
-        joinIfExists(options.templates, 'hooks.mjs') ||
-        joinIfExists(options.templates, 'hooks.cjs') ||
-        joinIfExists(options.templates, 'hooks.js');
-    if (!loadPath) {
-        return defaultOptions.hooks;
-    }
-
-    const hooks = await import(realpathSync(loadPath));
-    return hooks?.default && typeof hooks.default === 'object' ? hooks.default : defaultOptions.hooks;
+    logger.info(
+        `Generated ${document.models.length} models and ${document.services.length} services from ${options.input}.`,
+    );
+    return { openApi, writtenFiles };
 }

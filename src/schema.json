@@ -3,11 +3,10 @@
   "$id": "https://github.com/public-js/ng-openapi-gen/blob/main/src/schema.json",
   "title": "Options for ng-openapi-gen",
   "type": "object",
-  "required": ["input"],
+  "required": [
+    "input"
+  ],
   "properties": {
-    "$schema": {
-      "type": "string"
-    },
     "input": {
       "description": "Path to local or URL to remote OpenAPI 3 spec file in JSON or YAML format.",
       "type": "string"
@@ -37,14 +36,16 @@
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "default": []
     },
     "excludeTags": {
       "description": "Specific tags to be excluded. Defaults to [].",
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "default": []
     },
     "ignoreUnusedModels": {
       "description": "Whether to skip models with no references to them. Defaults to true.",
@@ -139,12 +140,21 @@
     },
     "enumStyle": {
       "description": "Determines how root enums will be generated. Possible values are:\n- `alias` for type aliases with the possible values;\n- `upper` for enums with UPPER_CASE names;\n- `ignorecase` for enums with names as is;\n- `pascal` for enums with PascalCase names (default).\nDefaults to 'pascal'.",
-      "enum": ["alias", "upper", "ignorecase", "pascal"],
+      "enum": [
+        "alias",
+        "upper",
+        "ignorecase",
+        "pascal"
+      ],
       "default": "pascal"
     },
-    "templates": {
-      "description": "Path to directory with custom templates. All `.handlebars` files will override the corresponding default.",
-      "type": "string"
+    "injectionStyle": {
+      "description": "Determines how Angular dependencies are injected in generated services and modules. Can be either `constructor` (default) or `inject`.",
+      "enum": [
+        "constructor",
+        "inject"
+      ],
+      "default": "constructor"
     },
     "excludeParameters": {
       "description": "When specified, filters the generated services, excluding any param corresponding to this list of params.",
@@ -165,39 +175,26 @@
     },
     "bigintStyle": {
       "description": "Determines how bigint will be generated. Can be either `number` (default) or `bigint`. Defaults to 'number'.",
-      "enum": ["number", "bigint"],
+      "enum": [
+        "number",
+        "bigint"
+      ],
       "default": "number"
     },
     "endOfLineStyle": {
       "description": "Determines how to normalize line endings. Possible values are:\n- `lf` to force LF (\\n) line endings (Unix, OS X);\n- `cr` to force CR (\\r) line endings (Mac OS);\n- `crlf` to force CRLF (\\r\\n) line endings (Windows, DOS);\n- `auto` to normalize line endings for the current operating system (default).\nDefaults to 'auto'.",
-      "enum": ["lf", "cr", "crlf", "auto"],
+      "enum": [
+        "lf",
+        "cr",
+        "crlf",
+        "auto"
+      ],
       "default": "auto"
     },
-    "customizedResponseType": {
-      "description": "Defines responseType for specific paths to use. Commonly used when built-in deduction can't fulfill your needs.",
-      "type": "object",
-      "minProperties": 1,
-      "patternProperties": {
-        ".*": {
-          "type": "object",
-          "required": ["toUse"],
-          "properties": {
-            "toUse": {
-              "enum": ["arraybuffer", "blob", "json", "document"]
-            }
-          }
-        }
-      }
-    },
-    "responseMethodDescription": {
-      "description": "Description template for generated $response method. Defaults to '{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}'.",
-      "type": "string",
-      "default": "{{descriptionPrefix}}This method provides access to the full `HttpResponse`, allowing access to response headers.\nTo access only the response body, use `{{methodName}}()` instead.{{descriptionSuffix}}"
-    },
-    "bodyMethodDescription": {
-      "description": "Description template for generated $body method. Defaults to '{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}'.",
-      "type": "string",
-      "default": "{{descriptionPrefix}}This method provides access only to the response body.\nTo access the full response (for headers, for example), use `{{responseMethodName}}()` instead.{{descriptionSuffix}}"
+    "generateResponseMethod": {
+      "description": "Whether to generate the extra `$Response` method by default for each operation. Defaults to true.",
+      "type": "boolean",
+      "default": true
     }
   }
 }

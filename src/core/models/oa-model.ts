@@ -47,7 +47,7 @@ export class OaModel extends OaBase {
     protected updateProperties(imports: Map<string, OaImport>): void {
         const type = this.schema.type || this.options.fallbackPropertyType;
 
-        // When enumStyle is 'alias' it is handled as a simple type.
+        // When enumStyle is 'alias,' it is handled as a simple type.
         if (
             this.options.enumStyle !== 'alias' &&
             (this.schema.enum || []).length > 0 &&
@@ -139,6 +139,6 @@ export class OaModel extends OaBase {
     }
 
     protected skipImport(refName: string): boolean {
-        return this.refName === refName; // Prevent self imports
+        return this.refName === refName; // Prevent self-imports
     }
 }

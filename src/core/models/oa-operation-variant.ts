@@ -2,7 +2,7 @@ import { SchemaObject } from 'openapi3-ts';
 
 import { OaContent } from './oa-content.js';
 import { OaOperation } from './oa-operation.js';
-import { Options } from '../../config/options.js';
+import { defaultOptions, Options } from '../../config/options.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { tsComments } from '../../utils/string.js';
 
@@ -20,6 +20,7 @@ export class OaOperationVariant {
 
     public responseMethodTsComments: string;
     public bodyMethodTsComments: string;
+    public generateResponseMethod: boolean;
 
     constructor(
         public operation: OaOperation,
@@ -28,15 +29,12 @@ export class OaOperationVariant {
         public successResponse: OaContent | null,
         public options: Options,
     ) {
+        this.generateResponseMethod = operation.generateResponseMethod;
         this.responseMethodName = `${methodName}$Response`;
 
         if (successResponse) {
             this.resultType = successResponse.type;
-            this.responseType = this.inferResponseType(
-                successResponse,
-                operation,
-                options.customizedResponseType || {},
-            );
+            this.responseType = this.inferResponseType(successResponse, operation);
             this.accept = successResponse.mediaType;
         } else {
             this.resultType = 'void';
@@ -50,21 +48,20 @@ export class OaOperationVariant {
         this.isBoolean = this.resultType === 'boolean';
         this.isOther = !this.isVoid && !this.isNumber && !this.isString && !this.isBoolean;
 
-        this.responseMethodTsComments = tsComments(this.responseMethodDescription(), 1, operation.deprecated);
-        this.bodyMethodTsComments = tsComments(this.bodyMethodDescription(), 1, operation.deprecated);
+        this.responseMethodTsComments = tsComments(
+            `${this.descriptionPrefix}This method provides access to the full \`HttpResponse\`, allowing access to response headers.\nTo access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix}`,
+            1,
+            operation.deprecated,
+        );
+        this.bodyMethodTsComments = tsComments(
+            `${this.descriptionPrefix}This method provides access only to the response body.${this.descriptionSuffix}`,
+            1,
+            operation.deprecated,
+        );
     }
 
-    protected inferResponseType(
-        successResponse: OaContent,
-        operation: OaOperation,
-        customizedResponseType: Options['customizedResponseType'],
-    ): string {
-        const customizedResponseTypeByPath = customizedResponseType[operation.path];
-        if (customizedResponseTypeByPath) {
-            return customizedResponseTypeByPath.toUse;
-        }
-
-        // If schema is in binary format, return 'blob'
+    protected inferResponseType(successResponse: OaContent, operation: OaOperation): string {
+        // If the schema is in binary format, return 'blob'
         let schemaOrRef = successResponse.spec?.schema || { type: 'string' };
         if (schemaOrRef.$ref) {
             schemaOrRef = resolveRef(operation.openApi, schemaOrRef.$ref);
@@ -84,25 +81,6 @@ export class OaOperationVariant {
         }
     }
 
-    private responseMethodDescription(): string {
-        return this.options.responseMethodDescription.replace(
-            /{{([\da-z]+)}}/gi,
-            function (_, key: string) {
-                return this[key];
-            }.bind(this),
-        );
-    }
-
-    private bodyMethodDescription(): string {
-        return this.options.bodyMethodDescription.replace(
-            /{{([\da-z]+)}}/gi,
-            function (_, key: string) {
-                return this[key];
-            }.bind(this),
-        );
-    }
-
-    // noinspection JSUnusedLocalSymbols
     private get descriptionPrefix(): string {
         let description = (this.operation.spec.description || '').trim();
         let summary = this.operation.spec.summary;
@@ -118,11 +96,10 @@ export class OaOperationVariant {
         return description;
     }
 
-    // noinspection JSUnusedLocalSymbols
     private get descriptionSuffix(): string {
         const sends = this.requestBody ? 'sends `' + this.requestBody.mediaType + '` and ' : '';
         const handles = this.requestBody
-            ? `handles request body of type \`${this.requestBody.mediaType}\``
+            ? `handles the request body of type \`${this.requestBody.mediaType}\``
             : "doesn't expect any request body";
         return `\n\nThis method ${sends}${handles}.`;
     }

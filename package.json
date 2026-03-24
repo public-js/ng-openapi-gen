@@ -1,13 +1,15 @@
 {
   "name": "@public-js/ng-openapi-gen",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "An OpenAPI 3 code generator for Angular",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && node scripts/copy-build-assets.mjs",
+    "build": "npm run generate:schema && tsc -p tsconfig.build.json && node scripts/copy-build-assets.mjs",
+    "generate:schema": "node --import tsx ./scripts/generate-schema.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "test:unit": "vitest run test/unit",
     "test:fixtures": "vitest run test/fixtures",
     "cd:prepare-release": "node scripts/release.mjs"
   },
@@ -15,11 +17,10 @@
     "@apidevtools/json-schema-ref-parser": "~11.2.0",
     "@sindresorhus/transliterate": "^1.6.0",
     "change-case": "^5.4.4",
-    "eol": "~0.9.0",
     "fs-extra": "^11.0.0",
-    "handlebars": "~4.7.0",
     "jsesc": "~3.0.0",
     "openapi3-ts": "~2.0.0",
+    "ts-morph": "^23.0.0",
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {

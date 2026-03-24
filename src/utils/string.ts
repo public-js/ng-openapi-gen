@@ -1,21 +1,5 @@
 import { camelCase, deburr, kebabCase, upperFirst } from './text-case.js';
 
-export function trimLeadingSlash(input: string): string {
-    return input.startsWith('/') || input.startsWith('\\') ? input.slice(1) : input;
-}
-
-export function trimTrailingSlash(input: string): string {
-    return input.endsWith('/') || input.endsWith('\\') ? input.slice(0, -1) : input;
-}
-
-export function getFileNameIfExt(fileName: string, ext: string): string | null {
-    return fileName.endsWith(ext) ? fileName.slice(0, fileName.length - ext.length) : null;
-}
-
-export function normalizeLineBreaks(input: string): string {
-    return input.replace(/\r\n|\r|\n/g, '\n');
-}
-
 /**
  * Returns the namespace path, that is, the part before the last '.' split by '/' instead of '.'.
  * If there's no namespace, returns undefined.

@@ -2,9 +2,9 @@
 /* eslint-disable */
 
 /**
- * This file was generated automatically from API specification.
+ * This file was generated automatically from the API specification.
  * Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.
- * To update this file run the generation tool.
+ * To update this file, run the generation tool.
  */
 
 import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
@@ -79,7 +79,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Json$Plain()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Plain$Response(params?: {
     body?: RefObject;
@@ -105,7 +105,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Json$Plain$Response()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Plain(params?: {
     body?: RefObject;
@@ -120,7 +120,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Json$Binary()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Binary$Response(params?: {
     body?: RefObject;
@@ -146,7 +146,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Json$Binary$Response()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Binary(params?: {
     body?: RefObject;
@@ -161,7 +161,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Json$Image()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Image$Response(params?: {
     body?: RefObject;
@@ -187,7 +187,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Json$Image$Response()` instead.
    *
-   * This method sends `application/json` and handles request body of type `application/json`.
+   * This method sends `application/json` and handles the request body of type `application/json`.
    */
   public path4Put$Json$Image(params?: {
     body?: RefObject;
@@ -202,7 +202,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Plain$Plain()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Plain$Response(params?: {
     body?: string;
@@ -228,7 +228,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Plain$Plain$Response()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Plain(params?: {
     body?: string;
@@ -243,7 +243,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Plain$Binary()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Binary$Response(params?: {
     body?: string;
@@ -269,7 +269,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Plain$Binary$Response()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Binary(params?: {
     body?: string;
@@ -284,7 +284,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Plain$Image()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Image$Response(params?: {
     body?: string;
@@ -310,7 +310,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Plain$Image$Response()` instead.
    *
-   * This method sends `text/plain` and handles request body of type `text/plain`.
+   * This method sends `text/plain` and handles the request body of type `text/plain`.
    */
   public path4Put$Plain$Image(params?: {
     body?: string;
@@ -325,7 +325,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Any$Plain()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Plain$Response(params?: {
     body?: Blob;
@@ -351,7 +351,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Any$Plain$Response()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Plain(params?: {
     body?: Blob;
@@ -366,7 +366,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Any$Binary()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Binary$Response(params?: {
     body?: Blob;
@@ -392,7 +392,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Any$Binary$Response()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Binary(params?: {
     body?: Blob;
@@ -407,7 +407,7 @@ export class NoTagService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `path4Put$Any$Image()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Image$Response(params?: {
     body?: Blob;
@@ -433,7 +433,7 @@ export class NoTagService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), use `path4Put$Any$Image$Response()` instead.
    *
-   * This method sends `* / *` and handles request body of type `* / *`.
+   * This method sends `* / *` and handles the request body of type `* / *`.
    */
   public path4Put$Any$Image(params?: {
     body?: Blob;

@@ -105,15 +105,24 @@ export function tsTypeVal(
 
     // An object
     if (type === 'object' || schema.properties) {
-        let result = '{\n';
         const properties = schema.properties || {};
         const required = schema.required;
+        const discriminatorLines = allOf
+            .map((baseSchema) => tryGetDiscriminator(baseSchema, schema, openApi))
+            .filter((discriminator): discriminator is { propName: string; value: string } => Boolean(discriminator))
+            .map((discriminator) => `'${discriminator.propName}': '${discriminator.value}';\n`);
 
-        for (const baseSchema of allOf) {
-            const discriminator = tryGetDiscriminator(baseSchema, schema, openApi);
-            if (discriminator) {
-                result += `'${discriminator.propName}': '${discriminator.value}';\n`;
-            }
+        if (schema.additionalProperties && discriminatorLines.length === 0 && Object.keys(properties).length === 0) {
+            const additionalProperties = schema.additionalProperties === true ? {} : schema.additionalProperties;
+            intersectionType.push(
+                `{ [key: string]: ${tsTypeVal(additionalProperties, openApi, options, imports, container)}; }`,
+            );
+            return intersectionType.join(' & ');
+        }
+
+        let result = '{\n';
+        for (const discriminatorLine of discriminatorLines) {
+            result += discriminatorLine;
         }
 
         for (const [propName, property] of Object.entries(properties)) {
