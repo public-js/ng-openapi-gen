@@ -8,7 +8,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:fixtures": "vitest run test/fixtures"
+    "test:fixtures": "vitest run test/fixtures",
+    "cd:prepare-release": "node scripts/release.mjs"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "~11.2.0",
@@ -25,6 +26,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/jsesc": "~3.0.0",
     "@types/node": "^22.13.4",
+    "conventional-changelog-cli": "^5.0.0",
     "prettier": "^3.9.10",
     "tsx": "^4.19.2",
     "typescript": "^5.8.2",
