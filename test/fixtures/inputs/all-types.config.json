@@ -1,5 +1,6 @@
 {
   "$schema": "../../../src/schema.json",
   "input": "all-types.json",
-  "output": "../modified-results/all-types/"
+  "output": "../modified-results/all-types/",
+  "runPrettier": false
 }

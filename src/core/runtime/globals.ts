@@ -14,6 +14,7 @@ export class Globals {
     public moduleFile?: string;
     public modelIndexFile?: string;
     public serviceIndexFile?: string;
+    public includePrettier?: boolean;
 
     constructor(options: Options) {
         this.configurationFile = options.configurationFile;
@@ -23,6 +24,7 @@ export class Globals {
         this.responseClass = options.response;
         this.pathToModelsDir = `./${options.modelsDir}/`;
         this.pathToServicesDir = `./${options.servicesDir}/`;
+        this.includePrettier = options.runPrettier;
 
         if (options.module !== false && options.module !== '') {
             this.moduleClass = typeof options.module === 'string' ? options.module : (defaultOptions.module as string);

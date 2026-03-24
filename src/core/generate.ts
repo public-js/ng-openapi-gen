@@ -6,6 +6,7 @@ import { GeneratorDocumentBuilder } from './generation/document-builder.js';
 import { emitDocument } from './emitter/emit-document.js';
 import { loadHooks } from './hooks/loader.js';
 import { HookRunner } from './hooks/runner.js';
+import { runPostProcessors } from './output/post-process.js';
 import { writeGeneratedFiles } from './output/write-output.js';
 import { GeneratorLogger } from './runtime/logger.js';
 
@@ -31,6 +32,7 @@ export async function generate(input: Partial<OptionsInput> | Options): Promise<
     const document = await new GeneratorDocumentBuilder(openApi, options, hooks, logger).build();
     const files = await emitDocument(document, hooks);
     const writtenFiles = writeGeneratedFiles(files, options, logger);
+    await runPostProcessors(options, logger);
     await hooks.afterWrite(writtenFiles, { openApi, document });
 
     logger.info(

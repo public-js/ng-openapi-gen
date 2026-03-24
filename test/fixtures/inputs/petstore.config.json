@@ -2,6 +2,7 @@
   "$schema": "../../../src/schema.json",
   "input": "petstore.json",
   "output": "../modified-results/petstore",
+  "runPrettier": false,
   "modelPrefix": "Petstore",
   "modelSuffix": "Model",
   "bigintStyle": "bigint"

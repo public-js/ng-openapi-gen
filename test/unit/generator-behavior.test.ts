@@ -177,6 +177,8 @@ describe('generator behavior', () => {
             await generate({
                 input: inputPath,
                 output: outputDir,
+                runEslint: false,
+                runPrettier: false,
                 generateResponseMethod: false,
             });
 
@@ -228,6 +230,8 @@ describe('generator behavior', () => {
             await generate({
                 input: inputPath,
                 output: outputDir,
+                runEslint: false,
+                runPrettier: false,
                 injectionStyle: 'inject',
             });
 
@@ -285,6 +289,8 @@ describe('generator behavior', () => {
             await generate({
                 input: inputPath,
                 output: outputDir,
+                runEslint: false,
+                runPrettier: false,
                 module: false,
             });
 

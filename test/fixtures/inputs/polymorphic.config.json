@@ -2,5 +2,6 @@
   "$schema": "../../../src/schema.json",
   "input": "polymorphic.json",
   "output": "../modified-results/polymorphic",
+  "runPrettier": false,
   "ignoreUnusedModels": false
 }

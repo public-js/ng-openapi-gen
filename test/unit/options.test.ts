@@ -23,11 +23,13 @@ describe('options', () => {
         expect(options.hooks).toEqual(['./one.mjs', './two.mjs']);
     });
 
-    test('resolveOptions applies the generator defaults', () => {
+    test('resolveOptions enables prettier and eslint by default', () => {
         const options = resolveOptions({
             input: 'spec.json',
         });
 
+        expect(options.runEslint).toBe(true);
+        expect(options.runPrettier).toBe(true);
         expect(options.generateResponseMethod).toBe(true);
         expect(options.injectionStyle).toBe('constructor');
     });

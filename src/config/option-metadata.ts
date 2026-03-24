@@ -175,6 +175,18 @@ export const optionMetadata: Record<string, OptionMetadata> = {
         enumValues: ['lf', 'cr', 'crlf', 'auto'],
         default: 'auto',
     },
+    runEslint: {
+        description:
+            'Whether to run `eslint --fix` on the generated output directory after writing files. Defaults to true.',
+        kind: 'boolean',
+        default: true,
+    },
+    runPrettier: {
+        description:
+            'Whether to run `prettier --write` on the generated output directory after writing files. Defaults to true.',
+        kind: 'boolean',
+        default: true,
+    },
     generateResponseMethod: {
         description:
             'Whether to generate the extra `$Response` method by default for each operation. Defaults to true.',

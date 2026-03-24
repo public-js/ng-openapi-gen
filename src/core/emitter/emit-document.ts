@@ -59,6 +59,13 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
         `${document.globals.requestBuilderFile}.ts`,
         emitRequestBuilderSource(document),
     );
+    if (document.globals.includePrettier) {
+        createTextSourceFile(
+            'support:prettier-config',
+            'prettier.config.mjs',
+            "export default {\n  overrides: [{ files: ['*.ts', '**/*.ts'], options: { printWidth: 900 } }],\n};\n",
+        );
+    }
     if (document.globals.moduleClass && document.globals.moduleFile) {
         buildModuleSourceFile(createSourceFile('support:module', `${document.globals.moduleFile}.ts`), document);
     }

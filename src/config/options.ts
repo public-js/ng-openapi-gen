@@ -32,6 +32,8 @@ export interface OptionsInput {
     fallbackPropertyType?: string;
     bigintStyle?: 'number' | 'bigint';
     endOfLineStyle?: 'lf' | 'cr' | 'crlf' | 'auto';
+    runEslint?: boolean;
+    runPrettier?: boolean;
     generateResponseMethod?: boolean;
     modelsDir?: string;
     servicesDir?: string;
@@ -65,6 +67,8 @@ type DefaultedOptions =
     | 'fallbackPropertyType'
     | 'bigintStyle'
     | 'endOfLineStyle'
+    | 'runEslint'
+    | 'runPrettier'
     | 'generateResponseMethod'
     | 'modelsDir'
     | 'servicesDir';
@@ -103,6 +107,8 @@ export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
     fallbackPropertyType: optionMetadata.fallbackPropertyType.default as string,
     bigintStyle: optionMetadata.bigintStyle.default as Options['bigintStyle'],
     endOfLineStyle: optionMetadata.endOfLineStyle.default as Options['endOfLineStyle'],
+    runEslint: optionMetadata.runEslint.default as boolean,
+    runPrettier: optionMetadata.runPrettier.default as boolean,
     generateResponseMethod: optionMetadata.generateResponseMethod.default as boolean,
     modelsDir: internalDefaultOptions.modelsDir,
     servicesDir: internalDefaultOptions.servicesDir,
