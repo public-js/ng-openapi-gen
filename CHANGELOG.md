@@ -1,3 +1,5 @@
+## [0.2.1-rc.1](https://github.com/public-js/ng-openapi-gen/compare/0.2.1-rc.0...0.2.1-rc.1) (2026-04-01)
+
 ## [0.2.1-rc.0](https://github.com/public-js/ng-openapi-gen/compare/0.1.1...0.2.1-rc.0) (2026-03-24)
 
 ## [0.1.1](https://github.com/public-js/ng-openapi-gen/compare/0.1.0...0.1.1) (2026-03-21)

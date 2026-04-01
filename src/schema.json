@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://github.com/public-js/ng-openapi-gen/blob/main/src/schema.json",
+  "$id": "undefined/blob/main/src/schema.json",
   "title": "Options for ng-openapi-gen",
   "type": "object",
   "required": [
