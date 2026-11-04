@@ -104,12 +104,9 @@ export class GeneratorDocumentBuilder {
     private async collectServices(): Promise<void> {
         const tags = this.openApi.tags || [];
         for (const [tagName, operations] of this.operationsByTag.entries()) {
-            if (this.options.includeTags.length > 0 && !this.options.includeTags.includes(tagName)) {
-                this.logger.debug(`Ignoring tag ${tagName} because it is not listed in the 'includeTags' option.`);
-                continue;
-            }
-            if (this.options.excludeTags.length > 0 && this.options.excludeTags.includes(tagName)) {
-                this.logger.debug(`Ignoring tag ${tagName} because it is listed in the 'excludeTags' option.`);
+            const { includeTags, excludeTags } = this.options;
+            if (includeTags.length > 0 ? !includeTags.includes(tagName) : excludeTags.includes(tagName)) {
+                this.logger.debug(`Ignoring tag ${tagName} because of the 'includeTags' or 'excludeTags' option.`);
                 continue;
             }
             const tag = tags.find((candidate) => candidate.name === tagName) || { name: tagName };

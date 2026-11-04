@@ -183,4 +183,13 @@ describe('regressions', () => {
 
         expect(schema.$id).toBe('https://github.com/public-js/ng-openapi-gen/blob/main/src/schema.json');
     });
+
+    test('includeTags overrides excludeTags', async () => {
+        const { document } = await emit(specWithTags(['One', 'Two']), [], {
+            includeTags: ['One'],
+            excludeTags: ['One', 'Two'],
+        });
+
+        expect(document.services.map((service) => service.name)).toEqual(['One']);
+    });
 });
