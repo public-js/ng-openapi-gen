@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { EOL } from 'node:os';
 import { dirname, join, normalize } from 'node:path';
 
 import type { Options } from '../../config/options.js';
@@ -6,7 +7,7 @@ import type { WrittenFile } from '../hooks/types.js';
 import type { GeneratedFile } from '../generation/document.js';
 import type { GeneratorLogger } from '../runtime/logger.js';
 
-const LINE_ENDINGS: Record<Options['endOfLineStyle'], string> = { lf: '\n', cr: '\r', crlf: '\r\n', auto: '\n' };
+const LINE_ENDINGS: Record<Options['endOfLineStyle'], string> = { lf: '\n', cr: '\r', crlf: '\r\n', auto: EOL };
 
 /** Writes the files that changed. When `removeStaleFiles` is set, also removes other files from the same folders. */
 export function writeGeneratedFiles(files: GeneratedFile[], options: Options, logger: GeneratorLogger): WrittenFile[] {
