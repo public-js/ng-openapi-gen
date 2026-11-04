@@ -68,6 +68,10 @@ export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefine
     return type;
 }
 
+function quoted(text: string): string {
+    return `'${jsesc(text, { minimal: true, quotes: 'single' })}'`;
+}
+
 function referenceType(ref: string, { openApi, options, imports, container }: TypeContext): string {
     const prefix = (resolveRef(openApi, ref) as SchemaObject).nullable ? 'null | ' : '';
     const name = refName(ref);
@@ -106,7 +110,7 @@ function enumMemberType(allOf: Array<SchemaObject | ReferenceObject>, { imports 
     if (!imp?.modelPtr?.isEnum) {
         return undefined;
     }
-    const value = typeof member.enum[0] === 'string' ? `'${member.enum[0]}'` : member.enum[0];
+    const value = typeof member.enum[0] === 'string' ? `'${jsesc(member.enum[0])}'` : member.enum[0];
     const enumValue = imp.modelPtr.enumValues.find((candidate) => candidate.value === value);
     return enumValue && `${importedName(imp)}.${enumValue.name}`;
 }
@@ -116,7 +120,7 @@ function objectType(schema: SchemaObject, context: TypeContext): string {
     const discriminatorLines = (schema.allOf || [])
         .map((baseSchema) => discriminator(baseSchema, schema, context.openApi))
         .filter((entry) => entry !== undefined)
-        .map(({ propName, value }) => `'${propName}': '${value}';\n`);
+        .map(({ propName, value }) => `${quoted(propName)}: ${quoted(value)};\n`);
     const additionalProperties = schema.additionalProperties === true ? {} : schema.additionalProperties;
 
     if (additionalProperties && discriminatorLines.length === 0 && Object.keys(properties).length === 0) {
@@ -133,7 +137,7 @@ function objectType(schema: SchemaObject, context: TypeContext): string {
             result += tsComments(description, deprecated);
         }
         const optional = schema.required?.includes(propName) ? '' : '?';
-        result += `'${propName}'${optional}: ${tsTypeVal(property, context)}${nullable ? ' | null' : ''};\n`;
+        result += `${quoted(propName)}${optional}: ${tsTypeVal(property, context)}${nullable ? ' | null' : ''};\n`;
     }
     if (additionalProperties) {
         result += `[key: string]: ${tsTypeVal(additionalProperties, context)};\n`;

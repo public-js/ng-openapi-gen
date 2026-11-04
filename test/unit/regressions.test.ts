@@ -43,4 +43,62 @@ describe('regressions', () => {
         expect(file('models/a/b/deep.ts')).toContain("from '../../root'");
         expect(file('models/a/b/deep.ts')).toContain("from '../c/other'");
     });
+
+    test('escapes quotes in inline object keys', async () => {
+        const { file } = await emit(
+            {
+                ...specBase,
+                components: {
+                    schemas: {
+                        Inline: {
+                            type: 'object',
+                            nullable: true,
+                            properties: { "it's": { type: 'string' } },
+                        },
+                    },
+                },
+            },
+            [],
+            { ignoreUnusedModels: false },
+        );
+
+        expect(file('models/inline.ts')).toContain("'it\\'s'?: string;");
+    });
+
+    test('leaves non-ASCII inline object keys readable', async () => {
+        const { file } = await emit(
+            {
+                ...specBase,
+                components: {
+                    schemas: { Inline: { type: 'object', nullable: true, properties: { имя: { type: 'string' } } } },
+                },
+            },
+            [],
+            { ignoreUnusedModels: false },
+        );
+
+        expect(file('models/inline.ts')).toContain("'имя'?: string;");
+    });
+
+    test('matches enum members whose value needs escaping', async () => {
+        const ref = (name: string) => ({ $ref: `#/components/schemas/${name}` });
+        const { file } = await emit(
+            {
+                ...specBase,
+                components: {
+                    schemas: {
+                        Kind: { type: 'string', enum: ["it's", 'plain'], 'x-enumNames': ['Quoted', 'Plain'] },
+                        Item: {
+                            type: 'object',
+                            properties: { kind: { allOf: [ref('Kind'), { enum: ["it's"] }] } },
+                        },
+                    },
+                },
+            },
+            [],
+            { ignoreUnusedModels: false },
+        );
+
+        expect(file('models/item.ts')).toContain('kind?: Kind.Quoted;');
+    });
 });
