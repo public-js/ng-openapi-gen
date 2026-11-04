@@ -61,6 +61,13 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
         buildRootIndexSourceFile(addFile('support:index', 'index.ts'), document);
     }
 
+    /** Files that hooks create directly in the project have no metadata yet */
+    const metadataOf = (sourceFile: SourceFile) => {
+        const path = sourceFile.getFilePath();
+        const relativePath = path.replace(/^\/(virtual\/)?/, '');
+        return tsFiles.get(path) ?? { id: `hook:${relativePath}`, relativePath };
+    };
+
     const hookContext = { openApi: document.openApi, document, project };
     await hooks.generateAdditionalFiles(hookContext);
     const hookFiles = hooks.drainGeneratedFiles();
@@ -71,19 +78,14 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
     }
 
     for (const sourceFile of project.getSourceFiles().sort((a, b) => a.getFilePath().localeCompare(b.getFilePath()))) {
-        const metadata = tsFiles.get(sourceFile.getFilePath());
-        if (metadata) {
-            await hooks.transformSourceFile(sourceFile, metadata, hookContext);
-        }
+        await hooks.transformSourceFile(sourceFile, metadataOf(sourceFile), hookContext);
     }
 
-    const files: GeneratedFile[] = project.getSourceFiles().map((sourceFile) => {
-        const metadata = tsFiles.get(sourceFile.getFilePath());
-        if (!metadata) {
-            throw new Error(`Missing source metadata for ${sourceFile.getFilePath()}`);
-        }
-        return { ...metadata, kind: 'ts', content: sourceFile.getFullText() };
-    });
+    const files: GeneratedFile[] = project.getSourceFiles().map((sourceFile) => ({
+        ...metadataOf(sourceFile),
+        kind: 'ts',
+        content: sourceFile.getFullText(),
+    }));
 
     for (const extra of [...hookFiles, ...hooks.drainGeneratedFiles()]) {
         if (extra.kind !== 'ts') {

@@ -139,4 +139,21 @@ describe('regressions', () => {
         expect(document.modelsById.has('#/components/schemas/Foo')).toBe(false);
         expect(document.servicesById.size).toBe(0);
     });
+
+    test('hooks can add source files through the project', async () => {
+        const seen: string[] = [];
+        const { file } = await emit(specWithTags(['One']), [
+            {
+                generateAdditionalFiles(context) {
+                    context.project?.createSourceFile('/virtual/extra/direct.ts', 'export const direct = 1;\n');
+                },
+                transformSourceFile(_sourceFile, metadata) {
+                    seen.push(metadata.relativePath);
+                },
+            },
+        ]);
+
+        expect(file('extra/direct.ts')).toBe('export const direct = 1;\n');
+        expect(seen).toContain('extra/direct.ts');
+    });
 });
