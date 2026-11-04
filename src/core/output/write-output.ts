@@ -2,17 +2,14 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFile
 import { dirname, join, normalize } from 'node:path';
 
 import type { Options } from '../../config/options.js';
+import type { WrittenFile } from '../hooks/types.js';
 import type { GeneratedFile } from '../generation/document.js';
 import type { GeneratorLogger } from '../runtime/logger.js';
 
 const LINE_ENDINGS: Record<Options['endOfLineStyle'], string> = { lf: '\n', cr: '\r', crlf: '\r\n', auto: '\n' };
 
 /** Writes the files that changed. When `removeStaleFiles` is set, also removes other files from the same folders. */
-export function writeGeneratedFiles(
-    files: GeneratedFile[],
-    options: Options,
-    logger: GeneratorLogger,
-): Array<{ id: string; relativePath: string; absolutePath: string }> {
+export function writeGeneratedFiles(files: GeneratedFile[], options: Options, logger: GeneratorLogger): WrittenFile[] {
     const lineEnding = LINE_ENDINGS[options.endOfLineStyle];
     const written = files.map((file) => ({
         id: file.id,

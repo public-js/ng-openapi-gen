@@ -1,6 +1,6 @@
 type PrimitiveKind = 'string' | 'number' | 'boolean';
 
-type OptionKind = PrimitiveKind | 'stringArray' | 'stringOrBoolean' | 'enum' | 'stringArrayOrString' | 'object';
+type OptionKind = PrimitiveKind | 'stringArray' | 'stringOrBoolean' | 'enum' | 'stringArrayOrString';
 
 export interface OptionMetadata {
     description: string;
@@ -8,7 +8,6 @@ export interface OptionMetadata {
     alias?: string;
     default?: unknown;
     enumValues?: string[];
-    schema?: Record<string, unknown>;
     cli?: boolean;
 }
 

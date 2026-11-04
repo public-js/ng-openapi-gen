@@ -26,22 +26,10 @@ export class Globals {
         this.pathToServicesDir = `./${options.servicesDir}/`;
         this.includePrettier = options.runPrettier;
 
-        if (options.module !== false && options.module !== '') {
-            this.moduleClass = typeof options.module === 'string' ? options.module : (defaultOptions.module as string);
-            this.moduleFile = fileName(this.moduleClass as string).replace(/-module$/, '.module');
-        }
-
-        if (options.serviceIndex !== false && options.serviceIndex !== '') {
-            this.serviceIndexFile =
-                typeof options.serviceIndex === 'string'
-                    ? options.serviceIndex
-                    : (defaultOptions.serviceIndex as string);
-        }
-
-        if (options.modelIndex !== false && options.modelIndex !== '') {
-            this.modelIndexFile =
-                typeof options.modelIndex === 'string' ? options.modelIndex : (defaultOptions.modelIndex as string);
-        }
+        this.moduleClass = optionalName(options.module, defaultOptions.module);
+        this.moduleFile = this.moduleClass && fileName(this.moduleClass).replace(/-module$/, '.module');
+        this.serviceIndexFile = optionalName(options.serviceIndex, defaultOptions.serviceIndex);
+        this.modelIndexFile = optionalName(options.modelIndex, defaultOptions.modelIndex);
 
         this.autoGenerationNotice = tsComments(
             [
@@ -52,4 +40,12 @@ export class Globals {
             0,
         );
     }
+}
+
+/** Resolves a `string | boolean` option: `false` or empty disables the file and `true` selects the default name. */
+function optionalName(value: string | boolean, defaultName: string | boolean): string | undefined {
+    if (value === false || value === '') {
+        return undefined;
+    }
+    return String(value === true ? defaultName : value);
 }

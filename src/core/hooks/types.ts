@@ -15,6 +15,15 @@ export interface HookGeneratedFile {
     content: string;
 }
 
+export interface SourceFileMetadata {
+    id: string;
+    relativePath: string;
+}
+
+export interface WrittenFile extends SourceFileMetadata {
+    absolutePath: string;
+}
+
 export interface HookContext {
     options: Options;
     logger: GeneratorLogger;
@@ -39,13 +48,10 @@ export interface GeneratorHook {
     generateAdditionalFiles?: (context: HookContext) => Promise<void> | void;
     transformSourceFile?: (
         sourceFile: SourceFile,
-        metadata: { id: string; relativePath: string },
+        metadata: SourceFileMetadata,
         context: HookContext,
     ) => Promise<void> | void;
-    afterWrite?: (
-        files: Array<{ id: string; relativePath: string; absolutePath: string }>,
-        context: HookContext,
-    ) => Promise<void> | void;
+    afterWrite?: (files: WrittenFile[], context: HookContext) => Promise<void> | void;
 }
 
 export function defineHook<T extends GeneratorHook>(hook: T): T {

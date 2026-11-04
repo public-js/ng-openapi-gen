@@ -63,7 +63,8 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
 
     const hookContext = { openApi: document.openApi, document, project };
     await hooks.generateAdditionalFiles(hookContext);
-    for (const extra of hooks.takeGeneratedFiles()) {
+    const hookFiles = hooks.drainGeneratedFiles();
+    for (const extra of hookFiles) {
         if (extra.kind === 'ts') {
             addFile(extra.id ?? `hook:${extra.relativePath}`, extra.relativePath, extra.content);
         }
@@ -84,7 +85,7 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
         return { ...metadata, kind: 'ts', content: sourceFile.getFullText() };
     });
 
-    for (const extra of hooks.takeGeneratedFiles()) {
+    for (const extra of [...hookFiles, ...hooks.drainGeneratedFiles()]) {
         if (extra.kind !== 'ts') {
             const { id = `hook:${extra.relativePath}`, kind = 'text', relativePath, content } = extra;
             files.push({ id, kind, relativePath, content });

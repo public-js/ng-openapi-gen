@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 import yargsParser from 'yargs-parser';
 
-import { createCliParserOptions, resolveOptions, type OptionsInput } from '../config/options.js';
+import { createCliParserOptions, type OptionsInput } from '../config/options.js';
 import { generate } from '../core/generate.js';
 
 export async function runCli(argv = process.argv.slice(2)): Promise<void> {
@@ -16,9 +16,7 @@ export async function runCli(argv = process.argv.slice(2)): Promise<void> {
         configOptions = JSON.parse(readFileSync(parsed.config, 'utf8')) as Partial<OptionsInput>;
     }
 
-    const cliOptions = sanitizeCliOptions(parsed);
-    const options = resolveOptions({ ...configOptions, ...cliOptions });
-    await generate(options);
+    await generate({ ...configOptions, ...sanitizeCliOptions(parsed) });
 }
 
 function sanitizeCliOptions(parsed: Record<string, unknown>): Partial<OptionsInput> {

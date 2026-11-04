@@ -28,22 +28,8 @@ export class GeneratorLogger {
 
     private record(level: DiagnosticLevel, message: string, writeToConsole: boolean): void {
         this.diagnostics.push({ level, message });
-        if (!writeToConsole) {
-            return;
-        }
-        switch (level) {
-            case 'debug':
-                console.debug(message);
-                break;
-            case 'info':
-                console.info(message);
-                break;
-            case 'warn':
-                console.warn(message);
-                break;
-            case 'error':
-                console.error(message);
-                break;
+        if (writeToConsole) {
+            console[level](message);
         }
     }
 }

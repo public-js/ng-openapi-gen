@@ -6,7 +6,7 @@ import type { OaModel } from '../models/oa-model.js';
 import type { OaOperation } from '../models/oa-operation.js';
 import type { OaService } from '../models/oa-service.js';
 import type { GeneratorLogger } from '../runtime/logger.js';
-import type { GeneratorHook, HookContext, HookGeneratedFile } from './types.js';
+import type { GeneratorHook, HookContext, HookGeneratedFile, SourceFileMetadata, WrittenFile } from './types.js';
 import type { Options } from '../../config/options.js';
 
 export class HookRunner {
@@ -22,70 +22,57 @@ export class HookRunner {
         this.generatedFiles.push(file);
     }
 
-    public takeGeneratedFiles(): HookGeneratedFile[] {
-        return [...this.generatedFiles];
+    /** Returns the files registered so far and forgets them. */
+    public drainGeneratedFiles(): HookGeneratedFile[] {
+        return this.generatedFiles.splice(0);
     }
 
     public async transformOpenApi(openApi: OpenAPIObject): Promise<OpenAPIObject> {
         let current = openApi;
         for (const hook of this.hooks) {
-            if (!hook.transformOpenApi) {
-                continue;
-            }
-            const next = await hook.transformOpenApi(current, this.createContext({ openApi: current }));
-            if (next) {
-                current = next;
-            }
+            current = (await hook.transformOpenApi?.(current, this.createContext({ openApi: current }))) || current;
         }
         return current;
     }
 
-    public async transformModel(model: OaModel, extras: HookContextExtras): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.transformModel?.(model, this.createContext(extras));
-        }
+    public transformModel(model: OaModel, extras: HookContextExtras): Promise<void> {
+        return this.runAll(extras, (hook, context) => hook.transformModel?.(model, context));
     }
 
-    public async transformOperation(operation: OaOperation, extras: HookContextExtras): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.transformOperation?.(operation, this.createContext(extras));
-        }
+    public transformOperation(operation: OaOperation, extras: HookContextExtras): Promise<void> {
+        return this.runAll(extras, (hook, context) => hook.transformOperation?.(operation, context));
     }
 
-    public async transformService(service: OaService, extras: HookContextExtras): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.transformService?.(service, this.createContext(extras));
-        }
+    public transformService(service: OaService, extras: HookContextExtras): Promise<void> {
+        return this.runAll(extras, (hook, context) => hook.transformService?.(service, context));
     }
 
-    public async transformDocument(document: GeneratorDocument, extras: HookContextExtras): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.transformDocument?.(document, this.createContext({ ...extras, document }));
-        }
+    public transformDocument(document: GeneratorDocument, extras: HookContextExtras): Promise<void> {
+        return this.runAll({ ...extras, document }, (hook, context) => hook.transformDocument?.(document, context));
     }
 
-    public async generateAdditionalFiles(extras: HookContextExtras): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.generateAdditionalFiles?.(this.createContext(extras));
-        }
+    public generateAdditionalFiles(extras: HookContextExtras): Promise<void> {
+        return this.runAll(extras, (hook, context) => hook.generateAdditionalFiles?.(context));
     }
 
-    public async transformSourceFile(
+    public transformSourceFile(
         sourceFile: SourceFile,
-        metadata: { id: string; relativePath: string },
+        metadata: SourceFileMetadata,
         extras: HookContextExtras,
     ): Promise<void> {
-        for (const hook of this.hooks) {
-            await hook.transformSourceFile?.(sourceFile, metadata, this.createContext(extras));
-        }
+        return this.runAll(extras, (hook, context) => hook.transformSourceFile?.(sourceFile, metadata, context));
     }
 
-    public async afterWrite(
-        files: Array<{ id: string; relativePath: string; absolutePath: string }>,
+    public afterWrite(files: WrittenFile[], extras: HookContextExtras): Promise<void> {
+        return this.runAll(extras, (hook, context) => hook.afterWrite?.(files, context));
+    }
+
+    private async runAll(
         extras: HookContextExtras,
+        run: (hook: GeneratorHook, context: HookContext) => Promise<void> | void,
     ): Promise<void> {
         for (const hook of this.hooks) {
-            await hook.afterWrite?.(files, this.createContext(extras));
+            await run(hook, this.createContext(extras));
         }
     }
 

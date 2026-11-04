@@ -1,55 +1,30 @@
 import { optionMetadata, type OptionMetadata } from './option-metadata.js';
 
-function schemaForOption(_name: string, metadata: OptionMetadata) {
-    const description = metadata.description;
-    if (metadata.schema) {
-        return { description, ...metadata.schema };
-    }
+function typeSchema(metadata: OptionMetadata) {
     switch (metadata.kind) {
         case 'string':
-            return metadata.default !== undefined
-                ? { description, type: 'string', default: metadata.default }
-                : { description, type: 'string' };
         case 'number':
-            return metadata.default !== undefined
-                ? { description, type: 'number', default: metadata.default }
-                : { description, type: 'number' };
         case 'boolean':
-            return metadata.default !== undefined
-                ? { description, type: 'boolean', default: metadata.default }
-                : { description, type: 'boolean' };
+            return { type: metadata.kind };
         case 'stringArray':
-            return {
-                description,
-                type: 'array',
-                items: { type: 'string' },
-                ...(metadata.default !== undefined ? { default: metadata.default } : {}),
-            };
+            return { type: 'array', items: { type: 'string' } };
         case 'stringOrBoolean':
-            return {
-                description,
-                anyOf: [{ type: 'string' }, { type: 'boolean' }],
-                ...(metadata.default !== undefined ? { default: metadata.default } : {}),
-            };
+            return { anyOf: [{ type: 'string' }, { type: 'boolean' }] };
         case 'stringArrayOrString':
-            return {
-                description,
-                anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
-            };
+            return { anyOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] };
         case 'enum':
-            return {
-                description,
-                enum: metadata.enumValues,
-                ...(metadata.default !== undefined ? { default: metadata.default } : {}),
-            };
-        case 'object':
-            return { description, type: 'object' };
+            return { enum: metadata.enumValues };
     }
+}
+
+function schemaForOption(metadata: OptionMetadata) {
+    const defaultValue = metadata.default !== undefined ? { default: metadata.default } : {};
+    return { description: metadata.description, ...typeSchema(metadata), ...defaultValue };
 }
 
 export function buildSchemaJson(repository: string) {
     const properties = Object.fromEntries(
-        Object.entries(optionMetadata).map(([name, metadata]) => [name, schemaForOption(name, metadata)]),
+        Object.entries(optionMetadata).map(([name, metadata]) => [name, schemaForOption(metadata)]),
     );
 
     return {

@@ -2,7 +2,7 @@ import { SchemaObject } from 'openapi3-ts';
 
 import { OaContent } from './oa-content.js';
 import { OaOperation } from './oa-operation.js';
-import { defaultOptions, Options } from '../../config/options.js';
+import { Options } from '../../config/options.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { tsComments } from '../../utils/string.js';
 

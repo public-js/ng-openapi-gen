@@ -39,82 +39,22 @@ export interface OptionsInput {
     servicesDir?: string;
 }
 
-type DefaultedOptions =
-    | 'output'
-    | 'verbose'
-    | 'defaultTag'
-    | 'fetchTimeout'
-    | 'includeTags'
-    | 'excludeTags'
-    | 'ignoreUnusedModels'
-    | 'removeStaleFiles'
-    | 'modelIndex'
-    | 'serviceIndex'
-    | 'indexFile'
-    | 'servicePrefix'
-    | 'serviceSuffix'
-    | 'modelPrefix'
-    | 'modelSuffix'
-    | 'module'
-    | 'configurationFile'
-    | 'rootUrlToken'
-    | 'requestBuilder'
-    | 'response'
-    | 'enumStyle'
-    | 'injectionStyle'
-    | 'hooks'
-    | 'skipJsonSuffix'
-    | 'fallbackPropertyType'
-    | 'bigintStyle'
-    | 'endOfLineStyle'
-    | 'runEslint'
-    | 'runPrettier'
-    | 'generateResponseMethod'
-    | 'modelsDir'
-    | 'servicesDir';
-
-export type Options = Required<Pick<OptionsInput, DefaultedOptions>> &
-    Omit<OptionsInput, 'hooks'> & {
-        input: string;
+export type Options = Required<Omit<OptionsInput, 'hooks' | 'excludeParameters'>> &
+    Pick<OptionsInput, 'excludeParameters'> & {
         hooks: string[];
     };
 
-export const defaultOptions: Required<Pick<OptionsInput, DefaultedOptions>> = {
-    output: optionMetadata.output.default as string,
-    verbose: optionMetadata.verbose.default as boolean,
-    defaultTag: optionMetadata.defaultTag.default as string,
-    fetchTimeout: optionMetadata.fetchTimeout.default as number,
-    includeTags: [...((optionMetadata.includeTags.default as unknown as string[]) ?? [])],
-    excludeTags: [...((optionMetadata.excludeTags.default as unknown as string[]) ?? [])],
-    ignoreUnusedModels: optionMetadata.ignoreUnusedModels.default as boolean,
-    removeStaleFiles: optionMetadata.removeStaleFiles.default as boolean,
-    modelIndex: optionMetadata.modelIndex.default as string,
-    serviceIndex: optionMetadata.serviceIndex.default as string,
-    indexFile: optionMetadata.indexFile.default as boolean,
-    servicePrefix: optionMetadata.servicePrefix.default as string,
-    serviceSuffix: optionMetadata.serviceSuffix.default as string,
-    modelPrefix: optionMetadata.modelPrefix.default as string,
-    modelSuffix: optionMetadata.modelSuffix.default as string,
-    module: optionMetadata.module.default as string,
-    configurationFile: optionMetadata.configurationFile.default as string,
-    rootUrlToken: optionMetadata.rootUrlToken.default as string,
-    requestBuilder: optionMetadata.requestBuilder.default as string,
-    response: optionMetadata.response.default as string,
-    enumStyle: optionMetadata.enumStyle.default as Options['enumStyle'],
-    injectionStyle: optionMetadata.injectionStyle.default as Options['injectionStyle'],
+export const defaultOptions = {
+    ...Object.fromEntries(
+        Object.entries(optionMetadata)
+            .filter(([, metadata]) => metadata.default !== undefined)
+            .map(([name, metadata]) => [name, metadata.default]),
+    ),
     hooks: [],
-    skipJsonSuffix: optionMetadata.skipJsonSuffix.default as boolean,
-    fallbackPropertyType: optionMetadata.fallbackPropertyType.default as string,
-    bigintStyle: optionMetadata.bigintStyle.default as Options['bigintStyle'],
-    endOfLineStyle: optionMetadata.endOfLineStyle.default as Options['endOfLineStyle'],
-    runEslint: optionMetadata.runEslint.default as boolean,
-    runPrettier: optionMetadata.runPrettier.default as boolean,
-    generateResponseMethod: optionMetadata.generateResponseMethod.default as boolean,
-    modelsDir: internalDefaultOptions.modelsDir,
-    servicesDir: internalDefaultOptions.servicesDir,
-};
+    ...internalDefaultOptions,
+} as unknown as Omit<Options, 'input' | 'excludeParameters'>;
 
-export function normalizeHooks(value: OptionsInput['hooks']): string[] {
+function normalizeHooks(value: OptionsInput['hooks']): string[] {
     if (!value) {
         return [];
     }
@@ -131,41 +71,32 @@ export function resolveOptions(input: Partial<OptionsInput>): Options {
     } as Options;
 }
 
-export function createCliParserOptions(): YargsOptions & { array: Array<string | { key: string; number?: true }> } {
-    const result: YargsOptions & { array: Array<string | { key: string; number?: true }> } = {
+const CLI_TYPES = {
+    string: 'string',
+    stringOrBoolean: 'string',
+    enum: 'string',
+    number: 'number',
+    boolean: 'boolean',
+    stringArray: 'array',
+    stringArrayOrString: 'array',
+} as const;
+
+export function createCliParserOptions(): YargsOptions {
+    const types: Record<(typeof CLI_TYPES)[keyof typeof CLI_TYPES], string[]> = {
         string: ['config'],
         number: [],
         boolean: [],
         array: [],
-        alias: { config: 'c' },
-        configuration: { 'strip-dashed': true, 'strip-aliased': true },
     };
+    const alias: Record<string, string> = { config: 'c' };
 
     for (const [name, metadata] of Object.entries(optionMetadata)) {
-        if (!metadata.cli) {
-            continue;
-        }
-        switch (metadata.kind) {
-            case 'string':
-            case 'stringOrBoolean':
-            case 'enum':
-            case 'object':
-                (result.string as string[]).push(name);
-                break;
-            case 'number':
-                (result.number as string[]).push(name);
-                break;
-            case 'boolean':
-                (result.boolean as string[]).push(name);
-                break;
-            case 'stringArray':
-            case 'stringArrayOrString':
-                result.array.push(name);
-                break;
-        }
-        if (metadata.alias) {
-            (result.alias as Record<string, string>)[name] = metadata.alias;
+        if (metadata.cli) {
+            types[CLI_TYPES[metadata.kind]].push(name);
+            if (metadata.alias) {
+                alias[name] = metadata.alias;
+            }
         }
     }
-    return result;
+    return { ...types, alias, configuration: { 'strip-dashed': true, 'strip-aliased': true } };
 }
