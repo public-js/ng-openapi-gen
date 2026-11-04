@@ -3,7 +3,7 @@ import { SchemaObject } from 'openapi3-ts';
 import { OaContent } from './oa-content.js';
 import { OaOperation } from './oa-operation.js';
 import { resolveRef } from '../../utils/open-api.js';
-import { tsComments } from '../../utils/string.js';
+import { docText } from '../../utils/string.js';
 
 export class OaOperationVariant {
     public responseMethodName: string;
@@ -11,8 +11,8 @@ export class OaOperationVariant {
     public responseType: string;
     public accept: string;
 
-    public responseMethodTsComments: string;
-    public bodyMethodTsComments: string;
+    public responseMethodDocs: string;
+    public bodyMethodDocs: string;
     public generateResponseMethod: boolean;
 
     constructor(
@@ -34,14 +34,12 @@ export class OaOperationVariant {
             this.accept = '*/*';
         }
 
-        this.responseMethodTsComments = tsComments(
+        this.responseMethodDocs = docText(
             `${this.descriptionPrefix}This method provides access to the full \`HttpResponse\`, allowing access to response headers.\nTo access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix}`,
-            1,
             operation.deprecated,
         );
-        this.bodyMethodTsComments = tsComments(
+        this.bodyMethodDocs = docText(
             `${this.descriptionPrefix}This method provides access only to the response body.${this.descriptionSuffix}`,
-            1,
             operation.deprecated,
         );
     }

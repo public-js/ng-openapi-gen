@@ -36,7 +36,7 @@ export function buildServiceSourceFile(sourceFile: SourceFile, service: OaServic
     sourceFile.addClass({
         isExported: true,
         name: service.typeName,
-        docs: toDocs(service.tsComments),
+        docs: toDocs(service.docs),
         decorators: [
             {
                 name: 'Injectable',
@@ -107,7 +107,7 @@ function buildResponseMethod(
     return {
         name: variant.responseMethodName,
         scope: Scope.Public,
-        docs: toDocs(variant.responseMethodTsComments),
+        docs: toDocs(variant.responseMethodDocs),
         returnType: `Observable<${document.globals.responseClass}<${variant.resultType}>>`,
         parameters: buildParameters(variant),
         statements: buildRequestStatements(service, variant, document),
@@ -124,7 +124,7 @@ function buildBodyMethod(
     return {
         name: variant.methodName,
         scope: Scope.Public,
-        docs: toDocs(variant.bodyMethodTsComments),
+        docs: toDocs(variant.bodyMethodDocs),
         returnType: `Observable<${variant.resultType}>`,
         parameters: buildParameters(variant),
         statements: variant.generateResponseMethod
@@ -201,17 +201,15 @@ function buildRequestStatements(
 function buildOperationParametersType(variant: OaOperationVariant): string {
     const lines = ['{'];
     for (const parameter of variant.operation.parameters) {
-        const docs = toDocs(parameter.tsComments)[0];
-        if (docs) {
-            lines.push(toInlineDoc(docs));
+        if (parameter.docs) {
+            lines.push(toInlineDoc(parameter.docs));
         }
         lines.push(`  ${parameter.var}${parameter.required ? '' : '?'}: ${parameter.type};`);
     }
     if (variant.requestBody) {
         const body = variant.operation.requestBody;
-        const docs = toDocs(body?.tsComments ?? '')[0];
-        if (docs) {
-            lines.push(toInlineDoc(docs));
+        if (body?.docs) {
+            lines.push(toInlineDoc(body.docs));
         }
         lines.push(`  body${body?.required ? '' : '?'}: ${variant.requestBody.type};`);
     }

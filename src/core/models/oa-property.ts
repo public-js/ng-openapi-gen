@@ -1,13 +1,13 @@
 import { ReferenceObject, SchemaObject } from 'openapi3-ts';
 
 import { OaModel } from './oa-model.js';
-import { escapeId, tsComments } from '../../utils/string.js';
+import { docText, escapeId } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaProperty {
     public identifier: string;
     public type: string;
-    public tsComments: string;
+    public docs: string;
 
     constructor(
         public model: OaModel,
@@ -23,7 +23,6 @@ export class OaProperty {
             this.type = 'null | ' + this.type;
         }
 
-        const description = (schema as SchemaObject).description || '';
-        this.tsComments = tsComments(description, 1, (schema as SchemaObject).deprecated);
+        this.docs = docText((schema as SchemaObject).description, (schema as SchemaObject).deprecated);
     }
 }

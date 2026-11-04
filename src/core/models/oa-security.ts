@@ -1,13 +1,13 @@
 import { SecuritySchemeObject } from 'openapi3-ts';
 
-import { methodName, tsComments } from '../../utils/string.js';
+import { docText, methodName } from '../../utils/string.js';
 
 export class OaSecurity {
     /** Variable name */
     public var: string;
     /** Header name */
     public name: string;
-    public tsComments: string;
+    public docs: string;
     /** Location of security parameter */
     public in: string;
 
@@ -18,7 +18,7 @@ export class OaSecurity {
     ) {
         this.name = spec.name || '';
         this.var = methodName(key);
-        this.tsComments = tsComments(spec.description || '', 2);
+        this.docs = docText(spec.description);
         this.in = spec.in || 'header';
     }
 }

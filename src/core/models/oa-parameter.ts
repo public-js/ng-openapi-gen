@@ -1,13 +1,13 @@
 import { ParameterLocation, ParameterObject } from 'openapi3-ts';
 
-import { escapeId, tsComments } from '../../utils/string.js';
+import { docText, escapeId } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaParameter {
     public var: string;
     public varAccess: string;
     public name: string;
-    public tsComments: string;
+    public docs: string;
     public required: boolean;
     public in: ParameterLocation;
     public type: string;
@@ -19,7 +19,7 @@ export class OaParameter {
         this.name = spec.name;
         this.var = escapeId(this.name);
         this.varAccess = this.var.includes("'") ? `[${this.var}]` : `.${this.var}`;
-        this.tsComments = tsComments(spec.description || '', 2, spec.deprecated);
+        this.docs = docText(spec.description, spec.deprecated);
         this.in = spec.in || 'query';
         this.required = this.in === 'path' || spec.required || false;
         this.style = spec.style;

@@ -14,8 +14,8 @@ export abstract class OaBase {
     public fileName: string;
     /** Camel-case qualified name of the type, including namespace */
     public qualifiedName: string;
-    /** TypeScript comments for this type */
-    public tsComments: string;
+    /** Doc comment text for this type */
+    public docs: string;
     /** Relative path to modelsDir, ending with `/` */
     public pathToModels: string;
 

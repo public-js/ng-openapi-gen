@@ -37,7 +37,6 @@ export class Globals {
                 'Manual changes to this file may cause incorrect behavior and will be lost when the code is regenerated.',
                 'To update this file, run the generation tool.',
             ].join('\n'),
-            0,
         );
     }
 }

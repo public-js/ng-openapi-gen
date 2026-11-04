@@ -5,7 +5,7 @@ import { OaImport } from './oa-import.js';
 import { OaOperation } from './oa-operation.js';
 import { Options } from '../../config/options.js';
 import { serviceClass } from '../../utils/open-api.js';
-import { tsComments } from '../../utils/string.js';
+import { docText } from '../../utils/string.js';
 
 export class OaService extends OaBase {
     constructor(
@@ -16,7 +16,7 @@ export class OaService extends OaBase {
         super(tag.name, options, serviceClass);
 
         this.fileName = this.fileName.replace(/-service$/, '.service');
-        this.tsComments = tsComments(tag.description || '', 0);
+        this.docs = docText(tag.description);
         this.pathToModels = `../${options.modelsDir}/`;
     }
 

@@ -12,12 +12,12 @@ export function buildModelSourceFile(sourceFile: SourceFile, model: OaModel): vo
         sourceFile.addInterface({
             isExported: true,
             name: model.typeName,
-            docs: toDocs(model.tsComments),
+            docs: toDocs(model.docs),
             properties: model.properties.map((property) => ({
                 name: property.identifier,
                 hasQuestionToken: !property.required,
                 type: property.type,
-                docs: toDocs(property.tsComments),
+                docs: toDocs(property.docs),
             })),
             indexSignatures: model.additionalPropertiesType
                 ? [
@@ -36,7 +36,7 @@ export function buildModelSourceFile(sourceFile: SourceFile, model: OaModel): vo
         sourceFile.addEnum({
             isExported: true,
             name: model.typeName,
-            docs: toDocs(model.tsComments),
+            docs: toDocs(model.docs),
             members: model.enumValues.map((value) => ({
                 name: value.name,
                 initializer: value.value,
@@ -48,7 +48,7 @@ export function buildModelSourceFile(sourceFile: SourceFile, model: OaModel): vo
     sourceFile.addTypeAlias({
         isExported: true,
         name: model.typeName,
-        docs: toDocs(model.tsComments),
+        docs: toDocs(model.docs),
         type: model.simpleType,
     });
 }

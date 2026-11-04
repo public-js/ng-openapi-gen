@@ -6,7 +6,7 @@ import { OaImport } from './oa-import.js';
 import { OaProperty } from './oa-property.js';
 import { Options } from '../../config/options.js';
 import { unqualifiedName } from '../../utils/open-api.js';
-import { tsComments } from '../../utils/string.js';
+import { docText } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 const NULL_PREFIX = 'null | ';
@@ -33,8 +33,7 @@ export class OaModel extends OaBase {
         super(refName, options, unqualifiedName);
         this.assumedName = this.qualifiedName;
 
-        const description = schema.description || '';
-        this.tsComments = tsComments(description, 0, schema.deprecated);
+        this.docs = docText(schema.description, schema.deprecated);
         this.pathToModels = '';
 
         const type = this.schema.type || this.options.fallbackPropertyType;

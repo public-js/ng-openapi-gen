@@ -47,20 +47,27 @@ export function escapeId(name: string) {
     return /^[A-Za-z]\w*$/.test(name) ? name : `'${name.replace(/'/g, "\\'")}'`;
 }
 
-/** Returns the TypeScript comments for the given schema description, in a given indentation level */
-export function tsComments(description: string | undefined, level: number, deprecated?: boolean): string {
-    const indent = '  '.repeat(level);
-    if (description === undefined || description.length === 0) {
-        return indent + (deprecated ? '/** @deprecated */' : '');
+/** Returns the text for a doc comment. Empty when there is nothing to document. */
+export function docText(description = '', deprecated = false): string {
+    const text = description
+        .trim()
+        .split('\n')
+        .map((line) => line.replace(/\*\//g, '* / ').trimEnd())
+        .join('\n');
+    if (!deprecated) {
+        return text;
     }
-    const lines = description.trim().split('\n');
-    let result = '\n' + indent + '/**\n';
-    for (const line of lines) {
-        result += indent + ' *' + (line === '' ? '' : ' ' + line.replace(/\*\//g, '* / ')) + '\n';
+    return text ? `${text}\n\n@deprecated` : '@deprecated';
+}
+
+/** Returns a full doc comment, for places that are rendered as plain text */
+export function tsComments(description: string, deprecated?: boolean): string {
+    let result = '\n/**\n';
+    for (const line of description.trim().split('\n')) {
+        result += ' *' + (line === '' ? '' : ' ' + line.replace(/\*\//g, '* / ')) + '\n';
     }
     if (deprecated) {
-        result += indent + ' *\n' + indent + ' * @deprecated\n';
+        result += ' *\n * @deprecated\n';
     }
-    result += indent + ' */\n' + indent;
-    return result;
+    return result + ' */\n';
 }

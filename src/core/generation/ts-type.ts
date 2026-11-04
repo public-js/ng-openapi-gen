@@ -130,7 +130,7 @@ function objectType(schema: SchemaObject, context: TypeContext): string {
         }
         const { description, deprecated, nullable } = property as SchemaObject;
         if (description) {
-            result += tsComments(description, 0, deprecated);
+            result += tsComments(description, deprecated);
         }
         const optional = schema.required?.includes(propName) ? '' : '?';
         result += `'${propName}'${optional}: ${tsTypeVal(property, context)}${nullable ? ' | null' : ''};\n`;
