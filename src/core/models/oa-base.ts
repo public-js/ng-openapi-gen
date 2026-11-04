@@ -67,7 +67,6 @@ export abstract class OaBase {
         schema: SchemaObject | ReferenceObject | undefined,
         imports: Map<string, OaImport>,
         additional = false,
-        processOneOf = false,
     ): void {
         if (!schema) {
             return;
@@ -95,17 +94,12 @@ export abstract class OaBase {
         for (const imp of schema.anyOf || []) {
             this.createImports(imp, imports, additional);
         }
-        if (processOneOf) {
-            for (const imp of schema.oneOf || []) {
-                this.createImports(imp, imports, additional);
-            }
-        }
         if (schema.items) {
             this.createImports(schema.items, imports, additional);
         }
         if (schema.properties) {
             for (const prop of Object.values(schema.properties)) {
-                this.createImports(prop, imports, additional, true);
+                this.createImports(prop, imports, additional);
             }
         }
         if (typeof schema.additionalProperties === 'object') {

@@ -35,7 +35,6 @@ export class OaOperation {
     public methodName: string;
     public pathVar: string;
     public parameters: OaParameter[] = [];
-    public hasParameters: boolean;
     public parametersRequired = false;
     public security: OaSecurity[][] = [];
     public deprecated: boolean;
@@ -43,7 +42,6 @@ export class OaOperation {
     public requestBody?: OaRequestBody;
     public successResponse?: OaResponse;
     public allResponses: OaResponse[] = [];
-    public pathExpression: string;
     public variants: OaOperationVariant[] = [];
     public generateResponseMethod: boolean;
 
@@ -67,7 +65,6 @@ export class OaOperation {
         if (this.parameters.some((p) => p.required)) {
             this.parametersRequired = true;
         }
-        this.hasParameters = this.parameters.length > 0;
 
         this.security = spec.security ? this.collectSecurity(spec.security) : this.collectSecurity(openApi.security);
 
@@ -77,7 +74,7 @@ export class OaOperation {
                 body = resolveRef(this.openApi, body.$ref) as RequestBodyObject | ReferenceObject;
             }
             body = body as RequestBodyObject;
-            this.requestBody = new OaRequestBody(body, this.collectContent(body.content), this.options);
+            this.requestBody = new OaRequestBody(body, this.collectContent(body.content));
             if (body.required) {
                 this.parametersRequired = true;
             }
@@ -86,7 +83,6 @@ export class OaOperation {
         const responses = this.collectResponses();
         this.successResponse = responses.success;
         this.allResponses = responses.all;
-        this.pathExpression = this.toPathExpression();
 
         this.deprecated = !!spec.deprecated;
     }
@@ -96,18 +92,8 @@ export class OaOperation {
         for (const parameter of this.parameters) {
             parameter.updateProperties(context);
         }
-        for (const securityGroup of this.security) {
-            for (const security of securityGroup) {
-                security.updateProperties(context);
-            }
-        }
         if (this.requestBody) {
             for (const cnt of this.requestBody.content) {
-                cnt.updateProperties(context);
-            }
-        }
-        if (this.successResponse) {
-            for (const cnt of this.successResponse.content) {
                 cnt.updateProperties(context);
             }
         }
@@ -172,7 +158,7 @@ export class OaOperation {
         }
         const result: OaContent[] = [];
         for (const [type, typeSpec] of Object.entries(desc)) {
-            result.push(new OaContent(type, typeSpec, this.openApi, this.options));
+            result.push(new OaContent(type, typeSpec));
         }
         return result;
     }
@@ -202,25 +188,7 @@ export class OaOperation {
         const responseDesc = responseObject.$ref
             ? (resolveRef(this.openApi, responseObject.$ref) as ResponseObject)
             : (responseObject as ResponseObject);
-        return new OaResponse(
-            statusCode,
-            responseDesc.description || '',
-            this.collectContent(responseDesc.content),
-            this.options,
-        );
-    }
-
-    /**
-     * Returns a path expression to be evaluated, for example:
-     * "/a/{var1}/b/{var2}/" returns "/a/${params.var1}/b/${params.var2}"
-     */
-    protected toPathExpression() {
-        // eslint-disable-next-line unicorn/better-regex
-        return (this.path || '').replace(/\{([^}]+)}/g, (_, pName) => {
-            const param = this.parameters.find((p) => p.name === pName);
-            const paramName = param ? param.var : pName;
-            return '${params.' + paramName + '}';
-        });
+        return new OaResponse(statusCode, responseDesc.description || '', this.collectContent(responseDesc.content));
     }
 
     protected calculateVariants() {
@@ -231,9 +199,7 @@ export class OaOperation {
         for (const [requestPart, requestContent] of requestVariants.entries()) {
             for (const [responsePart, responseContent] of responseVariants.entries()) {
                 const methodName = this.methodName + requestPart + responsePart;
-                this.variants.push(
-                    new OaOperationVariant(this, methodName, requestContent, responseContent, this.options),
-                );
+                this.variants.push(new OaOperationVariant(this, methodName, requestContent, responseContent));
             }
         }
     }

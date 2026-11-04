@@ -9,8 +9,8 @@ export class OaEnumValue {
     public description: string;
 
     constructor(
-        public type: string,
-        public options: Options,
+        type: string,
+        options: Options,
         name: string | undefined,
         description: string | undefined,
         _value: unknown,

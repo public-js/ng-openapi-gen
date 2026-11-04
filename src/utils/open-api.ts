@@ -23,7 +23,7 @@ export function enumName(value: string, options: Options): string {
     if (options.enumStyle === 'ignorecase') {
         return name;
     } else if (options.enumStyle === 'upper') {
-        name = upperCase(name).replace(/\s+/g, '_');
+        name = upperCase(name);
     } else {
         name = upperFirst(camelCase(name));
     }

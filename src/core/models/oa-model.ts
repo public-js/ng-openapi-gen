@@ -9,13 +9,12 @@ import { unqualifiedName } from '../../utils/open-api.js';
 import { tsComments } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
-const nullInUnion = { val: 'null | ', len: 7 };
+const NULL_PREFIX = 'null | ';
 
 export class OaModel extends OaBase {
     public assumedName: string;
 
     // General type
-    public isSimple: boolean;
     public isEnum: boolean;
     public isObject: boolean;
     // Simple properties
@@ -61,7 +60,10 @@ export class OaModel extends OaBase {
         this.isObject =
             (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
         this.isEnum = (this.enumValues || []).length > 0;
-        this.isSimple = !this.isObject && !this.isEnum;
+    }
+
+    public get isSimple(): boolean {
+        return !this.isObject && !this.isEnum;
     }
 
     public collectImports(imports: Map<string, OaImport>): void {
@@ -94,13 +96,9 @@ export class OaModel extends OaBase {
             // See https://github.com/cyclosproject/ng-openapi-gen/issues/68
             const propTypes = new Set<string>();
             const appendType = (type: string) => {
-                if (Array.isArray(type)) {
-                    for (const subType of type) {
-                        propTypes.add(subType);
-                    }
-                } else if (type.startsWith(nullInUnion.val)) {
+                if (type.startsWith(NULL_PREFIX)) {
                     propTypes.add('null');
-                    propTypes.add(type.slice(nullInUnion.len));
+                    propTypes.add(type.slice(NULL_PREFIX.length));
                 } else {
                     propTypes.add(type);
                 }

@@ -23,12 +23,7 @@ export class OaService extends OaBase {
     public collectImports(imports: Map<string, OaImport>): void {
         for (const operation of this.operations) {
             for (const parameter of operation.parameters) {
-                this.createImports(parameter.spec.schema, imports, false, true);
-            }
-            for (const securityGroup of operation.security) {
-                for (const security of securityGroup) {
-                    this.createImports(security.spec.schema, imports);
-                }
+                this.createImports(parameter.spec.schema, imports);
             }
             if (operation.requestBody) {
                 for (const content of operation.requestBody.content) {
@@ -38,7 +33,7 @@ export class OaService extends OaBase {
             for (const response of operation.allResponses) {
                 const additional = response !== operation.successResponse;
                 for (const content of response.content) {
-                    this.createImports(content.spec.schema, imports, additional, true);
+                    this.createImports(content.spec.schema, imports, additional);
                 }
             }
         }

@@ -35,7 +35,7 @@ export function kebabCase(input: string): string {
 }
 
 export function upperCase(input: string): string {
-    return constantCase(normalizeCaseInput(input)).replace(/_/g, ' ');
+    return constantCase(normalizeCaseInput(input));
 }
 
 export function upperFirst(input: string): string {

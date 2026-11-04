@@ -2,7 +2,6 @@ import { SchemaObject } from 'openapi3-ts';
 
 import { OaContent } from './oa-content.js';
 import { OaOperation } from './oa-operation.js';
-import { Options } from '../../config/options.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { tsComments } from '../../utils/string.js';
 
@@ -11,12 +10,6 @@ export class OaOperationVariant {
     public resultType: string;
     public responseType: string;
     public accept: string;
-
-    public isVoid: boolean;
-    public isNumber: boolean;
-    public isString: boolean;
-    public isBoolean: boolean;
-    public isOther: boolean;
 
     public responseMethodTsComments: string;
     public bodyMethodTsComments: string;
@@ -27,7 +20,6 @@ export class OaOperationVariant {
         public methodName: string,
         public requestBody: OaContent | null,
         public successResponse: OaContent | null,
-        public options: Options,
     ) {
         this.generateResponseMethod = operation.generateResponseMethod;
         this.responseMethodName = `${methodName}$Response`;
@@ -42,12 +34,6 @@ export class OaOperationVariant {
             this.accept = '*/*';
         }
 
-        this.isVoid = this.resultType === 'void';
-        this.isNumber = this.resultType === 'number';
-        this.isString = this.resultType === 'string';
-        this.isBoolean = this.resultType === 'boolean';
-        this.isOther = !this.isVoid && !this.isNumber && !this.isString && !this.isBoolean;
-
         this.responseMethodTsComments = tsComments(
             `${this.descriptionPrefix}This method provides access to the full \`HttpResponse\`, allowing access to response headers.\nTo access only the response body, use \`${this.methodName}()\` instead.${this.descriptionSuffix}`,
             1,
@@ -58,6 +44,18 @@ export class OaOperationVariant {
             1,
             operation.deprecated,
         );
+    }
+
+    public get isVoid(): boolean {
+        return this.resultType === 'void';
+    }
+
+    public get isNumber(): boolean {
+        return this.resultType === 'number';
+    }
+
+    public get isBoolean(): boolean {
+        return this.resultType === 'boolean';
     }
 
     protected inferResponseType(successResponse: OaContent, operation: OaOperation): string {
