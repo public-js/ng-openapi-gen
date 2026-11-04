@@ -1,3 +1,9 @@
+## [0.2.1-rc.2](https://github.com/public-js/ng-openapi-gen/compare/0.2.1-rc.1...0.2.1-rc.2) (2026-11-04)
+
+### Features
+
+* discriminator enum values ([2c28c25](https://github.com/public-js/ng-openapi-gen/commit/2c28c25d1faee14a3d22e047bce4dc582ff499a6))
+
 ## [0.2.1-rc.1](https://github.com/public-js/ng-openapi-gen/compare/0.2.1-rc.0...0.2.1-rc.1) (2026-04-01)
 
 ## [0.2.1-rc.0](https://github.com/public-js/ng-openapi-gen/compare/0.1.1...0.2.1-rc.0) (2026-03-24)
