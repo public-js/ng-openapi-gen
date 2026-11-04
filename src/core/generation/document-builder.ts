@@ -39,7 +39,7 @@ export class GeneratorDocumentBuilder {
 
         const document = this.toDocument();
         await this.hooks.transformDocument(document, { openApi: this.openApi, document });
-        return this.toDocument();
+        return { ...document, ...indexDocument(document) };
     }
 
     private async collectModels(): Promise<void> {
@@ -186,19 +186,28 @@ export class GeneratorDocumentBuilder {
         const services = Array.from(this.services.values()).sort((a, b) => a.fileName.localeCompare(b.fileName));
         const operations = Array.from(this.operations.values()).sort((a, b) => a.id.localeCompare(b.id));
 
+        const lists = { models, operations, services };
         return {
             openApi: this.openApi,
             options: this.options,
             logger: this.logger,
             globals: this.globals,
-            models,
-            operations,
-            services,
-            modelsById: new Map(models.map((model) => [modelId(model.name), model])),
-            operationsById: new Map(operations.map((operation) => [operation.id, operation])),
-            servicesById: new Map(services.map((service) => [service.name, service])),
+            ...lists,
+            ...indexDocument(lists),
         };
     }
+}
+
+function indexDocument({
+    models,
+    operations,
+    services,
+}: Pick<GeneratorDocument, 'models' | 'operations' | 'services'>) {
+    return {
+        modelsById: new Map(models.map((model) => [modelId(model.name), model])),
+        operationsById: new Map(operations.map((operation) => [operation.id, operation])),
+        servicesById: new Map(services.map((service) => [service.name, service])),
+    };
 }
 
 export function modelId(name: string): string {

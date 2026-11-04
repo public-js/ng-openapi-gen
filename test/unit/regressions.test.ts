@@ -117,4 +117,26 @@ describe('regressions', () => {
         expect(file('models/inner.ts')).toBeDefined();
         expect(file('models/unused.ts')).toBeUndefined();
     });
+
+    test('transformDocument can change the document lists', async () => {
+        const schemas = { Foo: fooSchema, Extra: fooSchema };
+        const { document, file } = await emit(
+            specWithTags(['One'], { ...schemas, Other: fooSchema }),
+            [
+                {
+                    transformDocument(document) {
+                        document.services = [];
+                        document.models = document.models.filter((model) => model.name !== 'Foo');
+                    },
+                },
+            ],
+            { ignoreUnusedModels: false },
+        );
+
+        expect(file('models/foo.ts')).toBeUndefined();
+        expect(file('models/extra.ts')).toBeDefined();
+        expect(file('services/one.service.ts')).toBeUndefined();
+        expect(document.modelsById.has('#/components/schemas/Foo')).toBe(false);
+        expect(document.servicesById.size).toBe(0);
+    });
 });
