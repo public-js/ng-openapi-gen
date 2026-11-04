@@ -101,4 +101,20 @@ describe('regressions', () => {
 
         expect(file('models/item.ts')).toContain('kind?: Kind.Quoted;');
     });
+
+    test('keeps models only reachable through contentSchema', async () => {
+        const schemas = {
+            Foo: {
+                type: 'object',
+                properties: { p: { type: 'string', contentSchema: { $ref: '#/components/schemas/Inner' } } },
+            },
+            Inner: fooSchema,
+            Unused: fooSchema,
+        };
+        const { file } = await emit(specWithTags(['One'], schemas));
+
+        expect(file('models/foo.ts')).toContain("from './inner'");
+        expect(file('models/inner.ts')).toBeDefined();
+        expect(file('models/unused.ts')).toBeUndefined();
+    });
 });

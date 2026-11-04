@@ -1,7 +1,7 @@
-import type { OpenAPIObject, OperationObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
+import type { OpenAPIObject, OperationObject, SchemaObject } from 'openapi3-ts';
 
 import type { Options } from '../../config/options.js';
-import { methodName, refName } from '../../utils/string.js';
+import { methodName } from '../../utils/string.js';
 import { HookRunner } from '../hooks/runner.js';
 import type { GeneratorDocument } from './document.js';
 import { Globals } from '../runtime/globals.js';
@@ -151,42 +151,9 @@ export class GeneratorDocumentBuilder {
             return;
         }
         usedNames.add(model.name);
-        for (const nameRef of this.allReferencedNames(model.schema)) {
-            this.collectDependencies(nameRef, usedNames);
+        for (const imp of model.imports) {
+            this.collectDependencies(imp.refName, usedNames);
         }
-    }
-
-    private allReferencedNames(schema: SchemaObject | ReferenceObject | undefined): string[] {
-        if (!schema) {
-            return [];
-        }
-        if ('$ref' in schema && schema.$ref) {
-            return [refName(schema.$ref)];
-        }
-        const definition = schema as SchemaObject;
-
-        const result: string[] = [];
-        for (const candidate of definition.allOf || []) {
-            result.push(...this.allReferencedNames(candidate));
-        }
-        for (const candidate of definition.anyOf || []) {
-            result.push(...this.allReferencedNames(candidate));
-        }
-        for (const candidate of definition.oneOf || []) {
-            result.push(...this.allReferencedNames(candidate));
-        }
-        if (definition.properties) {
-            for (const candidate of Object.values(definition.properties)) {
-                result.push(...this.allReferencedNames(candidate));
-            }
-        }
-        if (typeof definition.additionalProperties === 'object') {
-            result.push(...this.allReferencedNames(definition.additionalProperties));
-        }
-        if (definition.items) {
-            result.push(...this.allReferencedNames(definition.items));
-        }
-        return result;
     }
 
     private shortenModels(): void {
