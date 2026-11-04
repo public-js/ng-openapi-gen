@@ -96,9 +96,25 @@ export function tsTypeVal(
         return `Array<${itemsType}>`;
     }
 
-    // All the types
     const allOf = schema.allOf || [];
     let intersectionType: string[] = [];
+
+    // Special case: enum discriminator
+    if (allOf.length === 2) {
+        const enumRefObject = allOf.find((o: ReferenceObject) => !!o.$ref) as ReferenceObject|undefined;
+        const memberObject = allOf.find((o: SchemaObject) => !!o.enum) as SchemaObject|undefined;
+        if (enumRefObject && memberObject && memberObject.enum.length === 1) {
+            const enumRef = effectiveSchemaOrRef(enumRefObject);
+            const name = refName(enumRef.$ref);
+            const imp: OaImport | undefined = imports?.get(name);
+            if (container?.name !== name && imp) {
+                const enumName = imp.useAlias ? imp.qualifiedName : imp.typeName;
+                intersectionType.push(`${enumName}.${memberObject.enum[0]}`);
+            }
+        }
+    }
+
+    // Types intersection
     if (allOf.length > 0) {
         intersectionType = allOf.map((u) => tsTypeVal(u, openApi, options, imports, container));
     }

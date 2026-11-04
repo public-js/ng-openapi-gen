@@ -1,0 +1,7 @@
+{
+  "$schema": "../../../src/schema.json",
+  "input": "discriminator-enum.yaml",
+  "output": "./tmp/actual/discriminator-enum",
+  "runPrettier": false,
+  "ignoreUnusedModels": false
+}

@@ -1,0 +1,27 @@
+﻿components:
+  schemas:
+    AnimalType:
+      type: string
+      enum: [ Dog, Cat ]
+
+    Dog:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/AnimalType'
+            - enum:
+                - Dog
+        breed:
+          type: string
+
+    Cat:
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/AnimalType'
+            - enum:
+                - Cat
+        indoor:
+          type: boolean
