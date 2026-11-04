@@ -1,6 +1,6 @@
 import { posix } from 'node:path';
 
-import { OpenAPIObject, SchemaObject } from 'openapi3-ts/oas31';
+import type { OpenAPIObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import { Options } from '../../config/options.js';
 import { isNullable, schemaTypes, unqualifiedName } from '../../utils/open-api.js';

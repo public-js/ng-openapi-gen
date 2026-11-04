@@ -1,4 +1,4 @@
-import { RequestBodyObject } from 'openapi3-ts/oas31';
+import type { RequestBodyObject } from 'openapi3-ts/oas31';
 
 import { docText } from '../../utils/string.js';
 import { OaContent } from './oa-content.js';

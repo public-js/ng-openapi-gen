@@ -1,4 +1,4 @@
-import { SchemaObject } from 'openapi3-ts/oas31';
+import type { SchemaObject } from 'openapi3-ts/oas31';
 
 import { resolveRef } from '../../utils/open-api.js';
 import { docText } from '../../utils/string.js';

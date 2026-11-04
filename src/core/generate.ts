@@ -1,7 +1,7 @@
-import $RefParser from '@apidevtools/json-schema-ref-parser';
 import type { OpenAPIObject } from 'openapi3-ts/oas31';
 
 import { type OptionsInput, resolveOptions } from '../config/options.js';
+import { loadOpenApi } from '../utils/spec-loader.js';
 import { emitDocument } from './emitter/emit-document.js';
 import { GeneratorDocumentBuilder } from './generation/document-builder.js';
 import { loadHooks } from './hooks/loader.js';
@@ -24,9 +24,7 @@ export async function generate(input: Partial<OptionsInput>): Promise<GenerateRe
 
     const logger = new GeneratorLogger(options.verbose);
     const hooks = new HookRunner(await loadHooks(options.hooks), options, logger);
-    let openApi = (await $RefParser.bundle(options.input, {
-        resolve: { http: { timeout: options.fetchTimeout } },
-    })) as OpenAPIObject;
+    let openApi = await loadOpenApi(options.input, options.fetchTimeout);
     openApi = await hooks.transformOpenApi(openApi);
 
     const document = await new GeneratorDocumentBuilder(openApi, options, hooks, logger).build();
