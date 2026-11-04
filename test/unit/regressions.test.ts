@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { describe, expect, test } from 'vitest';
 
 import { emit, fooSchema, specBase, specWithTags } from './emit-helper.js';
@@ -173,5 +176,11 @@ describe('regressions', () => {
 
         expect(file('late.ts')).toBe('export {};\n');
         expect(file('late.txt')).toBe('late\n');
+    });
+
+    test('the JSON schema has a valid $id', () => {
+        const schema = JSON.parse(readFileSync(resolve(process.cwd(), 'src/schema.json'), 'utf8')) as { $id: string };
+
+        expect(schema.$id).toBe('https://github.com/public-js/ng-openapi-gen/blob/main/src/schema.json');
     });
 });
