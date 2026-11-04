@@ -25,9 +25,12 @@ export function buildServiceSourceFile(sourceFile: SourceFile, service: OaServic
         },
         { moduleSpecifier: 'rxjs', namedImports: ['Observable'] },
         { moduleSpecifier: 'rxjs/operators', namedImports: ['filter', 'map'] },
-        { moduleSpecifier: `../${document.globals.configurationFile}`, namedImports: [document.globals.rootUrlToken] },
         {
-            moduleSpecifier: `../${document.globals.requestBuilderFile}`,
+            moduleSpecifier: `${service.pathToRoot}${document.globals.configurationFile}`,
+            namedImports: [document.globals.rootUrlToken],
+        },
+        {
+            moduleSpecifier: `${service.pathToRoot}${document.globals.requestBuilderFile}`,
             namedImports: [document.globals.requestBuilderClass, document.globals.responseClass],
         },
         ...service.imports.map((imp) => ({ moduleSpecifier: imp.file, namedImports: [namedSpecifier(imp)] })),

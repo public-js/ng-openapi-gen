@@ -12,8 +12,8 @@ import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { API_ROOT_URL_TOKEN } from '../api-configuration';
-import { RequestBuilder, StrictHttpResponse } from '../request-builder';
+import { API_ROOT_URL_TOKEN } from '../../../../../api-configuration';
+import { RequestBuilder, StrictHttpResponse } from '../../../../../request-builder';
 
 
 @Injectable()

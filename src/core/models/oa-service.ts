@@ -1,3 +1,5 @@
+import { posix } from 'node:path';
+
 import { TagObject } from 'openapi3-ts';
 
 import { OaBase } from './oa-base.js';
@@ -17,7 +19,15 @@ export class OaService extends OaBase {
 
         this.fileName = this.fileName.replace(/-service$/, '.service');
         this.docs = docText(tag.description);
-        this.pathToModels = `../${options.modelsDir}/`;
+    }
+
+    public get sourceDir(): string {
+        return posix.join(this.options.servicesDir, this.namespace ?? '');
+    }
+
+    /** Relative path to the output root, ending with `/` */
+    public get pathToRoot(): string {
+        return `${posix.relative(this.sourceDir, '.')}/`;
     }
 
     public collectImports(imports: Map<string, OaImport>): void {

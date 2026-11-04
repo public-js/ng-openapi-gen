@@ -1,3 +1,5 @@
+import { posix } from 'node:path';
+
 import { OaModel } from './oa-model.js';
 import { Options } from '../../config/options.js';
 import { qualifiedName, unqualifiedName } from '../../utils/open-api.js';
@@ -57,29 +59,9 @@ export class OaImport {
         );
     }
 
-    public getRelativePath(sourceNamespaceSplit: string[], pathToModels: string): string {
-        const namespaceSplit = (this.namespace || '').split('/').filter(Boolean);
-        const [nsLen, srcNsLen] = [namespaceSplit.length, sourceNamespaceSplit.length];
-
-        if (nsLen === 0 && srcNsLen === 0) {
-            return pathToModels ? `${pathToModels}${this.fileName}` : `./${this.fileName}`;
-        }
-
-        let diffIx = null;
-        for (const currentIx in namespaceSplit) {
-            if (namespaceSplit[currentIx] !== sourceNamespaceSplit[currentIx]) {
-                diffIx = currentIx;
-                break;
-            }
-        }
-
-        if (diffIx === null) {
-            return nsLen === srcNsLen ? `./${this.fileName}` : '../'.repeat(srcNsLen - nsLen) + this.fileName;
-        }
-
-        const goUpCount = srcNsLen - diffIx;
-        const goUpPart = goUpCount ? '../'.repeat(goUpCount) : pathToModels ? '' : './';
-        const goDownPart = namespaceSplit.slice(diffIx).join('/');
-        return `${pathToModels}${goUpPart}${goDownPart}/${this.fileName}`;
+    /** Returns the import path of this model from a file in `sourceDir`. Both are relative to the output root. */
+    public getRelativePath(sourceDir: string, modelsDir: string): string {
+        const path = posix.relative(sourceDir, posix.join(modelsDir, this.file));
+        return path.startsWith('..') ? path : `./${path}`;
     }
 }

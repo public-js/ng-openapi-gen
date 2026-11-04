@@ -16,8 +16,8 @@ export abstract class OaBase {
     public qualifiedName: string;
     /** Doc comment text for this type */
     public docs: string;
-    /** Relative path to modelsDir, ending with `/` */
-    public pathToModels: string;
+    /** Folder of the generated file, relative to the output root */
+    public abstract get sourceDir(): string;
 
     public imports: OaImport[];
     protected _imports = new Map<string, OaImport>();
@@ -111,9 +111,8 @@ export abstract class OaBase {
             typeNamesCount.set(imp.typeName, (typeNamesCount.get(imp.typeName) || 0) + 1);
         }
 
-        const namespaceSplit = (this.namespace || '').split('/').filter(Boolean);
         for (const imp of this._imports.values()) {
-            imp.file = imp.getRelativePath(namespaceSplit, this.pathToModels);
+            imp.file = imp.getRelativePath(this.sourceDir, this.options.modelsDir);
 
             if (typeNamesCount.get(imp.typeName) > 1) {
                 imp.useAlias = true;

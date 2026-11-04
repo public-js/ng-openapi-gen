@@ -1,3 +1,5 @@
+import { posix } from 'node:path';
+
 import { OpenAPIObject, SchemaObject } from 'openapi3-ts';
 
 import { OaBase } from './oa-base.js';
@@ -34,7 +36,6 @@ export class OaModel extends OaBase {
         this.assumedName = this.qualifiedName;
 
         this.docs = docText(schema.description, schema.deprecated);
-        this.pathToModels = '';
 
         const type = this.schema.type || this.options.fallbackPropertyType;
 
@@ -56,6 +57,10 @@ export class OaModel extends OaBase {
         this.isObject =
             (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
         this.isEnum = (this.enumValues || []).length > 0;
+    }
+
+    public get sourceDir(): string {
+        return posix.join(this.options.modelsDir, this.namespace ?? '');
     }
 
     public get isSimple(): boolean {
