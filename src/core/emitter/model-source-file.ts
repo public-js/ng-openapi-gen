@@ -1,20 +1,12 @@
 import { type SourceFile } from 'ts-morph';
 
 import type { OaModel } from '../models/oa-model.js';
-import { toDocs } from './source-file-helpers.js';
+import { namedSpecifier, toDocs } from './source-file-helpers.js';
 
 export function buildModelSourceFile(sourceFile: SourceFile, model: OaModel): void {
-    for (const modelImport of model.imports) {
-        sourceFile.addImportDeclaration({
-            moduleSpecifier: modelImport.file,
-            namedImports: [
-                {
-                    name: modelImport.typeName,
-                    alias: modelImport.useAlias ? modelImport.qualifiedName : undefined,
-                },
-            ],
-        });
-    }
+    sourceFile.addImportDeclarations(
+        model.imports.map((imp) => ({ moduleSpecifier: imp.file, namedImports: [namedSpecifier(imp)] })),
+    );
 
     if (model.isObject) {
         sourceFile.addInterface({

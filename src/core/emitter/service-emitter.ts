@@ -10,47 +10,27 @@ import {
 import type { GeneratorDocument } from '../generation/document.js';
 import type { OaOperationVariant } from '../models/oa-operation-variant.js';
 import type { OaService } from '../models/oa-service.js';
-import { toDocs } from './source-file-helpers.js';
+import { namedSpecifier, toDocs } from './source-file-helpers.js';
 
 export function buildServiceSourceFile(sourceFile: SourceFile, service: OaService, document: GeneratorDocument): void {
     sourceFile.addStatements(document.globals.autoGenerationNotice);
     const useInjectFunction = document.options.injectionStyle === 'inject';
 
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: '@angular/common/http',
-        namedImports: ['HttpClient', 'HttpContext', 'HttpResponse'],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: '@angular/core',
-        namedImports: useInjectFunction ? ['inject', 'Injectable'] : ['Inject', 'Injectable'],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: 'rxjs',
-        namedImports: ['Observable'],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: 'rxjs/operators',
-        namedImports: ['filter', 'map'],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: `../${document.globals.configurationFile}`,
-        namedImports: [document.globals.rootUrlToken],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: `../${document.globals.requestBuilderFile}`,
-        namedImports: [document.globals.requestBuilderClass, document.globals.responseClass],
-    });
-    for (const serviceImport of service.imports) {
-        sourceFile.addImportDeclaration({
-            moduleSpecifier: serviceImport.file,
-            namedImports: [
-                {
-                    name: serviceImport.typeName,
-                    alias: serviceImport.useAlias ? serviceImport.qualifiedName : undefined,
-                },
-            ],
-        });
-    }
+    sourceFile.addImportDeclarations([
+        { moduleSpecifier: '@angular/common/http', namedImports: ['HttpClient', 'HttpContext', 'HttpResponse'] },
+        {
+            moduleSpecifier: '@angular/core',
+            namedImports: useInjectFunction ? ['inject', 'Injectable'] : ['Inject', 'Injectable'],
+        },
+        { moduleSpecifier: 'rxjs', namedImports: ['Observable'] },
+        { moduleSpecifier: 'rxjs/operators', namedImports: ['filter', 'map'] },
+        { moduleSpecifier: `../${document.globals.configurationFile}`, namedImports: [document.globals.rootUrlToken] },
+        {
+            moduleSpecifier: `../${document.globals.requestBuilderFile}`,
+            namedImports: [document.globals.requestBuilderClass, document.globals.responseClass],
+        },
+        ...service.imports.map((imp) => ({ moduleSpecifier: imp.file, namedImports: [namedSpecifier(imp)] })),
+    ]);
 
     sourceFile.addClass({
         isExported: true,

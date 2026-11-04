@@ -2,6 +2,7 @@ import { Scope, VariableDeclarationKind, type SourceFile } from 'ts-morph';
 
 import type { GeneratorDocument } from '../generation/document.js';
 import { OaImport } from '../models/oa-import.js';
+import { namedSpecifier } from './source-file-helpers.js';
 
 export function buildConfigurationSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
     sourceFile.addStatements(document.globals.autoGenerationNotice);
@@ -25,20 +26,17 @@ export function buildConfigurationSourceFile(sourceFile: SourceFile, document: G
 export function buildModuleSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
     sourceFile.addStatements(document.globals.autoGenerationNotice);
     const useInjectFunction = document.options.injectionStyle === 'inject';
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: '@angular/common/http',
-        namedImports: ['HttpClient'],
-    });
-    sourceFile.addImportDeclaration({
-        moduleSpecifier: '@angular/core',
-        namedImports: useInjectFunction ? ['NgModule', 'inject'] : ['NgModule', 'Optional', 'SkipSelf'],
-    });
-    for (const service of document.services) {
-        sourceFile.addImportDeclaration({
+    sourceFile.addImportDeclarations([
+        { moduleSpecifier: '@angular/common/http', namedImports: ['HttpClient'] },
+        {
+            moduleSpecifier: '@angular/core',
+            namedImports: useInjectFunction ? ['NgModule', 'inject'] : ['NgModule', 'Optional', 'SkipSelf'],
+        },
+        ...document.services.map((service) => ({
             moduleSpecifier: `${document.globals.pathToServicesDir}${service.fileName}`,
             namedImports: [service.typeName],
-        });
-    }
+        })),
+    ]);
     sourceFile.addClass({
         isExported: true,
         name: document.globals.moduleClass,
@@ -111,59 +109,45 @@ ${document.services.map((service) => `    ${service.typeName},`).join('\n')}
 }
 
 export function buildModelIndexSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
-    for (const model of document.models.map((entry) => new OaImport().fromModel(entry))) {
-        sourceFile.addExportDeclaration({
+    sourceFile.addExportDeclarations(
+        modelImports(document).map((model) => ({
             isTypeOnly: !model.modelPtr?.isEnum,
-            namedExports: [
-                {
-                    name: model.typeName,
-                    alias: model.useAlias ? model.qualifiedName : undefined,
-                },
-            ],
+            namedExports: [namedSpecifier(model)],
             moduleSpecifier: `${document.globals.pathToModelsDir}${model.file}`,
-        });
-    }
+        })),
+    );
 }
 
 export function buildServiceIndexSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
-    for (const service of document.services) {
-        sourceFile.addExportDeclaration({
-            namedExports: [service.typeName],
-            moduleSpecifier: `${document.globals.pathToServicesDir}${service.fileName}`,
-        });
-    }
+    sourceFile.addExportDeclarations(serviceExports(document));
 }
 
 export function buildRootIndexSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
-    sourceFile.addExportDeclaration({
-        namedExports: [document.globals.rootUrlToken],
-        moduleSpecifier: `./${document.globals.configurationFile}`,
-    });
-    sourceFile.addExportDeclaration({
-        namedExports: [document.globals.requestBuilderClass, document.globals.responseClass],
-        moduleSpecifier: `./${document.globals.requestBuilderFile}`,
-    });
-    if (document.globals.moduleClass && document.globals.moduleFile) {
-        sourceFile.addExportDeclaration({
-            namedExports: [document.globals.moduleClass],
-            moduleSpecifier: `./${document.globals.moduleFile}`,
-        });
-    }
-    for (const model of document.models.map((entry) => new OaImport().fromModel(entry))) {
-        sourceFile.addExportDeclaration({
-            namedExports: [
-                {
-                    name: model.typeName,
-                    alias: model.useAlias ? model.qualifiedName : undefined,
-                },
-            ],
-            moduleSpecifier: `${document.globals.pathToModelsDir}${model.file}`,
-        });
-    }
-    for (const service of document.services) {
-        sourceFile.addExportDeclaration({
-            namedExports: [service.typeName],
-            moduleSpecifier: `${document.globals.pathToServicesDir}${service.fileName}`,
-        });
-    }
+    const { globals } = document;
+    sourceFile.addExportDeclarations([
+        { namedExports: [globals.rootUrlToken], moduleSpecifier: `./${globals.configurationFile}` },
+        {
+            namedExports: [globals.requestBuilderClass, globals.responseClass],
+            moduleSpecifier: `./${globals.requestBuilderFile}`,
+        },
+        ...(globals.moduleClass && globals.moduleFile
+            ? [{ namedExports: [globals.moduleClass], moduleSpecifier: `./${globals.moduleFile}` }]
+            : []),
+        ...modelImports(document).map((model) => ({
+            namedExports: [namedSpecifier(model)],
+            moduleSpecifier: `${globals.pathToModelsDir}${model.file}`,
+        })),
+        ...serviceExports(document),
+    ]);
+}
+
+function modelImports(document: GeneratorDocument): OaImport[] {
+    return document.models.map((model) => new OaImport().fromModel(model));
+}
+
+function serviceExports(document: GeneratorDocument) {
+    return document.services.map((service) => ({
+        namedExports: [service.typeName],
+        moduleSpecifier: `${document.globals.pathToServicesDir}${service.fileName}`,
+    }));
 }
