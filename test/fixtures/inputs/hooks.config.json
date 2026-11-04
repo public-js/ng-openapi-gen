@@ -1,7 +1,7 @@
 {
   "$schema": "../../../src/schema.json",
   "input": "hooks.json",
-  "output": "../modified-results/hooks",
+  "output": "./tmp/actual/hooks",
   "hooks": ["test/fixtures/inputs/hooks.mjs"],
   "runEslint": false,
   "runPrettier": false

@@ -41,9 +41,11 @@ describe('fixture contracts', () => {
                     if (relativePath.endsWith('.ts')) {
                         const expected = canonicalizeTypeScript(readFileSync(expectedPath, 'utf8'));
                         const actual = canonicalizeTypeScript(readFileSync(actualPath, 'utf8'));
-                        expect(actual).toBe(expected);
+                        expect(actual, `Mismatched '${relativePath}'`).toBe(expected);
                     } else {
-                        expect(readFileSync(actualPath, 'utf8')).toBe(readFileSync(expectedPath, 'utf8'));
+                        expect(readFileSync(actualPath, 'utf8'), `Mismatched '${relativePath}'`).toBe(
+                            readFileSync(expectedPath, 'utf8'),
+                        );
                     }
                 }
             } finally {

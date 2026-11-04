@@ -36,15 +36,7 @@ export class OaModel extends OaBase {
         const description = schema.description || '';
         this.tsComments = tsComments(description, 0, schema.deprecated);
         this.pathToModels = '';
-    }
 
-    public collectImports(imports: Map<string, OaImport>): void {
-        this.createImports(this.schema, imports);
-        this.updateImports();
-        this.updateProperties(this._imports);
-    }
-
-    protected updateProperties(imports: Map<string, OaImport>): void {
         const type = this.schema.type || this.options.fallbackPropertyType;
 
         // When enumStyle is 'alias,' it is handled as a simple type.
@@ -69,7 +61,15 @@ export class OaModel extends OaBase {
             (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
         this.isEnum = (this.enumValues || []).length > 0;
         this.isSimple = !this.isObject && !this.isEnum;
+    }
 
+    public collectImports(imports: Map<string, OaImport>): void {
+        this.createImports(this.schema, imports);
+        this.updateImports();
+        this.updateProperties(this._imports);
+    }
+
+    protected updateProperties(imports: Map<string, OaImport>): void {
         if (this.isObject) {
             // Object
             const propertiesByName = new Map<string, OaProperty>();

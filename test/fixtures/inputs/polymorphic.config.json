@@ -1,7 +1,7 @@
 {
   "$schema": "../../../src/schema.json",
   "input": "polymorphic.json",
-  "output": "../modified-results/polymorphic",
+  "output": "./tmp/actual/polymorphic",
   "runPrettier": false,
   "ignoreUnusedModels": false
 }
