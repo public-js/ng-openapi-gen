@@ -56,9 +56,7 @@ export abstract class OaBase {
             const existingImport = imports.get(refName);
             this._imports.set(
                 refName,
-                existingImport
-                    ? new OaImport().fromImport(existingImport)
-                    : new OaImport().fromRef(this.options, refName),
+                existingImport ? OaImport.fromImport(existingImport) : OaImport.fromRef(this.options, refName),
             );
         }
     }

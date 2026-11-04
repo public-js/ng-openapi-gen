@@ -51,7 +51,7 @@ export class GeneratorDocumentBuilder {
         }
         this.shortenModels();
         for (const [name, model] of this.models.entries()) {
-            this.imports.set(name, new OaImport().fromModel(model));
+            this.imports.set(name, OaImport.fromModel(model));
         }
         for (const model of this.models.values()) {
             model.collectImports(this.imports);

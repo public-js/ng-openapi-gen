@@ -155,7 +155,7 @@ export function buildRootIndexSourceFile(sourceFile: SourceFile, document: Gener
 }
 
 function modelImports(document: GeneratorDocument): OaImport[] {
-    return document.models.map((model) => new OaImport().fromModel(model));
+    return document.models.map((model) => OaImport.fromModel(model));
 }
 
 function serviceExports(document: GeneratorDocument) {

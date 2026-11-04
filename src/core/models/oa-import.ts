@@ -4,49 +4,57 @@ import { qualifiedName, unqualifiedName } from '../../utils/open-api.js';
 import { fileName, namespace } from '../../utils/string.js';
 
 export class OaImport {
-    public refName: string;
-    public typeName: string;
-    public qualifiedName: string;
-    public useAlias: boolean;
     public file: string;
 
-    public namespace?: string;
-    public fileName: string;
-    public modelPtr?: OaModel;
-
-    public fromModel(model: OaModel): OaImport {
-        this.refName = model.refName;
-        this.typeName = model.typeName;
-        this.qualifiedName = model.assumedName;
-        this.useAlias = this.typeName !== this.qualifiedName;
-        [this.namespace, this.fileName] = [
-            namespace(model.refName),
-            fileName(unqualifiedName(model.refName, model.options)),
-        ];
-        this.modelPtr = model;
-        this.setRelativePath();
-        return this;
+    private constructor(
+        public refName: string,
+        public typeName: string,
+        public qualifiedName: string,
+        public useAlias: boolean,
+        public namespace: string | undefined,
+        public fileName: string,
+        public modelPtr?: OaModel,
+    ) {
+        this.file = (namespace ? `${namespace}/` : '') + fileName;
     }
 
-    public fromRef(options: Options, refName: string): OaImport {
-        this.refName = refName;
-        this.typeName = unqualifiedName(refName, options);
-        this.qualifiedName = qualifiedName(refName, options);
-        this.useAlias = this.typeName !== this.qualifiedName;
-        [this.namespace, this.fileName] = [namespace(refName), fileName(unqualifiedName(refName, options))];
-        this.setRelativePath();
-        return this;
+    public static fromModel(model: OaModel): OaImport {
+        const { refName, typeName, assumedName, options } = model;
+        return new OaImport(
+            refName,
+            typeName,
+            assumedName,
+            typeName !== assumedName,
+            namespace(refName),
+            fileName(unqualifiedName(refName, options)),
+            model,
+        );
     }
 
-    public fromImport(source: OaImport): OaImport {
-        this.refName = source.refName;
-        this.typeName = source.typeName;
-        this.qualifiedName = source.qualifiedName;
-        this.useAlias = false;
-        [this.namespace, this.fileName] = [source.namespace, source.fileName];
-        this.modelPtr = source.modelPtr;
-        this.setRelativePath();
-        return this;
+    public static fromRef(options: Options, refName: string): OaImport {
+        const typeName = unqualifiedName(refName, options);
+        const aliasName = qualifiedName(refName, options);
+        return new OaImport(
+            refName,
+            typeName,
+            aliasName,
+            typeName !== aliasName,
+            namespace(refName),
+            fileName(typeName),
+        );
+    }
+
+    /** A copy for use within one file, which decides on its own whether an alias is needed. */
+    public static fromImport(source: OaImport): OaImport {
+        return new OaImport(
+            source.refName,
+            source.typeName,
+            source.qualifiedName,
+            false,
+            source.namespace,
+            source.fileName,
+            source.modelPtr,
+        );
     }
 
     public getRelativePath(sourceNamespaceSplit: string[], pathToModels: string): string {
@@ -73,9 +81,5 @@ export class OaImport {
         const goUpPart = goUpCount ? '../'.repeat(goUpCount) : pathToModels ? '' : './';
         const goDownPart = namespaceSplit.slice(diffIx).join('/');
         return `${pathToModels}${goUpPart}${goDownPart}/${this.fileName}`;
-    }
-
-    private setRelativePath(): void {
-        this.file = (this.namespace ? `${this.namespace}/` : '') + this.fileName;
     }
 }
