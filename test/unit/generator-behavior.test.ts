@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import type { OpenAPIObject } from 'openapi3-ts';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 
 import { describe, expect, test } from 'vitest';
@@ -122,6 +122,39 @@ describe('generator behavior', () => {
             expect(readFileSync(join(outputDir, 'fresh.ts'), 'utf8')).toContain('\r\n');
         } finally {
             rmSync(outputDir, { recursive: true, force: true });
+        }
+    });
+
+    test('sweeps only the folders holding generated files', () => {
+        const tempDir = mkdtempSync(join(tmpdir(), 'ng-openapi-gen-stale-'));
+        // A trailing slash must not stop nested folders from being swept
+        const outputDir = `${join(tempDir, 'output')}/`;
+        const file = (relativePath: string) => ({ id: relativePath, kind: 'ts' as const, relativePath, content: '' });
+        const write = (relativePath: string) => {
+            mkdirSync(dirname(join(outputDir, relativePath)), { recursive: true });
+            writeFileSync(join(outputDir, relativePath), 'old', 'utf8');
+        };
+
+        try {
+            for (const path of ['stale.ts', 'models/ns/stale.ts', 'models/stale.ts', 'custom/keep.ts']) {
+                write(path);
+            }
+            writeFileSync(join(tempDir, 'sibling.ts'), 'keep', 'utf8');
+
+            writeGeneratedFiles(
+                [file('models/ns/fresh.ts'), file('../outside.ts')],
+                resolveOptions({ input: 'inline.json', output: outputDir }),
+                new GeneratorLogger(false),
+            );
+
+            expect(existsSync(join(outputDir, 'stale.ts'))).toBe(false);
+            expect(existsSync(join(outputDir, 'models/stale.ts'))).toBe(false);
+            expect(existsSync(join(outputDir, 'models/ns/stale.ts'))).toBe(false);
+            expect(existsSync(join(outputDir, 'models/ns/fresh.ts'))).toBe(true);
+            expect(existsSync(join(outputDir, 'custom/keep.ts'))).toBe(true);
+            expect(existsSync(join(tempDir, 'sibling.ts'))).toBe(true);
+        } finally {
+            rmSync(tempDir, { recursive: true, force: true });
         }
     });
 

@@ -1,12 +1,12 @@
-import { fileRead, resolveFromIMU } from '../../utils/file-system.js';
+import { readFileSync } from 'node:fs';
+
 import type { GeneratorDocument } from '../generation/document.js';
 
 const DEFAULT_REQUEST_BUILDER_CLASS = 'RequestBuilder';
 const DEFAULT_RESPONSE_CLASS = 'StrictHttpResponse';
 
 export function emitRequestBuilderSource(document: GeneratorDocument): string {
-    const assetPath = resolveFromIMU(import.meta.url, '../../support/request-builder.ts');
-    let content = fileRead(assetPath);
+    let content = readFileSync(new URL('../../support/request-builder.ts', import.meta.url), 'utf8');
 
     content = content.replace('/*__AUTO_GENERATION_NOTICE__*/', document.globals.autoGenerationNotice.trim());
     if (document.globals.requestBuilderClass !== DEFAULT_REQUEST_BUILDER_CLASS) {
