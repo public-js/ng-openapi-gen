@@ -167,6 +167,8 @@ export class OaOperation {
         // For example: application/json, application/foo-bar+json, text/json ...
         const requestVariants = this.contentsByMethodPart(this.requestBody);
         const responseVariants = this.contentsByMethodPart(this.successResponse);
+        // Runs once per service, and an operation belongs to one service per tag
+        this.variants = [];
         for (const [requestPart, requestContent] of requestVariants.entries()) {
             for (const [responsePart, responseContent] of responseVariants.entries()) {
                 const methodName = this.methodName + requestPart + responsePart;

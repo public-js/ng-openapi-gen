@@ -1,29 +1,14 @@
-import type { OpenAPIObject } from 'openapi3-ts';
 import { describe, expect, test } from 'vitest';
 
-import { resolveOptions } from '../../src/config/options.js';
-import { emitDocument } from '../../src/core/emitter/emit-document.js';
-import { HookRunner } from '../../src/core/hooks/runner.js';
-import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';
-import { GeneratorLogger } from '../../src/core/runtime/logger.js';
-
-async function emit(openApi: OpenAPIObject) {
-    const options = resolveOptions({ input: 'inline.json' });
-    const logger = new GeneratorLogger(false);
-    const hooks = new HookRunner([], options, logger);
-    const document = await new GeneratorDocumentBuilder(openApi, options, hooks, logger).build();
-    const files = await emitDocument(document, hooks);
-    return (relativePath: string) => files.find((file) => file.relativePath === relativePath)?.content;
-}
+import { emit, specBase } from './emit-helper.js';
 
 // The fixture tests compare ASTs without comments, so doc comments are only covered here
 describe('doc comments', () => {
     const fooSchema = { $ref: '#/components/schemas/Foo' };
 
     test('renders descriptions, deprecations and escaped comment ends', async () => {
-        const file = await emit({
-            openapi: '3.0.0',
-            info: { title: 'Test', version: '1.0.0' },
+        const { file } = await emit({
+            ...specBase,
             tags: [{ name: 'Things', description: 'Service docs' }],
             paths: {
                 '/foo': {
@@ -61,7 +46,7 @@ describe('doc comments', () => {
                     },
                 },
             },
-        } as OpenAPIObject);
+        });
 
         expect(file('models/foo.ts')).toBe(
             [
