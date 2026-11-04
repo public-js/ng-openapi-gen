@@ -1,3 +1,9 @@
+## [0.2.1-rc.3](https://github.com/public-js/ng-openapi-gen/compare/0.2.1-rc.2...0.2.1-rc.3) (2026-11-04)
+
+### Bug Fixes
+
+* enum values ([5ffc46a](https://github.com/public-js/ng-openapi-gen/commit/5ffc46a4428265281a85c67bc02f37b107e49cb3))
+
 ## [0.2.1-rc.2](https://github.com/public-js/ng-openapi-gen/compare/0.2.1-rc.1...0.2.1-rc.2) (2026-11-04)
 
 ### Features

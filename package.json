@@ -1,6 +1,6 @@
 {
   "name": "@public-js/ng-openapi-gen",
-  "version": "0.2.1-rc.2",
+  "version": "0.2.1-rc.3",
   "description": "An OpenAPI 3 code generator for Angular",
   "scripts": {
     "build": "npm run generate:schema && tsc -p tsconfig.build.json && node scripts/copy-build-assets.mjs",
