@@ -26,7 +26,7 @@ export class OaOperationVariant {
 
         if (successResponse) {
             this.resultType = successResponse.type;
-            this.responseType = this.inferResponseType(successResponse, operation);
+            this.responseType = this.inferResponseType(successResponse);
             this.accept = successResponse.mediaType;
         } else {
             this.resultType = 'void';
@@ -58,11 +58,11 @@ export class OaOperationVariant {
         return this.resultType === 'boolean';
     }
 
-    protected inferResponseType(successResponse: OaContent, operation: OaOperation): string {
+    protected inferResponseType(successResponse: OaContent): string {
         // If the schema is in binary format, return 'blob'
         let schemaOrRef = successResponse.spec?.schema || { type: 'string' };
         if (schemaOrRef.$ref) {
-            schemaOrRef = resolveRef(operation.openApi, schemaOrRef.$ref);
+            schemaOrRef = resolveRef(this.operation.openApi, schemaOrRef.$ref);
         }
         const schema = schemaOrRef as SchemaObject;
         if (schema.format === 'binary') {

@@ -32,13 +32,7 @@ export class OaParameter {
     }
 
     protected createParameterOptions(): string {
-        const options: { style?: string; explode?: boolean } = {};
-        if (this.style) {
-            options.style = this.style;
-        }
-        if (!!this.explode === this.explode) {
-            options.explode = this.explode;
-        }
-        return JSON.stringify(options);
+        const { style, explode } = this;
+        return JSON.stringify({ ...(style && { style }), ...(typeof explode === 'boolean' && { explode }) });
     }
 }

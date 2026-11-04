@@ -107,81 +107,52 @@ export class OaOperation {
     }
 
     protected collectParameters(params: (ParameterObject | ReferenceObject)[] | undefined): OaParameter[] {
-        if (!params) {
-            return [];
-        }
+        const excluded = this.options.excludeParameters || [];
         const result: OaParameter[] = [];
-        for (let param of params) {
-            if (param.$ref) {
-                param = resolveRef(this.openApi, param.$ref) as ParameterObject;
-            }
-            param = param as ParameterObject;
+        for (const paramOrRef of params || []) {
+            const param = (paramOrRef.$ref ? resolveRef(this.openApi, paramOrRef.$ref) : paramOrRef) as ParameterObject;
 
             if (param.in === 'cookie') {
                 console.warn(
                     `Ignoring cookie parameter ${this.id}.${param.name} as cookie parameters cannot be sent in XmlHttpRequests.`,
                 );
-            } else if (this.paramIsNotExcluded(param)) {
-                result.push(new OaParameter(param as ParameterObject));
+            } else if (!excluded.includes(param.name)) {
+                result.push(new OaParameter(param));
             }
         }
         return result;
     }
 
     protected collectSecurity(params: SecurityRequirementObject[] | undefined): OaSecurity[][] {
-        if (!params) {
-            return [];
-        }
-        const result: OaSecurity[][] = [];
-        for (const param of params) {
-            const scopeResult: OaSecurity[] = [];
-            for (const [key, scope] of Object.entries(param)) {
-                const security = resolveRef(
-                    this.openApi,
-                    `#/components/securitySchemes/${key}`,
-                ) as SecuritySchemeObject;
-                scopeResult.push(new OaSecurity(key, security, scope));
-            }
-            result.push(scopeResult);
-        }
-        return result;
-    }
-
-    protected paramIsNotExcluded(param: ParameterObject): boolean {
-        const excludedParameters = this.options.excludeParameters || [];
-        return !excludedParameters.includes(param.name);
+        return (params || []).map((param) =>
+            Object.entries(param).map(([key, scope]) => {
+                const scheme = resolveRef(this.openApi, `#/components/securitySchemes/${key}`);
+                return new OaSecurity(key, scheme as SecuritySchemeObject, scope);
+            }),
+        );
     }
 
     protected collectContent(desc: ContentObject | undefined): OaContent[] {
-        if (!desc) {
-            return [];
-        }
-        const result: OaContent[] = [];
-        for (const [type, typeSpec] of Object.entries(desc)) {
-            result.push(new OaContent(type, typeSpec));
-        }
-        return result;
+        return Object.entries(desc || {}).map(([type, typeSpec]) => new OaContent(type, typeSpec));
     }
 
     protected collectResponses(): { success: OaResponse | undefined; all: OaResponse[] } {
-        const allResponses: OaResponse[] = [];
-        const responses = this.spec.responses || {};
-        const responseByType = new Map<string, OaResponse>();
+        const all: OaResponse[] = [];
+        let success: OaResponse | undefined;
+        let fallback: OaResponse | undefined;
 
-        for (const [statusCode, responseObject] of Object.entries(responses)) {
-            const response = this.getResponse(responseObject, statusCode);
-            allResponses.push(response);
-            const statusInt = parseInt(statusCode.trim(), 10);
-            if (statusInt >= 200 && statusInt < 300 && !responseByType.has('successResponse')) {
-                responseByType.set('successResponse', response);
+        for (const [statusCode, responseObject] of Object.entries(this.spec.responses || {})) {
+            const response = this.getResponse(responseObject as ResponseObject, statusCode);
+            all.push(response);
+            const status = parseInt(statusCode.trim(), 10);
+            if (status >= 200 && status < 300) {
+                success ??= response;
             } else if (statusCode === 'default') {
-                responseByType.set('defaultResponse', response);
+                fallback = response;
             }
         }
 
-        const successResponse: OaResponse | undefined =
-            responseByType.get('successResponse') ?? responseByType.get('defaultResponse');
-        return { success: successResponse, all: allResponses };
+        return { success: success ?? fallback, all };
     }
 
     protected getResponse(responseObject: ResponseObject, statusCode: string): OaResponse {
@@ -205,35 +176,16 @@ export class OaOperation {
     }
 
     protected contentsByMethodPart(hasContent?: { content?: OaContent[] }): Map<string, OaContent | null> {
-        const map = new Map<string, OaContent | null>();
-        if (hasContent) {
-            const content = hasContent.content;
-            if (content && content.length > 0) {
-                for (const type of content) {
-                    if (type && type.mediaType) {
-                        map.set(this.variantMethodPart(type), type);
-                    }
-                }
-            }
-        }
-        if (map.size === 0) {
-            map.set('', null);
-        } else if (map.size === 1) {
-            const content = [...map.values()][0];
-            map.clear();
-            map.set('', content);
-        }
-        return map;
+        const contents = (hasContent?.content || []).filter((content) => content?.mediaType);
+        const byMethodPart = new Map(contents.map((content) => [this.variantMethodPart(content), content]));
+        // A single variant needs no suffix in the method name
+        return byMethodPart.size > 1 ? byMethodPart : new Map([['', [...byMethodPart.values()][0] ?? null]]);
     }
 
     /**
      * Returns how the given content is represented on the method name
      */
-    protected variantMethodPart(content: OaContent | null): string {
-        if (!content) {
-            return '';
-        }
-
+    protected variantMethodPart(content: OaContent): string {
         let type = content.mediaType.replace(/\/\*/, '');
         if (type === '*' || type === 'application/octet-stream') {
             return '$Any';

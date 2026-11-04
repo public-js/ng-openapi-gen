@@ -47,12 +47,9 @@ export class OaModel extends OaBase {
         ) {
             const names = (this.schema['x-enumNames'] as string[]) || [];
             const descriptions = (this.schema['x-enumDescriptions'] as string[]) || [];
-            const values = this.schema.enum || [];
-            this.enumValues = [];
-            for (const [i, value] of values.entries()) {
-                const enumValue = new OaEnumValue(type, this.options, names[i], descriptions[i], value);
-                this.enumValues.push(enumValue);
-            }
+            this.enumValues = (this.schema.enum || []).map(
+                (value, i) => new OaEnumValue(type, this.options, names[i], descriptions[i], value),
+            );
         }
 
         const hasAllOf = this.schema.allOf && this.schema.allOf.length > 0;
@@ -78,9 +75,7 @@ export class OaModel extends OaBase {
             // Object
             const propertiesByName = new Map<string, OaProperty>();
             this.collectObject(this.schema, propertiesByName, context);
-            const sortedNames = [...propertiesByName.keys()];
-            sortedNames.sort();
-            this.properties = sortedNames.map((propName) => propertiesByName.get(propName) as OaProperty);
+            this.properties = [...propertiesByName.keys()].sort().map((propName) => propertiesByName.get(propName));
         } else {
             // Simple / array / enum / union / intersection
             this.simpleType = tsTypeVal(this.schema, context);

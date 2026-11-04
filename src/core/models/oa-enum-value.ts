@@ -16,14 +16,8 @@ export class OaEnumValue {
         _value: unknown,
     ) {
         const value = String(_value);
-        this.name = name || enumName(value, options);
+        this.name = name || enumName(value, options) || '_';
         this.description = description || this.name;
-        if (this.name === '') {
-            this.name = '_';
-        }
-        if (this.description === '') {
-            this.description = this.name;
-        }
         this.value = type === 'string' ? `'${jsesc(value)}'` : value;
     }
 }
