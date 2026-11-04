@@ -1,4 +1,4 @@
-import type { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
+import type { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import type { Options } from '../config/options.js';
 import { namespace, toBasicChars, typeName } from './string.js';
@@ -59,10 +59,27 @@ export function resolveRef(openApi: OpenAPIObject, ref: string): unknown {
             current = (current as Record<string, unknown>)[part];
         }
     }
-    if (current == null || typeof current !== 'object') {
+    // In OpenAPI 3.1, a schema may also be a boolean
+    if (current == null || !['object', 'boolean'].includes(typeof current)) {
         throw new Error(`Couldn't resolve reference ${ref}`);
     }
     return current;
+}
+
+/**
+ * Returns the types a schema allows, leaving out `null`, which is reported by {@link isNullable}.
+ * In OpenAPI 3.1, `type` may be a list of types. A schema that only allows `null` returns just that.
+ */
+export function schemaTypes(schema: SchemaObject): string[] {
+    const types = [schema.type ?? []].flat();
+    const concreteTypes = types.filter((type) => type !== 'null');
+    return concreteTypes.length > 0 ? concreteTypes : types;
+}
+
+/** Tells whether a schema allows `null`, either with the 3.1 `null` type, or the 3.0 `nullable` keyword */
+export function isNullable(schemaOrRef: SchemaObject | ReferenceObject | undefined): boolean {
+    const schema = schemaOrRef as (SchemaObject & { nullable?: boolean }) | undefined;
+    return !!schema?.nullable || (Array.isArray(schema?.type) && schema.type.includes('null'));
 }
 
 /**
@@ -76,7 +93,7 @@ export function effectiveSchemaOrRef(
         return schemaOrRef;
     }
     const schema = schemaOrRef as SchemaObject & { contentSchema?: SchemaObject | ReferenceObject };
-    return schema.type === 'string' && schema.format !== 'binary' && schema.contentSchema
+    return schemaTypes(schema).includes('string') && schema.format !== 'binary' && schema.contentSchema
         ? schema.contentSchema
         : schemaOrRef;
 }

@@ -1,6 +1,6 @@
 import { posix } from 'node:path';
 
-import { TagObject } from 'openapi3-ts';
+import { TagObject } from 'openapi3-ts/oas31';
 
 import { Options } from '../../config/options.js';
 import { serviceClass } from '../../utils/open-api.js';

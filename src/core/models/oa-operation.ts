@@ -9,7 +9,7 @@ import {
     ResponseObject,
     SecurityRequirementObject,
     SecuritySchemeObject,
-} from 'openapi3-ts';
+} from 'openapi3-ts/oas31';
 
 import { Options } from '../../config/options.js';
 import { resolveRef } from '../../utils/open-api.js';
@@ -70,7 +70,7 @@ export class OaOperation {
 
         let body = spec.requestBody;
         if (body) {
-            if (body.$ref) {
+            if ('$ref' in body) {
                 body = resolveRef(this.openApi, body.$ref) as RequestBodyObject | ReferenceObject;
             }
             body = body as RequestBodyObject;
@@ -110,7 +110,9 @@ export class OaOperation {
         const excluded = this.options.excludeParameters || [];
         const result: OaParameter[] = [];
         for (const paramOrRef of params || []) {
-            const param = (paramOrRef.$ref ? resolveRef(this.openApi, paramOrRef.$ref) : paramOrRef) as ParameterObject;
+            const param = (
+                '$ref' in paramOrRef ? resolveRef(this.openApi, paramOrRef.$ref) : paramOrRef
+            ) as ParameterObject;
 
             if (param.in === 'cookie') {
                 console.warn(
@@ -155,10 +157,11 @@ export class OaOperation {
         return { success: success ?? fallback, all };
     }
 
-    protected getResponse(responseObject: ResponseObject, statusCode: string): OaResponse {
-        const responseDesc = responseObject.$ref
-            ? (resolveRef(this.openApi, responseObject.$ref) as ResponseObject)
-            : (responseObject as ResponseObject);
+    protected getResponse(responseObject: ResponseObject | ReferenceObject, statusCode: string): OaResponse {
+        const responseDesc =
+            '$ref' in responseObject
+                ? (resolveRef(this.openApi, responseObject.$ref) as ResponseObject)
+                : responseObject;
         return new OaResponse(statusCode, responseDesc.description || '', this.collectContent(responseDesc.content));
     }
 

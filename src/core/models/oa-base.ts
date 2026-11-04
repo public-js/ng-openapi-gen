@@ -1,4 +1,4 @@
-import { ReferenceObject, SchemaObject } from 'openapi3-ts';
+import { ReferenceObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import { Options } from '../../config/options.js';
 import { effectiveSchemaOrRef } from '../../utils/open-api.js';

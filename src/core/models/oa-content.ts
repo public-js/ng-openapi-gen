@@ -1,4 +1,4 @@
-import { MediaTypeObject } from 'openapi3-ts';
+import { MediaTypeObject } from 'openapi3-ts/oas31';
 
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 

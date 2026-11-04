@@ -1,4 +1,4 @@
-import { ReferenceObject, SchemaObject } from 'openapi3-ts';
+import { ReferenceObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import { docText, escapeId } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
@@ -19,9 +19,6 @@ export class OaProperty {
         this.identifier = escapeId(this.name);
 
         this.type = tsTypeVal(this.schema, { ...context, container: model });
-        if ((schema as SchemaObject)?.nullable && !this.type.startsWith('null | ')) {
-            this.type = 'null | ' + this.type;
-        }
 
         this.docs = docText((schema as SchemaObject).description, (schema as SchemaObject).deprecated);
     }

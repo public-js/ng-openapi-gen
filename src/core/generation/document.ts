@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIObject } from 'openapi3-ts/oas31';
 
 import type { Options } from '../../config/options.js';
 import type { OaModel } from '../models/oa-model.js';

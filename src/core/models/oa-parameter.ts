@@ -1,4 +1,4 @@
-import { ParameterLocation, ParameterObject } from 'openapi3-ts';
+import { ParameterLocation, ParameterObject } from 'openapi3-ts/oas31';
 
 import { docText, escapeId } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';

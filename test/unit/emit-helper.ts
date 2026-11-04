@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIObject } from 'openapi3-ts/oas31';
 
 import { emitDocument } from '../../src/core/emitter/emit-document.js';
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';

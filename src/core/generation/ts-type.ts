@@ -1,8 +1,8 @@
 import jsesc from 'jsesc';
-import type { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
+import type { OpenAPIObject, ReferenceObject, SchemaObject, SchemaObjectType } from 'openapi3-ts/oas31';
 
 import type { Options } from '../../config/options.js';
-import { effectiveSchemaOrRef, qualifiedName, resolveRef } from '../../utils/open-api.js';
+import { effectiveSchemaOrRef, isNullable, qualifiedName, resolveRef, schemaTypes } from '../../utils/open-api.js';
 import { refName, tsComments } from '../../utils/string.js';
 import type { OaImport } from '../models/oa-import.js';
 import type { OaModel } from '../models/oa-model.js';
@@ -15,11 +15,21 @@ export interface TypeContext {
     container?: OaModel;
 }
 
-/** Returns the TypeScript type for the given schema */
+/** Returns the TypeScript type for the given schema, including `null` when the schema allows it */
 export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefined, context: TypeContext): string {
+    const type = nonNullType(schemaOrRef, context);
+    return isNullable(schemaOrRef) && type !== 'null' ? `null | ${type}` : type;
+}
+
+/**
+ * Returns the TypeScript type for the given schema, leaving out the `null` that {@link isNullable} reports.
+ * Models are rendered this way, as references to a nullable model add the `null` themselves.
+ */
+export function nonNullType(schemaOrRef: SchemaObject | ReferenceObject | undefined, context: TypeContext): string {
     const { options } = context;
     const effective = effectiveSchemaOrRef(schemaOrRef);
-    if (!effective) {
+    // In OpenAPI 3.1, a schema may also be a boolean
+    if (!effective || typeof effective !== 'object') {
         return options.fallbackPropertyType;
     }
     if (effective.$ref) {
@@ -33,7 +43,14 @@ export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefine
         return types.length > 1 ? `(${types.join(' | ')})` : types[0];
     }
 
-    const type = schema.type || options.fallbackPropertyType;
+    const enumValues = literalValues(schema);
+    const types = schemaTypes(schema);
+    if (types.length > 1 && enumValues.length === 0) {
+        const typeList = types.map((type) => tsTypeVal(narrowToType(schema, type), context));
+        return `(${typeList.join(' | ')})`;
+    }
+
+    const [type = options.fallbackPropertyType] = types;
     if (type === 'array' || schema.items) {
         return arrayType(schema, context);
     }
@@ -44,7 +61,7 @@ export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefine
         return enumMember;
     }
 
-    const intersection = allOf.map((member) => tsTypeVal(member, context));
+    const intersection = allOf.map((member) => nonNullType(member, context));
     if (type === 'object' || schema.properties) {
         intersection.push(objectType(schema, context));
     }
@@ -52,11 +69,8 @@ export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefine
         return intersection.join(' & ');
     }
 
-    const enumValues = schema.enum || [];
     if (enumValues.length > 0) {
-        return type === 'number' || type === 'integer' || type === 'boolean'
-            ? enumValues.join(' | ')
-            : enumValues.map((value) => `'${jsesc(value)}'`).join(' | ');
+        return enumValues.map(literalType).join(' | ');
     }
 
     if (type === 'string' && schema.format === 'binary') {
@@ -68,12 +82,48 @@ export function tsTypeVal(schemaOrRef: SchemaObject | ReferenceObject | undefine
     return type;
 }
 
+/** Returns a schema with several types narrowed to one, leaving out the keywords that only apply to the others */
+function narrowToType(schema: SchemaObject, type: string): SchemaObject {
+    const { properties, additionalProperties, items, ...rest } = schema;
+    return {
+        ...rest,
+        type: type as SchemaObjectType,
+        ...(type === 'object' && { properties, additionalProperties }),
+        ...(type === 'array' && { items }),
+    };
+}
+
+/**
+ * The values of `enum` or `const`. A `null` value is left out when the schema is nullable, as that's handled apart,
+ * unless it's the only value.
+ */
+function literalValues(schema: SchemaObject): unknown[] {
+    const values: unknown[] = schema.enum ?? ('const' in schema ? [schema.const] : []);
+    const concreteValues = values.filter((value) => value !== null);
+    return isNullable(schema) && concreteValues.length > 0 ? concreteValues : values;
+}
+
+/** Returns the TypeScript literal type for a value of `enum` or `const`, which may be any JSON value */
+function literalType(value: unknown): string {
+    if (typeof value === 'string') {
+        return `'${jsesc(value)}'`;
+    }
+    if (Array.isArray(value)) {
+        return `[${value.map(literalType).join(', ')}]`;
+    }
+    if (typeof value === 'object' && value !== null) {
+        const entries = Object.entries(value).map(([key, entry]) => `${quoted(key)}: ${literalType(entry)}`);
+        return `{ ${entries.join('; ')} }`;
+    }
+    return String(value);
+}
+
 function quoted(text: string): string {
     return `'${jsesc(text, { minimal: true, quotes: 'single' })}'`;
 }
 
 function referenceType(ref: string, { openApi, options, imports, container }: TypeContext): string {
-    const prefix = (resolveRef(openApi, ref) as SchemaObject).nullable ? 'null | ' : '';
+    const prefix = isNullable(resolveRef(openApi, ref) as SchemaObject) ? 'null | ' : '';
     const name = refName(ref);
     if (container?.name === name) {
         return prefix + container.typeName;
@@ -88,8 +138,8 @@ function importedName(imp: OaImport): string {
 
 function arrayType(schema: SchemaObject, context: TypeContext): string {
     const items = schema.items || {};
-    let itemsType = tsTypeVal(items, context);
-    if ((items as SchemaObject).nullable && !itemsType.includes(' | null')) {
+    let itemsType = nonNullType(items, context);
+    if (isNullable(items) && !itemsType.includes(' | null')) {
         itemsType += ' | null';
     }
     return `Array<${itemsType}>`;
@@ -132,12 +182,12 @@ function objectType(schema: SchemaObject, context: TypeContext): string {
         if (!property) {
             continue;
         }
-        const { description, deprecated, nullable } = property as SchemaObject;
+        const { description, deprecated } = property as SchemaObject;
         if (description) {
             result += tsComments(description, deprecated);
         }
         const optional = schema.required?.includes(propName) ? '' : '?';
-        result += `${quoted(propName)}${optional}: ${tsTypeVal(property, context)}${nullable ? ' | null' : ''};\n`;
+        result += `${quoted(propName)}${optional}: ${nonNullType(property, context)}${isNullable(property) ? ' | null' : ''};\n`;
     }
     if (additionalProperties) {
         result += `[key: string]: ${tsTypeVal(additionalProperties, context)};\n`;

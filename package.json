@@ -18,7 +18,7 @@
     "@sindresorhus/transliterate": "^1.6.0",
     "change-case": "^5.4.4",
     "jsesc": "~3.0.0",
-    "openapi3-ts": "~2.0.0",
+    "openapi3-ts": "^4.6.2",
     "ts-morph": "^27.0.2",
     "yargs-parser": "^21.1.1"
   },

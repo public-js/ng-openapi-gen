@@ -1,5 +1,5 @@
 import $RefParser from '@apidevtools/json-schema-ref-parser';
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIObject } from 'openapi3-ts/oas31';
 
 import { type OptionsInput, resolveOptions } from '../config/options.js';
 import { emitDocument } from './emitter/emit-document.js';

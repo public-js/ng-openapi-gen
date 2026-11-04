@@ -1,4 +1,4 @@
-import type { OpenAPIObject, OperationObject, SchemaObject } from 'openapi3-ts';
+import type { OpenAPIObject, OperationObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import type { Options } from '../../config/options.js';
 import { methodName } from '../../utils/string.js';

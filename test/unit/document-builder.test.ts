@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIObject } from 'openapi3-ts/oas31';
 import { describe, expect, test } from 'vitest';
 
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';

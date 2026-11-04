@@ -1,11 +1,11 @@
 import { posix } from 'node:path';
 
-import { OpenAPIObject, SchemaObject } from 'openapi3-ts';
+import { OpenAPIObject, SchemaObject } from 'openapi3-ts/oas31';
 
 import { Options } from '../../config/options.js';
-import { unqualifiedName } from '../../utils/open-api.js';
+import { isNullable, schemaTypes, unqualifiedName } from '../../utils/open-api.js';
 import { docText } from '../../utils/string.js';
-import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
+import { nonNullType, tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 import { OaBase } from './oa-base.js';
 import { OaEnumValue } from './oa-enum-value.js';
 import { OaImport } from './oa-import.js';
@@ -37,25 +37,31 @@ export class OaModel extends OaBase {
 
         this.docs = docText(schema.description, schema.deprecated);
 
-        const type = this.schema.type || this.options.fallbackPropertyType;
+        const [type = this.options.fallbackPropertyType, ...otherTypes] = schemaTypes(this.schema);
+        const isSingleType = otherTypes.length === 0;
 
         // When enumStyle is 'alias,' it is handled as a simple type.
         if (
             this.options.enumStyle !== 'alias' &&
             (this.schema.enum || []).length > 0 &&
+            isSingleType &&
             ['string', 'number', 'integer'].includes(type)
         ) {
             const names = (this.schema['x-enumNames'] as string[]) || [];
             const descriptions = (this.schema['x-enumDescriptions'] as string[]) || [];
-            this.enumValues = (this.schema.enum || []).map(
-                (value, i) => new OaEnumValue(type, this.options, names[i], descriptions[i], value),
+            this.enumValues = (this.schema.enum || []).flatMap((value, i) =>
+                value === null ? [] : [new OaEnumValue(type, this.options, names[i], descriptions[i], value)],
             );
         }
 
         const hasAllOf = this.schema.allOf && this.schema.allOf.length > 0;
         const hasOneOf = this.schema.oneOf && this.schema.oneOf.length > 0;
         this.isObject =
-            (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
+            (type === 'object' || !!this.schema.properties) &&
+            isSingleType &&
+            !isNullable(this.schema) &&
+            !hasAllOf &&
+            !hasOneOf;
         this.isEnum = this.enumValues.length > 0;
     }
 
@@ -82,12 +88,12 @@ export class OaModel extends OaBase {
             this.properties = [...propertiesByName.keys()].sort().map((propName) => propertiesByName.get(propName)!);
         } else {
             // Simple / array / enum / union / intersection
-            this.simpleType = tsTypeVal(this.schema, context);
+            this.simpleType = nonNullType(this.schema, context);
         }
     }
 
     private collectObject(schema: SchemaObject, propertiesByName: Map<string, OaProperty>, context: TypeContext) {
-        if (schema.type === 'object' || !!schema.properties) {
+        if (schemaTypes(schema).includes('object') || !!schema.properties) {
             // An object definition
             const properties = schema.properties || {};
             const required = schema.required || [];
@@ -120,7 +126,7 @@ export class OaModel extends OaBase {
         }
         if (schema.allOf) {
             for (const s of schema.allOf) {
-                this.collectObject(s, propertiesByName, context);
+                this.collectObject(s as SchemaObject, propertiesByName, context);
             }
         }
     }
