@@ -5,8 +5,9 @@ import { OaEnumValue } from './oa-enum-value.js';
 import { OaImport } from './oa-import.js';
 import { OaProperty } from './oa-property.js';
 import { Options } from '../../config/options.js';
-import { tsTypeVal, unqualifiedName } from '../../utils/open-api.js';
+import { unqualifiedName } from '../../utils/open-api.js';
 import { tsComments } from '../../utils/string.js';
+import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 const nullInUnion = { val: 'null | ', len: 7 };
 
@@ -70,24 +71,21 @@ export class OaModel extends OaBase {
     }
 
     protected updateProperties(imports: Map<string, OaImport>): void {
+        const context: TypeContext = { openApi: this.openApi, options: this.options, imports };
         if (this.isObject) {
             // Object
             const propertiesByName = new Map<string, OaProperty>();
-            this.collectObject(this.schema, propertiesByName, imports);
+            this.collectObject(this.schema, propertiesByName, context);
             const sortedNames = [...propertiesByName.keys()];
             sortedNames.sort();
             this.properties = sortedNames.map((propName) => propertiesByName.get(propName) as OaProperty);
         } else {
             // Simple / array / enum / union / intersection
-            this.simpleType = tsTypeVal(this.schema, this.openApi, this.options, imports);
+            this.simpleType = tsTypeVal(this.schema, context);
         }
     }
 
-    private collectObject(
-        schema: SchemaObject,
-        propertiesByName: Map<string, OaProperty>,
-        imports: Map<string, OaImport>,
-    ) {
+    private collectObject(schema: SchemaObject, propertiesByName: Map<string, OaProperty>, context: TypeContext) {
         if (schema.type === 'object' || !!schema.properties) {
             // An object definition
             const properties = schema.properties || {};
@@ -108,15 +106,7 @@ export class OaModel extends OaBase {
                 }
             };
             for (const [propName, propDef] of Object.entries(properties)) {
-                const prop = new OaProperty(
-                    this,
-                    propName,
-                    propDef,
-                    required.includes(propName),
-                    this.openApi,
-                    this.options,
-                    imports,
-                );
+                const prop = new OaProperty(this, propName, propDef, required.includes(propName), context);
                 propertiesByName.set(propName, prop);
                 appendType(prop.type);
                 if (!prop.required) {
@@ -126,14 +116,14 @@ export class OaModel extends OaBase {
             if (schema.additionalProperties === true) {
                 this.additionalPropertiesType = this.options.fallbackPropertyType;
             } else if (schema.additionalProperties) {
-                const propType = tsTypeVal(schema.additionalProperties, this.openApi, this.options, imports);
+                const propType = tsTypeVal(schema.additionalProperties, context);
                 appendType(propType);
                 this.additionalPropertiesType = [...propTypes].sort().join(' | ');
             }
         }
         if (schema.allOf) {
             for (const s of schema.allOf) {
-                this.collectObject(s, propertiesByName, imports);
+                this.collectObject(s, propertiesByName, context);
             }
         }
     }

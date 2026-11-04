@@ -2,7 +2,7 @@ import type { OpenAPIObject } from 'openapi3-ts';
 import { describe, expect, test } from 'vitest';
 
 import { resolveOptions } from '../../src/config/options.js';
-import { tsTypeVal } from '../../src/utils/open-api.js';
+import { tsTypeVal } from '../../src/core/generation/ts-type.js';
 
 describe('open-api utils', () => {
     test('renders additionalProperties-only objects on one line', () => {
@@ -19,8 +19,7 @@ describe('open-api utils', () => {
                     type: 'number',
                 },
             },
-            openApi,
-            options,
+            { openApi, options },
         );
 
         expect(type).toBe('{ [key: string]: number; }');

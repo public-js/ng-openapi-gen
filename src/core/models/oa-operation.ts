@@ -22,6 +22,7 @@ import { Options } from '../../config/options.js';
 import { upperFirst } from '../../utils/text-case.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { typeName } from '../../utils/string.js';
+import type { TypeContext } from '../generation/ts-type.js';
 
 export type HttpMethod = keyof Pick<
     PathItemObject,
@@ -91,27 +92,28 @@ export class OaOperation {
     }
 
     public updateProperties(imports: Map<string, OaImport>): void {
+        const context: TypeContext = { openApi: this.openApi, options: this.options, imports };
         for (const parameter of this.parameters) {
-            parameter.updateProperties(this.openApi, this.options, imports);
+            parameter.updateProperties(context);
         }
         for (const securityGroup of this.security) {
             for (const security of securityGroup) {
-                security.updateProperties(this.openApi, this.options, imports);
+                security.updateProperties(context);
             }
         }
         if (this.requestBody) {
             for (const cnt of this.requestBody.content) {
-                cnt.updateProperties(imports);
+                cnt.updateProperties(context);
             }
         }
         if (this.successResponse) {
             for (const cnt of this.successResponse.content) {
-                cnt.updateProperties(imports);
+                cnt.updateProperties(context);
             }
         }
         for (const response of this.allResponses) {
             for (const cnt of response.content) {
-                cnt.updateProperties(imports);
+                cnt.updateProperties(context);
             }
         }
         // Calculate the variants: request body content x success response content

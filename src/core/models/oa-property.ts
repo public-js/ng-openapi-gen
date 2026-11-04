@@ -1,10 +1,8 @@
-import { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
+import { ReferenceObject, SchemaObject } from 'openapi3-ts';
 
-import { OaImport } from './oa-import.js';
 import { OaModel } from './oa-model.js';
-import { Options } from '../../config/options.js';
-import { tsTypeVal } from '../../utils/open-api.js';
 import { escapeId, tsComments } from '../../utils/string.js';
+import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaProperty {
     public identifier: string;
@@ -16,13 +14,11 @@ export class OaProperty {
         public name: string,
         public schema: SchemaObject | ReferenceObject,
         public required: boolean,
-        openApi: OpenAPIObject,
-        options: Options,
-        imports: Map<string, OaImport>,
+        context: TypeContext,
     ) {
         this.identifier = escapeId(this.name);
 
-        this.type = tsTypeVal(this.schema, openApi, options, imports, model);
+        this.type = tsTypeVal(this.schema, { ...context, container: model });
         if ((schema as SchemaObject)?.nullable && !this.type.startsWith('null | ')) {
             this.type = 'null | ' + this.type;
         }

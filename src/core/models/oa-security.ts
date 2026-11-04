@@ -1,9 +1,7 @@
-import { OpenAPIObject, SecuritySchemeObject } from 'openapi3-ts';
+import { SecuritySchemeObject } from 'openapi3-ts';
 
-import { OaImport } from './oa-import.js';
-import { Options } from '../../config/options.js';
-import { tsTypeVal } from '../../utils/open-api.js';
 import { methodName, tsComments } from '../../utils/string.js';
+import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaSecurity {
     /** Variable name */
@@ -26,7 +24,7 @@ export class OaSecurity {
         this.in = spec.in || 'header';
     }
 
-    public updateProperties(openApi: OpenAPIObject, options: Options, imports: Map<string, OaImport>): void {
-        this.type = tsTypeVal(this.spec.schema, openApi, options, imports);
+    public updateProperties(context: TypeContext): void {
+        this.type = tsTypeVal(this.spec.schema, context);
     }
 }

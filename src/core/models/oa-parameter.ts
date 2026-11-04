@@ -1,9 +1,7 @@
-import { OpenAPIObject, ParameterLocation, ParameterObject } from 'openapi3-ts';
+import { ParameterLocation, ParameterObject } from 'openapi3-ts';
 
-import { OaImport } from './oa-import.js';
-import { Options } from '../../config/options.js';
-import { tsTypeVal } from '../../utils/open-api.js';
 import { escapeId, tsComments } from '../../utils/string.js';
+import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaParameter {
     public var: string;
@@ -29,8 +27,8 @@ export class OaParameter {
         this.parameterOptions = this.createParameterOptions();
     }
 
-    public updateProperties(openApi: OpenAPIObject, options: Options, imports: Map<string, OaImport>): void {
-        this.type = tsTypeVal(this.spec.schema, openApi, options, imports);
+    public updateProperties(context: TypeContext): void {
+        this.type = tsTypeVal(this.spec.schema, context);
     }
 
     protected createParameterOptions(): string {

@@ -1,12 +1,8 @@
-import jsesc from 'jsesc';
-import { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
+import type { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
 
-import { OaImport } from '../core/models/oa-import.js';
-import { OaModel } from '../core/models/oa-model.js';
-import { Options } from '../config/options.js';
-import { effectiveSchemaOrRef } from './effective-schema.js';
+import type { Options } from '../config/options.js';
 import { camelCase, upperCase, upperFirst } from './text-case.js';
-import { namespace, refName, toBasicChars, tsComments, typeName } from './string.js';
+import { namespace, toBasicChars, typeName } from './string.js';
 
 /** Returns the unqualified model class name, that is, the last part after '.' */
 export function unqualifiedName(name: string, options: Options): string {
@@ -38,165 +34,13 @@ export function enumName(value: string, options: Options): string {
 }
 
 /** Applies the prefix and suffix to a model class name */
-export function modelClass(baseName: string, options: Options): string {
+function modelClass(baseName: string, options: Options): string {
     return `${options.modelPrefix}${typeName(baseName)}${options.modelSuffix}`;
 }
 
 /** Applies the prefix and suffix to a service class name */
 export function serviceClass(baseName: string, options: Options): string {
     return `${options.servicePrefix}${typeName(baseName)}${options.serviceSuffix}`;
-}
-
-/** Returns the TypeScript type for the given type and options */
-export function tsTypeVal(
-    schemaOrRef: SchemaObject | ReferenceObject | undefined,
-    openApi: OpenAPIObject,
-    options: Options,
-    imports?: Map<string, OaImport>,
-    container?: OaModel,
-): string {
-    // No schema
-    if (!schemaOrRef) {
-        return options.fallbackPropertyType;
-    }
-
-    schemaOrRef = effectiveSchemaOrRef(schemaOrRef);
-
-    // A reference
-    if (schemaOrRef.$ref) {
-        const resolved = resolveRef(openApi, schemaOrRef.$ref);
-        const nullable = !!(resolved && (resolved as SchemaObject).nullable);
-        const prefix = nullable ? 'null | ' : '';
-        const name = refName(schemaOrRef.$ref);
-        const imp: OaImport | undefined = imports?.get(name);
-        return container?.name === name
-            ? prefix + container.typeName
-            : prefix + (imp ? (imp.useAlias ? imp.qualifiedName : imp.typeName) : qualifiedName(name, options));
-    }
-
-    const schema = schemaOrRef as SchemaObject;
-
-    // A union of types
-    const union = schema.oneOf || schema.anyOf || [];
-    if (union.length > 0) {
-        return union.length > 1
-            ? `(${union.map((u) => tsTypeVal(u, openApi, options, imports, container)).join(' | ')})`
-            : union.map((u) => tsTypeVal(u, openApi, options, imports, container)).join(' | ');
-    }
-
-    const type = schema.type || options.fallbackPropertyType;
-
-    // An array
-    if (type === 'array' || schema.items) {
-        const items = schema.items || {};
-        let itemsType = tsTypeVal(items, openApi, options, imports, container);
-        if ((items as unknown)['nullable'] && !itemsType.includes(' | null')) {
-            itemsType += ' | null';
-        }
-        return `Array<${itemsType}>`;
-    }
-
-    const allOf = schema.allOf || [];
-
-    // Special case: enum discriminator
-    if (allOf.length === 2) {
-        const enumRefObject = allOf.find((o: ReferenceObject) => !!o.$ref) as ReferenceObject | undefined;
-        const memberObject = allOf.find((o: SchemaObject) => !!o.enum) as SchemaObject | undefined;
-        if (enumRefObject && memberObject && memberObject.enum.length === 1) {
-            const enumRef = effectiveSchemaOrRef(enumRefObject);
-            const name = refName(enumRef.$ref);
-            const imp: OaImport | undefined = imports?.get(name);
-            if (imp?.modelPtr?.isEnum) {
-                const propMatch =
-                    typeof memberObject.enum[0] === 'string' ? `'${memberObject.enum[0]}'` : memberObject.enum[0];
-                const propName = imp.modelPtr.enumValues.find((ev) => ev.value === propMatch)?.name;
-                if (propName) {
-                    const enumName = imp.useAlias ? imp.qualifiedName : imp.typeName;
-                    return `${enumName}.${propName}`;
-                }
-            }
-        }
-    }
-
-    let intersectionType: string[] = [];
-
-    // Types intersection
-    if (allOf.length > 0) {
-        intersectionType = allOf.map((u) => tsTypeVal(u, openApi, options, imports, container));
-    }
-
-    // An object
-    if (type === 'object' || schema.properties) {
-        const properties = schema.properties || {};
-        const required = schema.required;
-        const discriminatorLines = allOf
-            .map((baseSchema) => tryGetDiscriminator(baseSchema, schema, openApi))
-            .filter((discriminator): discriminator is { propName: string; value: string } => Boolean(discriminator))
-            .map((discriminator) => `'${discriminator.propName}': '${discriminator.value}';\n`);
-
-        if (schema.additionalProperties && discriminatorLines.length === 0 && Object.keys(properties).length === 0) {
-            const additionalProperties = schema.additionalProperties === true ? {} : schema.additionalProperties;
-            intersectionType.push(
-                `{ [key: string]: ${tsTypeVal(additionalProperties, openApi, options, imports, container)}; }`,
-            );
-            return intersectionType.join(' & ');
-        }
-
-        let result = '{\n';
-        for (const discriminatorLine of discriminatorLines) {
-            result += discriminatorLine;
-        }
-
-        for (const [propName, property] of Object.entries(properties)) {
-            if (!property) {
-                continue;
-            }
-            if ((property as SchemaObject).description) {
-                result += tsComments((property as SchemaObject).description, 0, (property as SchemaObject).deprecated);
-            }
-            result += `'${propName}'`;
-            const propRequired = required && required.includes(propName);
-            if (!propRequired) {
-                result += '?';
-            }
-            let propertyType = tsTypeVal(property, openApi, options, imports, container);
-            if ((property as SchemaObject).nullable) {
-                propertyType = `${propertyType} | null`;
-            }
-            result += `: ${propertyType};\n`;
-        }
-        if (schema.additionalProperties) {
-            const additionalProperties = schema.additionalProperties === true ? {} : schema.additionalProperties;
-            result += `[key: string]: ${tsTypeVal(additionalProperties, openApi, options, imports, container)};\n`;
-        }
-        result += '}';
-        intersectionType.push(result);
-    }
-
-    if (intersectionType.length > 0) {
-        return intersectionType.join(' & ');
-    }
-
-    // Inline enum
-    const enumValues = schema.enum || [];
-    if (enumValues.length > 0) {
-        return type === 'number' || type === 'integer' || type === 'boolean'
-            ? enumValues.join(' | ')
-            : enumValues.map((v) => `'${jsesc(v)}'`).join(' | ');
-    }
-
-    // A Blob
-    if (type === 'string' && schema.format === 'binary') {
-        return 'Blob';
-    }
-
-    // An integer
-    if (type === 'integer') {
-        return schema.format === 'int64' && options.bigintStyle === 'bigint' ? 'bigint' : 'number';
-    }
-
-    // Any other type
-    return type;
 }
 
 /** Resolves a reference from its name, such as #/components/schemas/Name, or just Name */
@@ -221,40 +65,18 @@ export function resolveRef(openApi: OpenAPIObject, ref: string): unknown {
     return current;
 }
 
-/** Tries to get a discriminator info from a base schema and for a derived one */
-function tryGetDiscriminator(
-    baseSchemaOrRef: SchemaObject | ReferenceObject,
-    derivedSchema: SchemaObject,
-    openApi: OpenAPIObject,
-) {
-    const baseSchema = (
-        baseSchemaOrRef.$ref ? resolveRef(openApi, baseSchemaOrRef.$ref) : baseSchemaOrRef
-    ) as SchemaObject;
-    const discriminatorProp = baseSchema.discriminator?.propertyName;
-    if (discriminatorProp) {
-        const discriminatorValue = tryGetDiscriminatorValue(baseSchema, derivedSchema, openApi);
-        if (discriminatorValue) {
-            return {
-                propName: discriminatorProp,
-                value: discriminatorValue,
-            };
-        }
+/**
+ * JSON Schema `contentSchema` lets specs describe the decoded payload carried inside a string.
+ * Prefer the richer type for generated TS types.
+ */
+export function effectiveSchemaOrRef(
+    schemaOrRef: SchemaObject | ReferenceObject | undefined,
+): SchemaObject | ReferenceObject | undefined {
+    if (!schemaOrRef || schemaOrRef.$ref) {
+        return schemaOrRef;
     }
-    return;
-}
-
-/** Tries to get a discriminator value from a base schema and for a derived one */
-function tryGetDiscriminatorValue(
-    baseSchema: SchemaObject,
-    derivedSchema: SchemaObject,
-    openApi: OpenAPIObject,
-): string | null {
-    const mapping = baseSchema.discriminator?.mapping;
-
-    if (mapping) {
-        const mappingIndex = Object.values(mapping).findIndex((ref) => resolveRef(openApi, ref) === derivedSchema);
-        return Object.keys(mapping)[mappingIndex] ?? null;
-    }
-
-    return null;
+    const schema = schemaOrRef as SchemaObject & { contentSchema?: SchemaObject | ReferenceObject };
+    return schema.type === 'string' && schema.format !== 'binary' && schema.contentSchema
+        ? schema.contentSchema
+        : schemaOrRef;
 }
