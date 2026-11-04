@@ -56,7 +56,7 @@ export function resolveRef(openApi: OpenAPIObject, ref: string): unknown {
         } else if (current == null) {
             break;
         } else {
-            current = current[part];
+            current = (current as Record<string, unknown>)[part];
         }
     }
     if (current == null || typeof current !== 'object') {

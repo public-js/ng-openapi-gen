@@ -20,11 +20,11 @@ export class OaModel extends OaBase {
     public isEnum: boolean;
     public isObject: boolean;
     // Simple properties
-    public simpleType: string;
-    public enumValues: OaEnumValue[];
+    public simpleType = '';
+    public enumValues: OaEnumValue[] = [];
     // Object properties
-    public properties: OaProperty[];
-    public additionalPropertiesType: string;
+    public properties: OaProperty[] = [];
+    public additionalPropertiesType?: string;
 
     constructor(
         private readonly openApi: OpenAPIObject,
@@ -56,7 +56,7 @@ export class OaModel extends OaBase {
         const hasOneOf = this.schema.oneOf && this.schema.oneOf.length > 0;
         this.isObject =
             (type === 'object' || !!this.schema.properties) && !this.schema.nullable && !hasAllOf && !hasOneOf;
-        this.isEnum = (this.enumValues || []).length > 0;
+        this.isEnum = this.enumValues.length > 0;
     }
 
     public get sourceDir(): string {
@@ -79,7 +79,7 @@ export class OaModel extends OaBase {
             // Object
             const propertiesByName = new Map<string, OaProperty>();
             this.collectObject(this.schema, propertiesByName, context);
-            this.properties = [...propertiesByName.keys()].sort().map((propName) => propertiesByName.get(propName));
+            this.properties = [...propertiesByName.keys()].sort().map((propName) => propertiesByName.get(propName)!);
         } else {
             // Simple / array / enum / union / intersection
             this.simpleType = tsTypeVal(this.schema, context);

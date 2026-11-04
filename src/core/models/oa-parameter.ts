@@ -10,7 +10,7 @@ export class OaParameter {
     public docs: string;
     public required: boolean;
     public in: ParameterLocation;
-    public type: string;
+    public type = '';
     public style?: string;
     public explode?: boolean;
     public parameterOptions: string;

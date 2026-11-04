@@ -15,14 +15,14 @@ export abstract class OaBase {
     /** Camel-case qualified name of the type, including namespace */
     public qualifiedName: string;
     /** Doc comment text for this type */
-    public docs: string;
+    public docs = '';
     /** Folder of the generated file, relative to the output root */
     public abstract get sourceDir(): string;
 
-    public imports: OaImport[];
+    public imports: OaImport[] = [];
     protected _imports = new Map<string, OaImport>();
 
-    public additionalDependencies: string[];
+    public additionalDependencies: string[] = [];
     private _additionalDependencies = new Set<string>();
 
     protected constructor(
@@ -62,18 +62,17 @@ export abstract class OaBase {
     }
 
     protected createImports(
-        schema: SchemaObject | ReferenceObject | undefined,
+        schemaOrRef: SchemaObject | ReferenceObject | undefined,
         imports: Map<string, OaImport>,
         additional = false,
     ): void {
-        if (!schema) {
+        const effective = effectiveSchemaOrRef(schemaOrRef);
+        if (!effective) {
             return;
         }
 
-        schema = effectiveSchemaOrRef(schema);
-
-        if (schema.$ref) {
-            const dep = refName(schema.$ref);
+        if (effective.$ref) {
+            const dep = refName(effective.$ref);
             if (additional) {
                 this._additionalDependencies.add(dep);
             } else {
@@ -82,7 +81,7 @@ export abstract class OaBase {
             return;
         }
 
-        schema = schema as SchemaObject;
+        const schema = effective as SchemaObject;
         for (const imp of schema.oneOf || []) {
             this.createImports(imp, imports, additional);
         }
@@ -114,13 +113,13 @@ export abstract class OaBase {
         for (const imp of this._imports.values()) {
             imp.file = imp.getRelativePath(this.sourceDir, this.options.modelsDir);
 
-            if (typeNamesCount.get(imp.typeName) > 1) {
+            if (typeNamesCount.get(imp.typeName)! > 1) {
                 imp.useAlias = true;
             }
         }
         this.imports = Array.from(this._imports.keys())
             .sort()
-            .map((key: string) => this._imports.get(key));
+            .map((key) => this._imports.get(key)!);
 
         this.additionalDependencies = [...this._additionalDependencies];
     }

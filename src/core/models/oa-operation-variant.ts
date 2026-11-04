@@ -60,7 +60,7 @@ export class OaOperationVariant {
         // If the schema is in binary format, return 'blob'
         let schemaOrRef = successResponse.spec?.schema || { type: 'string' };
         if (schemaOrRef.$ref) {
-            schemaOrRef = resolveRef(this.operation.openApi, schemaOrRef.$ref);
+            schemaOrRef = resolveRef(this.operation.openApi, schemaOrRef.$ref) as SchemaObject;
         }
         const schema = schemaOrRef as SchemaObject;
         if (schema.format === 'binary') {

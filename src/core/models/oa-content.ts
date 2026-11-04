@@ -3,7 +3,7 @@ import { MediaTypeObject } from 'openapi3-ts';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
 
 export class OaContent {
-    public type: string;
+    public type = '';
 
     constructor(
         public mediaType: string,
