@@ -1,8 +1,21 @@
+import { readFileSync } from 'node:fs';
+
 import { Scope, VariableDeclarationKind, type SourceFile } from 'ts-morph';
 
 import type { GeneratorDocument } from '../generation/document.js';
 import { OaImport } from '../models/oa-import.js';
 import { namedSpecifier } from './source-file-helpers.js';
+
+const DEFAULT_REQUEST_BUILDER_CLASS = 'RequestBuilder';
+const DEFAULT_RESPONSE_CLASS = 'StrictHttpResponse';
+
+export function renderRequestBuilder(document: GeneratorDocument): string {
+    const { autoGenerationNotice, requestBuilderClass, responseClass } = document.globals;
+    return readFileSync(new URL('../../support/request-builder.ts', import.meta.url), 'utf8')
+        .replace('/*__AUTO_GENERATION_NOTICE__*/', autoGenerationNotice.trim())
+        .replace(new RegExp(`\\b${DEFAULT_REQUEST_BUILDER_CLASS}\\b`, 'g'), requestBuilderClass)
+        .replace(new RegExp(`\\b${DEFAULT_RESPONSE_CLASS}\\b`, 'g'), responseClass);
+}
 
 export function buildConfigurationSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
     sourceFile.addStatements(document.globals.autoGenerationNotice);

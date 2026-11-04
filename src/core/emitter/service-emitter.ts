@@ -1,6 +1,7 @@
 import {
     MethodDeclarationStructure,
     OptionalKind,
+    ParameterDeclarationStructure,
     Scope,
     StructureKind,
     VariableDeclarationKind,
@@ -108,54 +109,8 @@ function buildResponseMethod(
         scope: Scope.Public,
         docs: toDocs(variant.responseMethodTsComments),
         returnType: `Observable<${document.globals.responseClass}<${variant.resultType}>>`,
-        parameters: [
-            {
-                name: 'params',
-                hasQuestionToken: !variant.operation.parametersRequired,
-                type: buildOperationParametersType(variant),
-            },
-            {
-                name: 'context',
-                hasQuestionToken: true,
-                type: 'HttpContext',
-            },
-        ],
-        statements: [
-            {
-                kind: StructureKind.VariableStatement,
-                declarationKind: VariableDeclarationKind.Const,
-                declarations: [
-                    {
-                        name: 'rb',
-                        initializer: `new ${document.globals.requestBuilderClass}(this.rootUrl, ${service.typeName}.${variant.operation.pathVar}, '${variant.operation.method}')`,
-                    },
-                ],
-            },
-            (writer) => {
-                writer.writeLine('if (params) {');
-                for (const parameter of variant.operation.parameters) {
-                    writer.writeLine(
-                        `  rb.${parameter.in}('${parameter.name}', params${parameter.varAccess}, ${parameter.parameterOptions});`,
-                    );
-                }
-                for (const line of renderRequestBodyLines(variant)) {
-                    writer.writeLine(line);
-                }
-                writer.writeLine('}');
-            },
-            (writer) => {
-                writer.writeLine('return this.http.request(');
-                writer.writeLine(
-                    `  rb.build({ responseType: '${variant.responseType}', accept: '${variant.accept}', context: context })`,
-                );
-                writer.writeLine(').pipe(');
-                writer.writeLine(`  filter((r: any) => r instanceof HttpResponse),`);
-                writer.writeLine(
-                    `  map((r: HttpResponse<any>) => ${renderHandleResponse(variant, document.globals.responseClass)}),`,
-                );
-                writer.write(');');
-            },
-        ],
+        parameters: buildParameters(variant),
+        statements: buildRequestStatements(service, variant, document),
     };
 }
 
@@ -164,77 +119,46 @@ function buildBodyMethod(
     variant: OaOperationVariant,
     document: GeneratorDocument,
 ): OptionalKind<MethodDeclarationStructure> {
+    const { responseClass } = document.globals;
+    const toBody = `map((r: ${responseClass}<${variant.resultType}>) => r.body as ${variant.resultType}),`;
     return {
         name: variant.methodName,
         scope: Scope.Public,
         docs: toDocs(variant.bodyMethodTsComments),
         returnType: `Observable<${variant.resultType}>`,
-        parameters: [
-            {
-                name: 'params',
-                hasQuestionToken: !variant.operation.parametersRequired,
-                type: buildOperationParametersType(variant),
-            },
-            {
-                name: 'context',
-                hasQuestionToken: true,
-                type: 'HttpContext',
-            },
-        ],
+        parameters: buildParameters(variant),
         statements: variant.generateResponseMethod
             ? [
                   (writer) => {
                       writer.writeLine(`return this.${variant.responseMethodName}(params, context).pipe(`);
-                      writer.writeLine(
-                          `  map((r: ${document.globals.responseClass}<${variant.resultType}>) => r.body as ${variant.resultType}),`,
-                      );
+                      writer.writeLine(`  ${toBody}`);
                       writer.write(');');
                   },
               ]
-            : buildDirectBodyMethodStatements(service, variant),
+            : buildRequestStatements(service, variant, document, toBody),
     };
 }
 
-function buildOperationParametersType(variant: OaOperationVariant): string {
-    const lines = ['{'];
-    for (const parameter of variant.operation.parameters) {
-        const docs = toDocs(parameter.tsComments)[0];
-        if (docs) {
-            lines.push(toInlineDoc(docs, 1));
-        }
-        lines.push(`  ${parameter.var}${parameter.required ? '' : '?'}: ${parameter.type};`);
-    }
-    if (variant.requestBody) {
-        const body = variant.operation.requestBody;
-        const docs = toDocs(body?.tsComments ?? '')[0];
-        if (docs) {
-            lines.push(toInlineDoc(docs, 1));
-        }
-        lines.push(`  body${body?.required ? '' : '?'}: ${variant.requestBody.type};`);
-    }
-    lines.push('}');
-    return lines.join('\n');
+function buildParameters(variant: OaOperationVariant): OptionalKind<ParameterDeclarationStructure>[] {
+    return [
+        {
+            name: 'params',
+            hasQuestionToken: !variant.operation.parametersRequired,
+            type: buildOperationParametersType(variant),
+        },
+        { name: 'context', hasQuestionToken: true, type: 'HttpContext' },
+    ];
 }
 
-function renderHandleResponse(variant: OaOperationVariant, responseClass: string): string {
-    if (variant.isVoid)
-        return `(r as HttpResponse<any>).clone({ body: undefined }) as ${responseClass}<${variant.resultType}>`;
-    if (variant.isNumber)
-        return `(r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as ${responseClass}<${variant.resultType}>`;
-    if (variant.isBoolean)
-        return `(r as HttpResponse<any>).clone({ body: String((r as HttpResponse<any>).body) === 'true' }) as ${responseClass}<${variant.resultType}>`;
-    return `r as ${responseClass}<${variant.resultType}>`;
-}
-
-function renderRequestBodyLines(variant: OaOperationVariant): string[] {
-    if (!variant.requestBody) return [];
-    return [`  rb.body(params.body, '${variant.requestBody.mediaType}');`];
-}
-
-function buildDirectBodyMethodStatements(
+/** Statements that build and send the request. `toBody` is an extra pipe step that unwraps the response body. */
+function buildRequestStatements(
     service: OaService,
     variant: OaOperationVariant,
+    document: GeneratorDocument,
+    toBody?: string,
 ): MethodDeclarationStructure['statements'] {
+    const { operation } = variant;
+    const { requestBuilderClass, responseClass } = document.globals;
     return [
         {
             kind: StructureKind.VariableStatement,
@@ -242,19 +166,19 @@ function buildDirectBodyMethodStatements(
             declarations: [
                 {
                     name: 'rb',
-                    initializer: `new ${variant.options.requestBuilder}(this.rootUrl, ${service.typeName}.${variant.operation.pathVar}, '${variant.operation.method}')`,
+                    initializer: `new ${requestBuilderClass}(this.rootUrl, ${service.typeName}.${operation.pathVar}, '${operation.method}')`,
                 },
             ],
         },
         (writer) => {
             writer.writeLine('if (params) {');
-            for (const parameter of variant.operation.parameters) {
+            for (const parameter of operation.parameters) {
                 writer.writeLine(
                     `  rb.${parameter.in}('${parameter.name}', params${parameter.varAccess}, ${parameter.parameterOptions});`,
                 );
             }
-            for (const line of renderRequestBodyLines(variant)) {
-                writer.writeLine(line);
+            if (variant.requestBody) {
+                writer.writeLine(`  rb.body(params.body, '${variant.requestBody.mediaType}');`);
             }
             writer.writeLine('}');
         },
@@ -265,19 +189,51 @@ function buildDirectBodyMethodStatements(
             );
             writer.writeLine(').pipe(');
             writer.writeLine('  filter((r: any) => r instanceof HttpResponse),');
-            writer.writeLine(
-                `  map((r: HttpResponse<any>) => ${renderHandleResponse(variant, service.options.response)}),`,
-            );
-            writer.writeLine(
-                `  map((r: ${service.options.response}<${variant.resultType}>) => r.body as ${variant.resultType}),`,
-            );
+            writer.writeLine(`  map((r: HttpResponse<any>) => ${renderHandleResponse(variant, responseClass)}),`);
+            if (toBody) {
+                writer.writeLine(`  ${toBody}`);
+            }
             writer.write(');');
         },
     ];
 }
 
-function toInlineDoc(text: string, level: number): string {
-    const indent = '  '.repeat(level);
-    const lines = text.split('\n');
-    return [indent + '/**', ...lines.map((line) => `${indent} * ${line}`), indent + ' */'].join('\n');
+function buildOperationParametersType(variant: OaOperationVariant): string {
+    const lines = ['{'];
+    for (const parameter of variant.operation.parameters) {
+        const docs = toDocs(parameter.tsComments)[0];
+        if (docs) {
+            lines.push(toInlineDoc(docs));
+        }
+        lines.push(`  ${parameter.var}${parameter.required ? '' : '?'}: ${parameter.type};`);
+    }
+    if (variant.requestBody) {
+        const body = variant.operation.requestBody;
+        const docs = toDocs(body?.tsComments ?? '')[0];
+        if (docs) {
+            lines.push(toInlineDoc(docs));
+        }
+        lines.push(`  body${body?.required ? '' : '?'}: ${variant.requestBody.type};`);
+    }
+    lines.push('}');
+    return lines.join('\n');
+}
+
+function renderHandleResponse(variant: OaOperationVariant, responseClass: string): string {
+    const response = '(r as HttpResponse<any>)';
+    const cast = `as ${responseClass}<${variant.resultType}>`;
+    if (variant.isVoid) {
+        return `${response}.clone({ body: undefined }) ${cast}`;
+    }
+    if (variant.isNumber) {
+        return `${response}.clone({ body: parseFloat(String(${response}.body)) }) ${cast}`;
+    }
+    if (variant.isBoolean) {
+        return `${response}.clone({ body: String(${response}.body) === 'true' }) ${cast}`;
+    }
+    return `r ${cast}`;
+}
+
+function toInlineDoc(text: string): string {
+    return ['  /**', ...text.split('\n').map((line) => `   * ${line}`), '   */'].join('\n');
 }

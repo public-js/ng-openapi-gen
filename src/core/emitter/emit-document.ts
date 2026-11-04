@@ -1,8 +1,7 @@
-import { IndentationText, NewLineKind, Project, QuoteKind } from 'ts-morph';
+import { IndentationText, Project, QuoteKind, type SourceFile } from 'ts-morph';
 
-import type { GeneratorDocument, GeneratedFile } from '../generation/document.js';
-import { HookRunner } from '../hooks/runner.js';
-import { emitRequestBuilderSource } from './support-emitter.js';
+import type { HookRunner } from '../hooks/runner.js';
+import type { GeneratedFile, GeneratorDocument } from '../generation/document.js';
 import { buildModelSourceFile } from './model-source-file.js';
 import { buildServiceSourceFile } from './service-emitter.js';
 import {
@@ -11,13 +10,17 @@ import {
     buildModuleSourceFile,
     buildRootIndexSourceFile,
     buildServiceIndexSourceFile,
+    renderRequestBuilder,
 } from './support-source-files.js';
 
+const PRETTIER_CONFIG =
+    "export default {\n  overrides: [{ files: ['*.ts', '**/*.ts'], options: { printWidth: 900 } }],\n};\n";
+
 export async function emitDocument(document: GeneratorDocument, hooks: HookRunner): Promise<GeneratedFile[]> {
+    const { globals, options } = document;
     const project = new Project({
         useInMemoryFileSystem: true,
         manipulationSettings: {
-            newLineKind: toNewLineKind(document.options.endOfLineStyle),
             indentationText: IndentationText.TwoSpaces,
             quoteKind: QuoteKind.Single,
             insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
@@ -26,119 +29,67 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
     });
 
     const tsFiles = new Map<string, { id: string; relativePath: string }>();
-    const createSourceFile = (id: string, relativePath: string) => {
-        const sourceFile = project.createSourceFile(`/virtual/${relativePath}`, '', { overwrite: true });
+    const addFile = (id: string, relativePath: string, content = ''): SourceFile => {
+        const sourceFile = project.createSourceFile(`/virtual/${relativePath}`, content, { overwrite: true });
         tsFiles.set(sourceFile.getFilePath(), { id, relativePath });
         return sourceFile;
     };
-    const createTextSourceFile = (id: string, relativePath: string, content: string) => {
-        const sourceFile = project.createSourceFile(`/virtual/${relativePath}`, content, { overwrite: true });
-        tsFiles.set(sourceFile.getFilePath(), { id, relativePath });
-    };
 
     for (const model of document.models) {
-        buildModelSourceFile(
-            createSourceFile(`model:${model.name}`, `${document.options.modelsDir}/${model.fileName}.ts`),
-            model,
-        );
+        buildModelSourceFile(addFile(`model:${model.name}`, `${options.modelsDir}/${model.fileName}.ts`), model);
     }
     for (const service of document.services) {
-        buildServiceSourceFile(
-            createSourceFile(`service:${service.name}`, `${document.options.servicesDir}/${service.fileName}.ts`),
-            service,
-            document,
-        );
+        const sourceFile = addFile(`service:${service.name}`, `${options.servicesDir}/${service.fileName}.ts`);
+        buildServiceSourceFile(sourceFile, service, document);
     }
 
-    buildConfigurationSourceFile(
-        createSourceFile('support:configuration', `${document.globals.configurationFile}.ts`),
-        document,
-    );
-    createTextSourceFile(
-        'support:request-builder',
-        `${document.globals.requestBuilderFile}.ts`,
-        emitRequestBuilderSource(document),
-    );
-    if (document.globals.includePrettier) {
-        createTextSourceFile(
-            'support:prettier-config',
-            'prettier.config.mjs',
-            "export default {\n  overrides: [{ files: ['*.ts', '**/*.ts'], options: { printWidth: 900 } }],\n};\n",
-        );
+    buildConfigurationSourceFile(addFile('support:configuration', `${globals.configurationFile}.ts`), document);
+    addFile('support:request-builder', `${globals.requestBuilderFile}.ts`, renderRequestBuilder(document));
+    if (globals.includePrettier) {
+        addFile('support:prettier-config', 'prettier.config.mjs', PRETTIER_CONFIG);
     }
-    if (document.globals.moduleClass && document.globals.moduleFile) {
-        buildModuleSourceFile(createSourceFile('support:module', `${document.globals.moduleFile}.ts`), document);
+    if (globals.moduleClass && globals.moduleFile) {
+        buildModuleSourceFile(addFile('support:module', `${globals.moduleFile}.ts`), document);
     }
-    if (document.globals.modelIndexFile) {
-        buildModelIndexSourceFile(
-            createSourceFile('support:model-index', `${document.globals.modelIndexFile}.ts`),
-            document,
-        );
+    if (globals.modelIndexFile) {
+        buildModelIndexSourceFile(addFile('support:model-index', `${globals.modelIndexFile}.ts`), document);
     }
-    if (document.globals.serviceIndexFile) {
-        buildServiceIndexSourceFile(
-            createSourceFile('support:service-index', `${document.globals.serviceIndexFile}.ts`),
-            document,
-        );
+    if (globals.serviceIndexFile) {
+        buildServiceIndexSourceFile(addFile('support:service-index', `${globals.serviceIndexFile}.ts`), document);
     }
-    if (document.options.indexFile) {
-        buildRootIndexSourceFile(createSourceFile('support:index', 'index.ts'), document);
+    if (options.indexFile) {
+        buildRootIndexSourceFile(addFile('support:index', 'index.ts'), document);
     }
 
-    await hooks.generateAdditionalFiles({ openApi: document.openApi, document, project });
+    const hookContext = { openApi: document.openApi, document, project };
+    await hooks.generateAdditionalFiles(hookContext);
     for (const extra of hooks.takeGeneratedFiles()) {
-        if ((extra.kind ?? 'text') === 'ts') {
-            createTextSourceFile(extra.id ?? `hook:${extra.relativePath}`, extra.relativePath, extra.content);
+        if (extra.kind === 'ts') {
+            addFile(extra.id ?? `hook:${extra.relativePath}`, extra.relativePath, extra.content);
         }
     }
 
     for (const sourceFile of project.getSourceFiles().sort((a, b) => a.getFilePath().localeCompare(b.getFilePath()))) {
         const metadata = tsFiles.get(sourceFile.getFilePath());
-        if (!metadata) {
-            continue;
+        if (metadata) {
+            await hooks.transformSourceFile(sourceFile, metadata, hookContext);
         }
-        await hooks.transformSourceFile(sourceFile, metadata, { openApi: document.openApi, document, project });
     }
 
-    const files: GeneratedFile[] = project
-        .getSourceFiles()
-        .map((sourceFile) => {
-            const metadata = tsFiles.get(sourceFile.getFilePath());
-            if (!metadata) {
-                throw new Error(`Missing source metadata for ${sourceFile.getFilePath()}`);
-            }
-            return {
-                id: metadata.id,
-                kind: 'ts' as const,
-                relativePath: metadata.relativePath,
-                content: sourceFile.getFullText(),
-            };
-        })
-        .sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+    const files: GeneratedFile[] = project.getSourceFiles().map((sourceFile) => {
+        const metadata = tsFiles.get(sourceFile.getFilePath());
+        if (!metadata) {
+            throw new Error(`Missing source metadata for ${sourceFile.getFilePath()}`);
+        }
+        return { ...metadata, kind: 'ts', content: sourceFile.getFullText() };
+    });
 
     for (const extra of hooks.takeGeneratedFiles()) {
-        if ((extra.kind ?? 'text') !== 'ts') {
-            files.push({
-                id: extra.id ?? `hook:${extra.relativePath}`,
-                kind: extra.kind ?? 'text',
-                relativePath: extra.relativePath,
-                content: extra.content,
-            });
+        if (extra.kind !== 'ts') {
+            const { id = `hook:${extra.relativePath}`, kind = 'text', relativePath, content } = extra;
+            files.push({ id, kind, relativePath, content });
         }
     }
 
     return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
-}
-
-function toNewLineKind(style: GeneratorDocument['options']['endOfLineStyle']): NewLineKind {
-    switch (style) {
-        case 'cr':
-            return NewLineKind.CarriageReturnLineFeed;
-        case 'crlf':
-            return NewLineKind.CarriageReturnLineFeed;
-        case 'lf':
-        case 'auto':
-        default:
-            return NewLineKind.LineFeed;
-    }
 }
