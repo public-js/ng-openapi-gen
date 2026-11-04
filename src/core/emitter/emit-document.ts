@@ -87,11 +87,11 @@ export async function emitDocument(document: GeneratorDocument, hooks: HookRunne
         content: sourceFile.getFullText(),
     }));
 
-    for (const extra of [...hookFiles, ...hooks.drainGeneratedFiles()]) {
-        if (extra.kind !== 'ts') {
-            const { id = `hook:${extra.relativePath}`, kind = 'text', relativePath, content } = extra;
-            files.push({ id, kind, relativePath, content });
-        }
+    // Files registered during the transforms above are too late for them and are written as they are
+    const hookTextFiles = hookFiles.filter((extra) => extra.kind !== 'ts');
+    for (const extra of [...hookTextFiles, ...hooks.drainGeneratedFiles()]) {
+        const { id = `hook:${extra.relativePath}`, kind = 'text', relativePath, content } = extra;
+        files.push({ id, kind, relativePath, content });
     }
 
     return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));

@@ -156,4 +156,22 @@ describe('regressions', () => {
         expect(file('extra/direct.ts')).toBe('export const direct = 1;\n');
         expect(seen).toContain('extra/direct.ts');
     });
+
+    test('keeps files registered while source files are transformed', async () => {
+        let registered = false;
+        const { file } = await emit(specWithTags(['One']), [
+            {
+                transformSourceFile(_sourceFile, _metadata, context) {
+                    if (!registered) {
+                        registered = true;
+                        context.registerGeneratedFile({ kind: 'ts', relativePath: 'late.ts', content: 'export {};\n' });
+                        context.registerGeneratedFile({ relativePath: 'late.txt', content: 'late\n' });
+                    }
+                },
+            },
+        ]);
+
+        expect(file('late.ts')).toBe('export {};\n');
+        expect(file('late.txt')).toBe('late\n');
+    });
 });
