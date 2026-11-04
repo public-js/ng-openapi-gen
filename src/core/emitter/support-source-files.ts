@@ -108,7 +108,7 @@ ${document.services.map((service) => `    ${service.typeName},`).join('\n')}
 export function buildModelIndexSourceFile(sourceFile: SourceFile, document: GeneratorDocument): void {
     for (const model of document.models.map((entry) => new OaImport().fromModel(entry))) {
         sourceFile.addExportDeclaration({
-            isTypeOnly: !model.isEnum,
+            isTypeOnly: !model.modelPtr?.isEnum,
             namedExports: [
                 {
                     name: model.typeName,

@@ -7,23 +7,23 @@ export class OaImport {
     public refName: string;
     public typeName: string;
     public qualifiedName: string;
-    public isEnum: boolean;
     public useAlias: boolean;
     public file: string;
 
     public namespace?: string;
     public fileName: string;
+    public modelPtr?: OaModel;
 
     public fromModel(model: OaModel): OaImport {
         this.refName = model.refName;
         this.typeName = model.typeName;
         this.qualifiedName = model.assumedName;
-        this.isEnum = model.isEnum;
         this.useAlias = this.typeName !== this.qualifiedName;
         [this.namespace, this.fileName] = [
             namespace(model.refName),
             fileName(unqualifiedName(model.refName, model.options)),
         ];
+        this.modelPtr = model;
         this.setRelativePath();
         return this;
     }
@@ -44,6 +44,7 @@ export class OaImport {
         this.qualifiedName = source.qualifiedName;
         this.useAlias = false;
         [this.namespace, this.fileName] = [source.namespace, source.fileName];
+        this.modelPtr = source.modelPtr;
         this.setRelativePath();
         return this;
     }

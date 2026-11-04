@@ -97,22 +97,27 @@ export function tsTypeVal(
     }
 
     const allOf = schema.allOf || [];
-    let intersectionType: string[] = [];
 
     // Special case: enum discriminator
     if (allOf.length === 2) {
-        const enumRefObject = allOf.find((o: ReferenceObject) => !!o.$ref) as ReferenceObject|undefined;
-        const memberObject = allOf.find((o: SchemaObject) => !!o.enum) as SchemaObject|undefined;
+        const enumRefObject = allOf.find((o: ReferenceObject) => !!o.$ref) as ReferenceObject | undefined;
+        const memberObject = allOf.find((o: SchemaObject) => !!o.enum) as SchemaObject | undefined;
         if (enumRefObject && memberObject && memberObject.enum.length === 1) {
             const enumRef = effectiveSchemaOrRef(enumRefObject);
             const name = refName(enumRef.$ref);
             const imp: OaImport | undefined = imports?.get(name);
-            if (container?.name !== name && imp) {
-                const enumName = imp.useAlias ? imp.qualifiedName : imp.typeName;
-                intersectionType.push(`${enumName}.${memberObject.enum[0]}`);
+            if (imp?.modelPtr?.isEnum) {
+                const propMatch = typeof memberObject.enum[0] === 'string' ? `'${memberObject.enum[0]}'` : memberObject.enum[0];
+                const propName = imp.modelPtr.enumValues.find(ev => ev.value === propMatch)?.name;
+                if (propName) {
+                    const enumName = imp.useAlias ? imp.qualifiedName : imp.typeName;
+                    return `${ enumName }.${ propName }`;
+                }
             }
         }
     }
+
+    let intersectionType: string[] = [];
 
     // Types intersection
     if (allOf.length > 0) {
