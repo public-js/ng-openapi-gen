@@ -1,9 +1,9 @@
 import $RefParser from '@apidevtools/json-schema-ref-parser';
 import type { OpenAPIObject } from 'openapi3-ts';
 
-import { resolveOptions, type OptionsInput } from '../config/options.js';
-import { GeneratorDocumentBuilder } from './generation/document-builder.js';
+import { type OptionsInput, resolveOptions } from '../config/options.js';
 import { emitDocument } from './emitter/emit-document.js';
+import { GeneratorDocumentBuilder } from './generation/document-builder.js';
 import { loadHooks } from './hooks/loader.js';
 import { HookRunner } from './hooks/runner.js';
 import type { WrittenFile } from './hooks/types.js';

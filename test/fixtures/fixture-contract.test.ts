@@ -1,7 +1,6 @@
-import { mkdtempSync, readdirSync, readFileSync } from 'node:fs';
-import { rmSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 import { describe, expect, test } from 'vitest';
 

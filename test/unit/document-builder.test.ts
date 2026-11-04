@@ -1,10 +1,10 @@
 import type { OpenAPIObject } from 'openapi3-ts';
 import { describe, expect, test } from 'vitest';
 
-import { resolveOptions } from '../../src/config/options.js';
-import { HookRunner } from '../../src/core/hooks/runner.js';
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';
+import { HookRunner } from '../../src/core/hooks/runner.js';
 import { GeneratorLogger } from '../../src/core/runtime/logger.js';
+import { resolveOptions } from '../../src/index.js';
 
 async function buildDocument(openApi: OpenAPIObject, optionOverrides: Record<string, unknown> = {}) {
     const options = resolveOptions({

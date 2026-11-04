@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { defaultOptions, resolveOptions } from '../../src/config/options.js';
+import { defaultOptions, resolveOptions } from '../../src/index.js';
 
 describe('options', () => {
     test('resolveOptions applies defaults and normalizes hooks', () => {

@@ -1,13 +1,13 @@
 import type { OpenAPIObject } from 'openapi3-ts';
 import type { Project, SourceFile } from 'ts-morph';
 
+import type { Options } from '../../config/options.js';
 import type { GeneratorDocument } from '../generation/document.js';
 import type { OaModel } from '../models/oa-model.js';
 import type { OaOperation } from '../models/oa-operation.js';
 import type { OaService } from '../models/oa-service.js';
 import type { GeneratorLogger } from '../runtime/logger.js';
 import type { GeneratorHook, HookContext, HookGeneratedFile, SourceFileMetadata, WrittenFile } from './types.js';
-import type { Options } from '../../config/options.js';
 
 export class HookRunner {
     private readonly generatedFiles: HookGeneratedFile[] = [];

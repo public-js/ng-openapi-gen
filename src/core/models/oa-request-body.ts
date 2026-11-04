@@ -1,7 +1,7 @@
 import { RequestBodyObject } from 'openapi3-ts';
 
-import { OaContent } from './oa-content.js';
 import { docText } from '../../utils/string.js';
+import { OaContent } from './oa-content.js';
 
 export class OaRequestBody {
     public required: boolean;

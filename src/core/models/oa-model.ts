@@ -2,14 +2,14 @@ import { posix } from 'node:path';
 
 import { OpenAPIObject, SchemaObject } from 'openapi3-ts';
 
-import { OaBase } from './oa-base.js';
-import { OaEnumValue } from './oa-enum-value.js';
-import { OaImport } from './oa-import.js';
-import { OaProperty } from './oa-property.js';
 import { Options } from '../../config/options.js';
 import { unqualifiedName } from '../../utils/open-api.js';
 import { docText } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
+import { OaBase } from './oa-base.js';
+import { OaEnumValue } from './oa-enum-value.js';
+import { OaImport } from './oa-import.js';
+import { OaProperty } from './oa-property.js';
 
 const NULL_PREFIX = 'null | ';
 

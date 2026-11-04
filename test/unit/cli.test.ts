@@ -1,7 +1,6 @@
-import { mkdtempSync, writeFileSync } from 'node:fs';
-import { existsSync, rmSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 import { describe, expect, test } from 'vitest';
 

@@ -1,9 +1,9 @@
 import { posix } from 'node:path';
 
-import { OaModel } from './oa-model.js';
 import { Options } from '../../config/options.js';
 import { qualifiedName, unqualifiedName } from '../../utils/open-api.js';
 import { fileName, namespace } from '../../utils/string.js';
+import { OaModel } from './oa-model.js';
 
 export class OaImport {
     public file: string;

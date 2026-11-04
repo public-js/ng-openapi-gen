@@ -3,9 +3,9 @@ import {
     OptionalKind,
     ParameterDeclarationStructure,
     Scope,
+    type SourceFile,
     StructureKind,
     VariableDeclarationKind,
-    type SourceFile,
 } from 'ts-morph';
 
 import type { GeneratorDocument } from '../generation/document.js';

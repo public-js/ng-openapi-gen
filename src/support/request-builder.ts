@@ -2,7 +2,14 @@
 
 /*__AUTO_GENERATION_NOTICE__*/
 
-import { HttpContext, HttpHeaders, HttpParameterCodec, HttpParams, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+    HttpContext,
+    HttpHeaders,
+    HttpParameterCodec,
+    HttpParams,
+    HttpRequest,
+    HttpResponse,
+} from '@angular/common/http';
 
 export type StrictHttpResponse<T> = HttpResponse<T> & { readonly body: T };
 

@@ -2,9 +2,9 @@ import { resolve } from 'node:path';
 
 import { describe, expect, test, vi } from 'vitest';
 
-import { resolveOptions } from '../../src/config/options.js';
 import { runPostProcessors } from '../../src/core/output/post-process.js';
 import { GeneratorLogger } from '../../src/core/runtime/logger.js';
+import { resolveOptions } from '../../src/index.js';
 
 describe('post-process', () => {
     test('runs eslint then prettier by default', async () => {

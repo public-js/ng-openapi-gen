@@ -1,11 +1,10 @@
 import type { OpenAPIObject } from 'openapi3-ts';
 
-import { resolveOptions, type OptionsInput } from '../../src/config/options.js';
 import { emitDocument } from '../../src/core/emitter/emit-document.js';
-import { HookRunner } from '../../src/core/hooks/runner.js';
-import type { GeneratorHook } from '../../src/core/hooks/types.js';
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';
+import { HookRunner } from '../../src/core/hooks/runner.js';
 import { GeneratorLogger } from '../../src/core/runtime/logger.js';
+import { type GeneratorHook, type OptionsInput, resolveOptions } from '../../src/index.js';
 
 export const specBase = { openapi: '3.0.0', info: { title: 'Test', version: '1.0.0' } };
 

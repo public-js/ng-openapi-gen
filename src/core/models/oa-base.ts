@@ -1,9 +1,9 @@
 import { ReferenceObject, SchemaObject } from 'openapi3-ts';
 
-import { OaImport } from './oa-import.js';
 import { Options } from '../../config/options.js';
 import { effectiveSchemaOrRef } from '../../utils/open-api.js';
 import { fileName, namespace, refName, typeName } from '../../utils/string.js';
+import { OaImport } from './oa-import.js';
 
 export abstract class OaBase {
     /** Name of the generated type / class */

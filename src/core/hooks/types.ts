@@ -2,7 +2,7 @@ import type { OpenAPIObject } from 'openapi3-ts';
 import type { Project, SourceFile } from 'ts-morph';
 
 import type { Options } from '../../config/options.js';
-import type { GeneratorDocument, GeneratedFileKind } from '../generation/document.js';
+import type { GeneratedFileKind, GeneratorDocument } from '../generation/document.js';
 import type { OaModel } from '../models/oa-model.js';
 import type { OaOperation } from '../models/oa-operation.js';
 import type { OaService } from '../models/oa-service.js';

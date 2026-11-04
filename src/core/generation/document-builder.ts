@@ -3,13 +3,13 @@ import type { OpenAPIObject, OperationObject, SchemaObject } from 'openapi3-ts';
 import type { Options } from '../../config/options.js';
 import { methodName } from '../../utils/string.js';
 import { HookRunner } from '../hooks/runner.js';
-import type { GeneratorDocument } from './document.js';
-import { Globals } from '../runtime/globals.js';
 import { OaImport } from '../models/oa-import.js';
 import { OaModel } from '../models/oa-model.js';
 import { HTTP_METHODS, OaOperation } from '../models/oa-operation.js';
 import { OaService } from '../models/oa-service.js';
+import { Globals } from '../runtime/globals.js';
 import type { GeneratorLogger } from '../runtime/logger.js';
+import type { GeneratorDocument } from './document.js';
 
 export class GeneratorDocumentBuilder {
     private readonly globals: Globals;

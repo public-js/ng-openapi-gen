@@ -1,8 +1,8 @@
 import { ReferenceObject, SchemaObject } from 'openapi3-ts';
 
-import { OaModel } from './oa-model.js';
 import { docText, escapeId } from '../../utils/string.js';
 import { tsTypeVal, type TypeContext } from '../generation/ts-type.js';
+import { OaModel } from './oa-model.js';
 
 export class OaProperty {
     public identifier: string;

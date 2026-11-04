@@ -1,7 +1,7 @@
 import { IndentationText, Project, QuoteKind, type SourceFile } from 'ts-morph';
 
-import type { HookRunner } from '../hooks/runner.js';
 import type { GeneratedFile, GeneratorDocument } from '../generation/document.js';
+import type { HookRunner } from '../hooks/runner.js';
 import { buildModelSourceFile } from './model-source-file.js';
 import { buildServiceSourceFile } from './service-emitter.js';
 import {

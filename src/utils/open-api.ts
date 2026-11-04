@@ -1,8 +1,8 @@
 import type { OpenAPIObject, ReferenceObject, SchemaObject } from 'openapi3-ts';
 
 import type { Options } from '../config/options.js';
-import { camelCase, upperCase, upperFirst } from './text-case.js';
 import { namespace, toBasicChars, typeName } from './string.js';
+import { camelCase, upperCase, upperFirst } from './text-case.js';
 
 /** Returns the unqualified model class name, that is, the last part after '.' */
 export function unqualifiedName(name: string, options: Options): string {

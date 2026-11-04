@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-import { Scope, VariableDeclarationKind, type SourceFile } from 'ts-morph';
+import { Scope, type SourceFile, VariableDeclarationKind } from 'ts-morph';
 
 import type { GeneratorDocument } from '../generation/document.js';
 import { OaImport } from '../models/oa-import.js';

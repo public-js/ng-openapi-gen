@@ -1,16 +1,15 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import type { OpenAPIObject } from 'openapi3-ts';
-import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 
+import type { OpenAPIObject } from 'openapi3-ts';
 import { describe, expect, test } from 'vitest';
 
-import { resolveOptions } from '../../src/config/options.js';
-import { HookRunner } from '../../src/core/hooks/runner.js';
 import { GeneratorDocumentBuilder } from '../../src/core/generation/document-builder.js';
+import { HookRunner } from '../../src/core/hooks/runner.js';
 import { writeGeneratedFiles } from '../../src/core/output/write-output.js';
 import { GeneratorLogger } from '../../src/core/runtime/logger.js';
-import { generate } from '../../src/index.js';
+import { generate, resolveOptions } from '../../src/index.js';
 
 async function buildDocument(openApi: OpenAPIObject, optionOverrides: Record<string, unknown> = {}) {
     const options = resolveOptions({

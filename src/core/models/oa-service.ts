@@ -2,12 +2,12 @@ import { posix } from 'node:path';
 
 import { TagObject } from 'openapi3-ts';
 
-import { OaBase } from './oa-base.js';
-import { OaImport } from './oa-import.js';
-import { OaOperation } from './oa-operation.js';
 import { Options } from '../../config/options.js';
 import { serviceClass } from '../../utils/open-api.js';
 import { docText } from '../../utils/string.js';
+import { OaBase } from './oa-base.js';
+import { OaImport } from './oa-import.js';
+import { OaOperation } from './oa-operation.js';
 
 export class OaService extends OaBase {
     constructor(

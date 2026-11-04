@@ -1,9 +1,9 @@
 import { SchemaObject } from 'openapi3-ts';
 
-import { OaContent } from './oa-content.js';
-import { OaOperation } from './oa-operation.js';
 import { resolveRef } from '../../utils/open-api.js';
 import { docText } from '../../utils/string.js';
+import { OaContent } from './oa-content.js';
+import { OaOperation } from './oa-operation.js';
 
 export class OaOperationVariant {
     public responseMethodName: string;

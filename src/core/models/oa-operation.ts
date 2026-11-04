@@ -11,6 +11,11 @@ import {
     SecuritySchemeObject,
 } from 'openapi3-ts';
 
+import { Options } from '../../config/options.js';
+import { resolveRef } from '../../utils/open-api.js';
+import { typeName } from '../../utils/string.js';
+import { upperFirst } from '../../utils/text-case.js';
+import type { TypeContext } from '../generation/ts-type.js';
 import { OaContent } from './oa-content.js';
 import { OaImport } from './oa-import.js';
 import { OaOperationVariant } from './oa-operation-variant.js';
@@ -18,11 +23,6 @@ import { OaParameter } from './oa-parameter.js';
 import { OaRequestBody } from './oa-request-body.js';
 import { OaResponse } from './oa-response.js';
 import { OaSecurity } from './oa-security.js';
-import { Options } from '../../config/options.js';
-import { upperFirst } from '../../utils/text-case.js';
-import { resolveRef } from '../../utils/open-api.js';
-import { typeName } from '../../utils/string.js';
-import type { TypeContext } from '../generation/ts-type.js';
 
 export type HttpMethod = keyof Pick<
     PathItemObject,
