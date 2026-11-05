@@ -1,3 +1,55 @@
+## [0.2.1](https://github.com/public-js/ng-openapi-gen/compare/0.1.1...0.2.1) (2026-11-05)
+
+### ⚠ BREAKING CHANGES
+
+* `null` in an `enum` is no longer generated as the string `'null'`.
+* `runEslint` and `runPrettier` are on by default, and the output gains a `prettier.config.mjs`.
+* Handlebars templates can no longer be overridden.
+* Most CLI flags moved to the config file.
+* Node 18 or later is required.
+* Node 22.19 or later is required.
+* Non-ASCII text is transliterated differently, which renames generated models, services, methods, enum members and files.
+* Package paths moved: the CLI entry from `src/ng-openapi-gen.js` to `dist/cli.js`, and the JSON schema from `src/schema.json` to `dist/schema.json`.
+
+### Features
+
+* add hook modules ([df76f6c](https://github.com/public-js/ng-openapi-gen/commit/df76f6c7c6536cb134e9d48387abcded79b2ab07))
+* fully support OpenAPI 3.1 schemas ([76cd6c9](https://github.com/public-js/ng-openapi-gen/commit/76cd6c9c9f4af591bfe61405ab9a12b80b033301))
+* load specs from localhost and internal hosts ([6e50b3d](https://github.com/public-js/ng-openapi-gen/commit/6e50b3d48076220b371d30fc58327fc59a2bdac4))
+* run eslint and prettier on the generated output ([807992c](https://github.com/public-js/ng-openapi-gen/commit/807992cc80dd74dba51b512bb5d89768a246d19a))
+* support enum members as discriminator values ([ac7e794](https://github.com/public-js/ng-openapi-gen/commit/ac7e794ad8df9636606339a079f94a6d2641475b))
+* swap Handlebars for ts-morph ([6292a5c](https://github.com/public-js/ng-openapi-gen/commit/6292a5cea3170adf5c549898f11423a5108a43be))
+
+### Bug Fixes
+
+* apply transformDocument changes to the document lists ([69d544f](https://github.com/public-js/ng-openapi-gen/commit/69d544f1066e8bd0018edd171e7a68d0b66aecd6))
+* escape quotes in inline object types ([a11fdbf](https://github.com/public-js/ng-openapi-gen/commit/a11fdbff4d70bbe90679e8ff1f63dfef6e1fdedc))
+* generate a valid $id for the JSON schema ([f74f113](https://github.com/public-js/ng-openapi-gen/commit/f74f113f28c7cbb054d77a229d3679b9c32cb835))
+* generate correct import paths for services in a namespace ([7b31ceb](https://github.com/public-js/ng-openapi-gen/commit/7b31ceb2c52314f420f95bdbff2415ded15faad9))
+* keep models only used through contentSchema ([52b69e2](https://github.com/public-js/ng-openapi-gen/commit/52b69e24c2f40766344bbd261aba31195958bfd8))
+* keep ts files registered during transformSourceFile ([c13cadc](https://github.com/public-js/ng-openapi-gen/commit/c13cadceaf9debb7e49e28f4758b492410146641))
+* let includeTags override excludeTags ([2cba633](https://github.com/public-js/ng-openapi-gen/commit/2cba6339fcfd40cac807b10278e2dd50999335d7))
+* stop duplicating methods for operations with several tags ([e8e3028](https://github.com/public-js/ng-openapi-gen/commit/e8e30283fa5e5bcb973eeae10fbd433958e4008d))
+* support files added by the hooks ([aedda3f](https://github.com/public-js/ng-openapi-gen/commit/aedda3f020019122ed0065bacf39deb2e6848ff8))
+* use the system line ending for endOfLineStyle auto ([51cd239](https://github.com/public-js/ng-openapi-gen/commit/51cd239786e97b7724b752de31fce2fb75cbaab3))
+
+### Performance Improvements
+
+* batch ts-morph import and export additions ([5387062](https://github.com/public-js/ng-openapi-gen/commit/5387062a4ac3ddb8a4290e037632cb3b59d7f8c2))
+* skip transliteration for names it cannot change ([844911d](https://github.com/public-js/ng-openapi-gen/commit/844911d43c0144f7381978ae8dffb6a3f405f6a9))
+
+### Miscellaneous Chores
+
+* upgrade json-schema-ref-parser to 16 ([e26d2e4](https://github.com/public-js/ng-openapi-gen/commit/e26d2e4b9fcad77b2837684d857229b946d46f7a))
+
+### Code Refactoring
+
+* replace the lodash helpers with change-case ([fde7762](https://github.com/public-js/ng-openapi-gen/commit/fde77628f1ccc68f4eb029c9cf89a667970d67e4))
+
+### Build System
+
+* replace the Nx workspace with a single package ([79f5802](https://github.com/public-js/ng-openapi-gen/commit/79f580270e54ea3f8c00a673f25a86af98d6be64))
+
 ## [0.1.1](https://github.com/public-js/ng-openapi-gen/compare/0.1.0...0.1.1) (2026-03-21)
 
 ### Features
