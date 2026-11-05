@@ -25,7 +25,7 @@ const currentVersion = JSON.parse(readFileSync(new URL('../package.json', import
 const versionArgs = getVersionArgs(mode, currentVersion);
 
 exec('npm', ['version', ...versionArgs, '--no-git-tag-version']);
-exec('npx', ['conventional-changelog', '-p', 'conventionalcommits', '-i', 'CHANGELOG.md', '-s']);
+exec('npx', ['conventional-changelog', '-p', 'conventionalcommits', '-i', 'CHANGELOG.md']);
 
 const nextVersion = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 console.log(nextVersion);
